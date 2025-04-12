@@ -27,14 +27,6 @@ require_once(__DIR__ . "/../include/menu.php");
             </form>            
         </div>       
 
-
-            
-                
-                
-
-                
-         
-
         <div class="col-6">
             <?php require_once(__DIR__ . "/../include/msg.php"); ?>
         </div>

@@ -37,12 +37,12 @@ require_once(__DIR__ . "/../include/menu.php");
                             <td><?php echo $cargo->getId(); ?></td>
                             <td><?= $cargo->getNome(); ?></td>
                             <td><a class="btn btn-primary" 
-                                href="<?= BASEURL ?>/controller/UsuarioController.php?action=edit&id=<?= $cargo->getId() ?>">
+                                href="<?= BASEURL ?>/controller/CargoController.php?action=edit&id=<?= $cargo->getId() ?>">
                                 Alterar</a> 
                             </td>
                             <td><a class="btn btn-danger" 
-                                onclick="return confirm('Confirma a exclusão do usuário?');"
-                                href="<?= BASEURL ?>/controller/UsuarioController.php?action=delete&id=<?= $cargo->getId() ?>">
+                                onclick="return confirm('Confirma a exclusão do Cargo?');"
+                                href="<?= BASEURL ?>/controller/CargoController.php?action=delete&id=<?= $cargo->getId() ?>">
                                 Excluir</a> 
                             </td>
                         </tr>

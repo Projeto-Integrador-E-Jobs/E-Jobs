@@ -15,6 +15,24 @@ class CargoDAO {
         
         return $this->mapCargos($result);
     }
+
+    public function findById(int $id) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM cargos " .
+               " WHERE id = ?";
+        $stm = $conn->prepare($sql);    
+        $stm->execute([$id]);
+        $result = $stm->fetchAll();
+
+        $cargos = $this->mapCargos($result);
+
+        if(count($cargos) == 1)
+            return $cargos[0];
+        elseif(count($cargos) == 0)
+            return null;
+
+    }
     
 
     public function insert(Cargo $cargo) {
@@ -27,6 +45,29 @@ class CargoDAO {
         $stm->bindValue("nome", $cargo->getNome());
         $stm->execute();
     }
+
+    public function update(Cargo $cargo) {
+        $conn = Connection::getConn();
+    
+        $sql = "UPDATE cargos SET nome = :nome WHERE id = :id";        
+        $stm = $conn->prepare($sql);
+        $stm->bindValue("id", $cargo->getId());
+        $stm->bindValue("nome", $cargo->getNome());
+    
+        $stm->execute();
+    }
+    
+
+    public function deleteById(int $id) {
+        $conn = Connection::getConn();
+    
+        $sql = "DELETE FROM cargos WHERE id = :id";
+        
+        $stm = $conn->prepare($sql);
+        $stm->bindValue("id", $id);
+        $stm->execute();
+    }
+    
 
     private function mapCargos($result) {
         $cargos = array();
