@@ -11,7 +11,7 @@ class UsuarioDAO {
     public function list() {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM usuarios u ORDER BY u.nome_usuario";
+        $sql = "SELECT * FROM usuario u ORDER BY u.nome";
         $stm = $conn->prepare($sql);    
         $stm->execute();
         $result = $stm->fetchAll();
@@ -23,8 +23,8 @@ class UsuarioDAO {
     public function findById(int $id) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM usuarios u" .
-               " WHERE u.id_usuario = ?";
+        $sql = "SELECT * FROM usuario u" .
+               " WHERE u.id = ?";
         $stm = $conn->prepare($sql);    
         $stm->execute([$id]);
         $result = $stm->fetchAll();
@@ -42,13 +42,13 @@ class UsuarioDAO {
 
 
     //Método para buscar um usuário por seu login e senha
-    public function findByLoginSenha(string $login, string $senha) {
+    public function findByLoginSenha(string $email, string $senha) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM usuarios u" .
-               " WHERE BINARY u.login = ?";
+        $sql = "SELECT * FROM usuario u" .
+               " WHERE BINARY u.email = ?";
         $stm = $conn->prepare($sql);    
-        $stm->execute([$login]);
+        $stm->execute([$email]);
         $result = $stm->fetchAll();
 
         $usuarios = $this->mapUsuarios($result);
@@ -70,14 +70,14 @@ class UsuarioDAO {
     public function insert(Usuario $usuario) {
         $conn = Connection::getConn();
 
-        $sql = "INSERT INTO usuarios (nome_usuario, login, senha, papel)" .
-               " VALUES (:nome, :login, :senha, :papel)";
+        $sql = "INSERT INTO usuario (nome_usuario, email, senha, tipo_usuario)" .
+               " VALUES (:nome, :email, :senha, :papel)";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
-        $stm->bindValue("login", $usuario->getLogin());
+        $stm->bindValue("email", $usuario->getEmail());
         $stm->bindValue("senha", password_hash($usuario->getSenha(), PASSWORD_DEFAULT));
-        $stm->bindValue("papel", $usuario->getPapel());
+        $stm->bindValue("tipoUsuario", $usuario->getTipoUsuario());
         $stm->execute();
     }
 
@@ -85,15 +85,15 @@ class UsuarioDAO {
     public function update(Usuario $usuario) {
         $conn = Connection::getConn();
 
-        $sql = "UPDATE usuarios SET nome_usuario = :nome, login = :login," . 
+        $sql = "UPDATE usuarios SET nome_usuario = :nome, email = :email," . 
                " senha = :senha, papel = :papel" .   
                " WHERE id_usuario = :id";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
-        $stm->bindValue("login", $usuario->getLogin());
+        $stm->bindValue("email", $usuario->getEmail());
         $stm->bindValue("senha", password_hash($usuario->getSenha(), PASSWORD_DEFAULT));
-        $stm->bindValue("papel", $usuario->getPapel());
+        $stm->bindValue("papel", $usuario->getTipoUsuario());
         $stm->bindValue("id", $usuario->getId());
         $stm->execute();
     }
@@ -114,11 +114,11 @@ class UsuarioDAO {
         $usuarios = array();
         foreach ($result as $reg) {
             $usuario = new Usuario();
-            $usuario->setId($reg['id_usuario']);
-            $usuario->setNome($reg['nome_usuario']);
-            $usuario->setLogin($reg['login']);
+            $usuario->setId($reg['id']);
+            $usuario->setNome($reg['nome']);
+            $usuario->setEmail($reg['email']);
             $usuario->setSenha($reg['senha']);
-            $usuario->setPapel($reg['papel']);
+            $usuario->setTipoUsuario($reg['tipo_usuario_id']);
             array_push($usuarios, $usuario);
         }
 

@@ -6,11 +6,11 @@ require_once(__DIR__ . "/../model/Usuario.php");
 
 class LoginService {
 
-    public function validarCampos(?string $login, ?string $senha) {
+    public function validarCampos(?string $email, ?string $senha) {
         $arrayMsg = array();
 
         //Valida o campo nome
-        if(! $login)
+        if(! $email)
             array_push($arrayMsg, "O campo [Login] é obrigatório.");
 
         //Valida o campo login
@@ -27,7 +27,7 @@ class LoginService {
         //Setar usuário na sessão do PHP
         $_SESSION[SESSAO_USUARIO_ID]   = $usuario->getId();
         $_SESSION[SESSAO_USUARIO_NOME] = $usuario->getNome();
-        $_SESSION[SESSAO_USUARIO_PAPEL] = $usuario->getPapel();
+        $_SESSION[SESSAO_USUARIO_PAPEL] = $usuario->getTipoUsuario();
     }
 
     public function removerUsuarioSessao() {

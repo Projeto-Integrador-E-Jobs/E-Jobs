@@ -1,3 +1,4 @@
+use ejobs;
 CREATE TABLE tipo_usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255)
@@ -30,7 +31,7 @@ CREATE TABLE usuario (
     FOREIGN KEY (estado_id) REFERENCES estado(id)
 );
 
-CREATE TABLE cargo (
+CREATE TABLE cargos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255)
 );
@@ -47,7 +48,7 @@ CREATE TABLE vaga (
     empresa_id INT,
     cargos_id INT,
     FOREIGN KEY (empresa_id) REFERENCES usuario(id),
-    FOREIGN KEY (cargos_id) REFERENCES cargo(id)
+    FOREIGN KEY (cargos_id) REFERENCES cargos(id)
 );
 
 CREATE TABLE candidatura (
@@ -59,3 +60,52 @@ CREATE TABLE candidatura (
     FOREIGN KEY (candidato_id) REFERENCES usuario(id),
     FOREIGN KEY (vaga_id) REFERENCES vaga(id)
 );
+
+INSERT INTO estado (nome, sigla) VALUES
+('Acre', 'AC'),
+('Alagoas', 'AL'),
+('Amapá', 'AP'),
+('Amazonas', 'AM'),
+('Bahia', 'BA'),
+('Ceará', 'CE'),
+('Distrito Federal', 'DF'),
+('Espírito Santo', 'ES'),
+('Goiás', 'GO'),
+('Maranhão', 'MA'),
+('Mato Grosso', 'MT'),
+('Mato Grosso do Sul', 'MS'),
+('Minas Gerais', 'MG'),
+('Pará', 'PA'),
+('Paraíba', 'PB'),
+('Paraná', 'PR'),
+('Pernambuco', 'PE'),
+('Piauí', 'PI'),
+('Rio de Janeiro', 'RJ'),
+('Rio Grande do Norte', 'RN'),
+('Rio Grande do Sul', 'RS'),
+('Rondônia', 'RO'),
+('Roraima', 'RR'),
+('Santa Catarina', 'SC'),
+('São Paulo', 'SP'),
+('Sergipe', 'SE'),
+('Tocantins', 'TO');
+
+INSERT INTO tipo_usuario (nome) VALUES
+('USUARIO'),
+('ADMINISTRADOR'),
+('EMPRESA');
+
+INSERT INTO cargo (nome) VALUES 
+('Desenvolvedor Backend'),
+('Designer UI/UX'),
+('Analista de Dados');
+
+INSERT INTO usuario (nome, email, senha, documento, descricao, estado_id, cidade, end_logradouro, end_bairro, end_numero, end_complemento, telefone, status, tipo_usuario_id) VALUES 
+('João da Silva', 'joao@email.com', '$2y$10$9H8nNzW7tM7cGhy6r59gYuKuflEGKzKGOMPv86yUhJbySUNnnY42y', '123.456.789-00',
+ 'Candidato com experiência em TI', 1, 'São Paulo', 'Rua A', 'Centro', '123', 'Apto 12', '(11)99999-9999', 'Ativo', 1),
+('Empresa XYZ', 'contato@xyz.com', '$2y$10$PrnFrYArQJto/SlnMTFTpOSDKU9XS5PfeHHUvJlzMxeJH5KdnI/Sm', '12.345.678/0001-99',
+ 'Empresa de tecnologia', 2, 'Belo Horizonte', 'Av. Brasil', 'Funcionários', '500', 'Sala 10', '(31)98888-8888', 'Ativo', 2),
+('Maria Admin', 'admin@maria.com', '$2y$10$9H8nNzW7tM7cGhy6r59gYuKuflEGKzKGOMPv86yUhJbySUNnnY42y', '987.654.321-00',
+ 'Administrador do sistema', 3, 'Rio de Janeiro', 'Rua das Laranjeiras', 'Centro', '200', '', '(21)97777-7777', 'Ativo', 3);
+
+

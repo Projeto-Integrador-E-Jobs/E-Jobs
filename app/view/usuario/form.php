@@ -26,10 +26,10 @@ require_once(__DIR__ . "/../include/menu.php");
                 </div>
                 
                 <div class="form-group">
-                    <label for="txtLogin">Login:</label>
-                    <input class="form-control" type="text" id="txtLogin" name="login" 
-                        maxlength="15" placeholder="Informe o login"
-                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getLogin() : ''); ?>"/>
+                    <label for="txtLogin">Email:</label>
+                    <input class="form-control" type="text" id="txtLogin" name="email" 
+                        maxlength="15" placeholder="Informe o email"
+                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEmail() : ''); ?>"/>
                 </div>
 
                 <div class="form-group">
@@ -48,7 +48,7 @@ require_once(__DIR__ . "/../include/menu.php");
 
                 <div class="form-group">
                     <label>Papel</label>
-                    <select class="form-control" name="papel" id="selPapel">
+                    <select class="form-control" name="tipoUsuario" id="selPapel">
                         <option value="">Selecione o papel</option>
                         <?php foreach($dados["papeis"] as $papel): ?>
                             <option value="<?= $papel ?>" 

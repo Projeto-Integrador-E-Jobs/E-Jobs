@@ -54,17 +54,17 @@ class UsuarioController extends Controller {
         //Captura os dados do formulário
         $dados["id"] = isset($_POST['id']) ? $_POST['id'] : 0;
         $nome = trim($_POST['nome']) ? trim($_POST['nome']) : NULL;
-        $login = trim($_POST['login']) ? trim($_POST['login']) : NULL;
+        $email = trim($_POST['login']) ? trim($_POST['login']) : NULL;
         $senha = trim($_POST['senha']) ? trim($_POST['senha']) : NULL;
         $confSenha = trim($_POST['conf_senha']) ? trim($_POST['conf_senha']) : NULL;
-        $papel = trim($_POST['papel']) ? trim($_POST['papel']) : NULL;
+        $tipoUsuario = trim($_POST['papel']) ? trim($_POST['papel']) : NULL;
 
         //Cria objeto Usuario
         $usuario = new Usuario();
         $usuario->setNome($nome);
-        $usuario->setLogin($login);
+        $usuario->setEmail($email);
         $usuario->setSenha($senha);
-        $usuario->setPapel($papel);
+        $usuario->setTipoUsuario($tipoUsuario);
 
         //Validar os dados
         $erros = $this->usuarioService->validarDados($usuario, $confSenha);
