@@ -52,17 +52,7 @@ require_once(__DIR__ . "/../include/menu.php");
                         </div>
                         
                         <div class="col-md-4">
-                            <div class="card bg-light border-0">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <i class="fas fa-info-circle text-primary me-2"></i>Informações
-                                    </h5>
-                                    <p class="card-text small">
-                                        Preencha o nome do cargo para cadastrá-lo no sistema.
-                                        Os cargos cadastrados poderão ser utilizados nas vagas de emprego.
-                                    </p>
-                                </div>
-                            </div>
+                    
                             
                             <?php require_once(__DIR__ . "/../include/msg.php"); ?>
                         </div>
