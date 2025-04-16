@@ -13,6 +13,7 @@ require_once(__DIR__ . "/../include/menu.php");
                     </h4>
                 </div>
                 
+<<<<<<< Updated upstream
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-8">
@@ -68,6 +69,25 @@ require_once(__DIR__ . "/../include/menu.php");
                     </div>
                 </div>
             </div>
+=======
+                <input type="hidden" id="hddId" name="id" 
+                    value="<?= $dados['id']; ?>" />
+
+                <button type="submit" class="btn btn-success">Gravar</button>
+                <button type="reset" class="btn btn-danger">Limpar</button>
+            </form>            
+        </div>       
+
+        <div class="col-6">
+            <?php require_once(__DIR__ . "/../include/msg.php"); ?>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-12">
+        <a class="btn btn-secondary" 
+                href="<?= BASEURL ?>/controller/CargoController.php?action=list">Voltar</a>
+>>>>>>> Stashed changes
         </div>
     </div>
 </div>
