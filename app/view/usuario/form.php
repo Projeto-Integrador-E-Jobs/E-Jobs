@@ -47,17 +47,101 @@ require_once(__DIR__ . "/../include/menu.php");
                 </div>
 
                 <div class="form-group">
+                    <label for="txtDocumento">Documento:</label>
+                    <input class="form-control" type="text" id="txtDocumento" name="documento" 
+                        maxlength="20" placeholder="Informe o documento"
+                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getDocumento() : ''); ?>"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtDescricao">Descrição:</label>
+                    <textarea class="form-control" id="txtDescricao" name="descricao" rows="3"
+                        placeholder="Informe a descrição"><?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getDescricao() : ''); ?></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select class="form-control" name="estado" id="selEstado">
+                        <option value="">Selecione o estado</option>
+                        <?php foreach($dados["estados"] as $estado): ?>
+                            <option value="<?= $estado->getId() ?>" 
+                                <?php 
+                                    if(isset($dados["usuario"]) && $dados["usuario"]->getEstado()?->getId() == $estado->getId()) 
+                                        echo "selected";
+                                ?>    
+                            >
+                                <?= $estado->getNome() ?>
+                            </option>
+                        <?php endforeach; ?>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtCidade">Cidade:</label>
+                    <input class="form-control" type="text" id="txtCidade" name="cidade" 
+                        maxlength="20" placeholder="Informe a Cidade"
+                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getCidade() : ''); ?>"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtEndLogradouro">Endereço Lougradouro:</label>
+                    <input class="form-control" type="text" id="txtEndLogradouro" name="endLogradouro" 
+                        maxlength="20" placeholder="Informe o Endereço Lougradouro"
+                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEndLogradouro() : ''); ?>"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtEndBairro">Bairro:</label>
+                    <input class="form-control" type="text" id="txtEndBairro" name="endBairro" 
+                        maxlength="20" placeholder="Informe o Bairro"
+                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEndBairro() : ''); ?>"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtEndNumero">Número:</label>
+                    <input class="form-control" type="text" id="txtEndNumero" name="endNumero" 
+                        maxlength="20" placeholder="Informe o Número"
+                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEndNumero() : ''); ?>"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtTelefone">Informe o telefone:</label>
+                    <input class="form-control" type="text" id="txtTelefone" name="telefone" 
+                        maxlength="20" placeholder="Informe o Número"
+                        value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getTelefone() : ''); ?>"/>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control" name="status" id="selStatus">
+                        <option value="">Selecione o status do usuário</option>
+                        <?php foreach($dados["status"] as $status): ?>
+                            <option value="<?= $status ?>" 
+                                <?php 
+                                    if(isset($dados["usuario"]) && $dados["usuario"]->getStatus() == $status) 
+                                        echo "selected";
+                                ?>    
+                            >
+                                <?= $status ?>
+                            </option>
+                        <?php endforeach; ?>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Papel</label>
                     <select class="form-control" name="tipoUsuario" id="selPapel">
                         <option value="">Selecione o papel</option>
                         <?php foreach($dados["papeis"] as $papel): ?>
-                            <option value="<?= $papel ?>" 
+                            <option value="<?= $papel->getId() ?>" 
                                 <?php 
-                                    if(isset($dados["usuario"]) && $dados["usuario"]->getPapel() == $papel) 
+                                    if(isset($dados["usuario"]) && $dados["usuario"]->getTipoUsuario()?->getId() == $papel->getId()) 
                                         echo "selected";
                                 ?>    
                             >
-                                <?= $papel ?>
+                                <?= $papel->getNome() ?>
                             </option>
                         <?php endforeach; ?>
 

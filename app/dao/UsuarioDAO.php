@@ -3,9 +3,21 @@
 #Objetivo: classe DAO para o model de Usuario
 
 include_once(__DIR__ . "/../connection/Connection.php");
+include_once(__DIR__ . "/../dao/TipoUsuarioDAO.php");
+include_once(__DIR__ . "/../dao/EstadoDAO.php");
 include_once(__DIR__ . "/../model/Usuario.php");
+include_once(__DIR__ . "/../model/TipoUsuario.php");
 
 class UsuarioDAO {
+    private TipoUsuarioDAO $tipoUsuarioDao;
+    private EstadoDAO $estadoDAO;
+
+    public function __construct() {
+
+        $this->estadoDAO = new EstadoDAO;
+        $this->tipoUsuarioDao = new TipoUsuarioDAO;
+       
+    }
 
     //Método para listar os usuaários a partir da base de dados
     public function list() {
@@ -70,14 +82,28 @@ class UsuarioDAO {
     public function insert(Usuario $usuario) {
         $conn = Connection::getConn();
 
-        $sql = "INSERT INTO usuario (nome_usuario, email, senha, tipo_usuario)" .
-               " VALUES (:nome, :email, :senha, :papel)";
+        $sql = "INSERT INTO usuario (nome, email, senha,
+        documento, descricao, estado_id, cidade, end_logradouro,
+        end_bairro, end_numero,end_complemento, telefone, status, tipo_usuario_id)" .
+               " VALUES (:nome, :email, :senha, :documento, :descricao,
+               :estado, :cidade, :endLogradouro, :endBairro, :endNumero,
+               :endCompleto, :telefone, :status, :tipoUsuario)";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
         $stm->bindValue("email", $usuario->getEmail());
         $stm->bindValue("senha", password_hash($usuario->getSenha(), PASSWORD_DEFAULT));
-        $stm->bindValue("tipoUsuario", $usuario->getTipoUsuario());
+        $stm->bindValue("documento", $usuario->getDocumento());
+        $stm->bindValue("descricao", $usuario->getDescricao());
+        $stm->bindValue("estado", $usuario->getEstado()->getId());
+        $stm->bindValue("cidade", $usuario->getCidade());
+        $stm->bindValue("endLogradouro", $usuario->getEndLogradouro());
+        $stm->bindValue("endBairro", $usuario->getEndBairro());
+        $stm->bindValue("endNumero", $usuario->getEndNumero());
+        $stm->bindValue("endCompleto", $usuario->getEndCompleto());
+        $stm->bindValue("telefone", $usuario->getTelefone());
+        $stm->bindValue("status", $usuario->getStatus());
+        $stm->bindValue("tipoUsuario", $usuario->getTipoUsuario()->getId());
         $stm->execute();
     }
 
@@ -85,15 +111,28 @@ class UsuarioDAO {
     public function update(Usuario $usuario) {
         $conn = Connection::getConn();
 
-        $sql = "UPDATE usuarios SET nome_usuario = :nome, email = :email," . 
-               " senha = :senha, papel = :papel" .   
-               " WHERE id_usuario = :id";
+        $sql = "UPDATE usuario SET nome = :nome, email = :email," . 
+               " senha = :senha, documento = :documento, descricao = :descricao," .
+               "estado_id = :estado, cidade = :cidade, end_logradouro = :endLogradouro," .
+               "end_bairro = :endBairro, end_numero = :endNumero, end_complemento = :endCompleto," . 
+               "telefone = :telefone, status = :status, tipo_usuario_id = :tipoUsuario" .     
+               " WHERE id = :id";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
         $stm->bindValue("email", $usuario->getEmail());
         $stm->bindValue("senha", password_hash($usuario->getSenha(), PASSWORD_DEFAULT));
-        $stm->bindValue("papel", $usuario->getTipoUsuario());
+        $stm->bindValue("documento", $usuario->getDocumento());
+        $stm->bindValue("descricao", $usuario->getDescricao());
+        $stm->bindValue("estado", $usuario->getEstado()->getId());
+        $stm->bindValue("cidade", $usuario->getCidade());
+        $stm->bindValue("endLogradouro", $usuario->getEndLogradouro());
+        $stm->bindValue("endBairro", $usuario->getEndBairro());
+        $stm->bindValue("endNumero", $usuario->getEndNumero());
+        $stm->bindValue("endCompleto", $usuario->getEndCompleto());
+        $stm->bindValue("telefone", $usuario->getTelefone());
+        $stm->bindValue("status", $usuario->getStatus());
+        $stm->bindValue("tipoUsuario", $usuario->getTipoUsuario()->getId());
         $stm->bindValue("id", $usuario->getId());
         $stm->execute();
     }
@@ -102,7 +141,7 @@ class UsuarioDAO {
     public function deleteById(int $id) {
         $conn = Connection::getConn();
 
-        $sql = "DELETE FROM usuarios WHERE id_usuario = :id";
+        $sql = "DELETE FROM usuario WHERE id = :id";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("id", $id);
@@ -118,7 +157,17 @@ class UsuarioDAO {
             $usuario->setNome($reg['nome']);
             $usuario->setEmail($reg['email']);
             $usuario->setSenha($reg['senha']);
-            $usuario->setTipoUsuario($reg['tipo_usuario_id']);
+            $usuario->setDocumento($reg['documento']);
+            $usuario->setDescricao($reg['descricao']);
+            $usuario->setEstado($this->estadoDAO->findById($reg['estado_id']));
+            $usuario->setCidade($reg['cidade']);
+            $usuario->setEndLogradouro($reg['end_logradouro']);
+            $usuario->setEndBairro($reg['end_bairro']);
+            $usuario->setEndNumero($reg['end_numero']);
+            $usuario->setEndCompleto($reg['end_complemento']);
+            $usuario->setTelefone($reg['telefone']);
+            $usuario->setStatus($reg['status']);
+            $usuario->setTipoUsuario($this->tipoUsuarioDao->findById($reg['tipo_usuario_id']));
             array_push($usuarios, $usuario);
         }
 

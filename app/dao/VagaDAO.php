@@ -2,18 +2,30 @@
 
 include_once(__DIR__ . "/../connection/Connection.php");
 include_once(__DIR__ . "/../model/Vaga.php");
+include_once(__DIR__ . "/../dao/UsuarioDAO.php");
+include_once(__DIR__ . "/../dao/CargoDAO.php");
 
 class VagaDAO {
+
+    private UsuarioDAO $usuarioDao;
+    private CargoDAO $cargoDao;
+
+    public function __construct() {
+
+        $this->usuarioDao = new UsuarioDAO();
+        $this->cargoDao = new CargoDAO();
+       
+    }
 
     public function list() {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM usuario v ORDER BY v.vaga";
+        $sql = "SELECT * FROM vaga v ORDER BY v.titulo";
         $stm = $conn->prepare($sql);    
         $stm->execute();
         $result = $stm->fetchAll();
         
-        return $this->mapUsuarios($result);
+        return $this->mapVagas($result);
     }
 
     
@@ -26,7 +38,7 @@ class VagaDAO {
         $stm->execute([$id]);
         $result = $stm->fetchAll();
 
-        $vagas = $this->mapUsuarios($result);
+        $vagas = $this->mapVagas($result);
 
         if(count($vagas) == 1)
             return $vagas[0];
@@ -94,7 +106,7 @@ class VagaDAO {
         $stm->execute();
     }
 
-    private function mapUsuarios($result) {
+    private function mapVagas($result) {
         $vagas = array();
         foreach ($result as $reg) {
             $vaga = new Vaga();
@@ -106,6 +118,8 @@ class VagaDAO {
             $vaga->setSalario($reg['salario']);
             $vaga->setDescricao($reg['descricao']);
             $vaga->setRequisitos($reg['requisitos']);
+            $vaga->setEmpresa($this->usuarioDao->findById($reg['empresa_id']));
+            $vaga->setCargo($this->cargoDao->findById($reg['cargos_id']));
             array_push($vagas, $vaga);
         }
 

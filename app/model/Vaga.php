@@ -12,185 +12,86 @@ class Vaga {
     private ?Usuario $empresa;
     private ?Cargo $cargo;   
     
-    
-
-    /**
-     * Get the value of id
-     */
-    public function getId(): int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    /**
-     * Set the value of id
-     */
-    public function setId(int $id): self
-    {
+    public function setId(?int $id): void {
         $this->id = $id;
-
-        return $this;
     }
 
-    /**
-     * Get the value of titulo
-     */
-    public function getTitulo(): string
-    {
+    public function getTitulo(): ?string {
         return $this->titulo;
     }
 
-    /**
-     * Set the value of titulo
-     */
-    public function setTitulo(string $titulo): self
-    {
+    public function setTitulo(?string $titulo): void {
         $this->titulo = $titulo;
-
-        return $this;
     }
 
-    /**
-     * Get the value of modalidade
-     */
-    public function getModalidade(): string
-    {
+    public function getModalidade(): ?string {
         return $this->modalidade;
     }
 
-    /**
-     * Set the value of modalidade
-     */
-    public function setModalidade(string $modalidade): self
-    {
+    public function setModalidade(?string $modalidade): void {
         $this->modalidade = $modalidade;
-
-        return $this;
     }
 
-    /**
-     * Get the value of horario
-     */
-    public function getHorario(): string
-    {
+    public function getHorario(): ?string {
         return $this->horario;
     }
 
-    /**
-     * Set the value of horario
-     */
-    public function setHorario(string $horario): self
-    {
+    public function setHorario(?string $horario): void {
         $this->horario = $horario;
-
-        return $this;
     }
 
-    /**
-     * Get the value of regime
-     */
-    public function getRegime(): string
-    {
+    public function getRegime(): ?string {
         return $this->regime;
     }
 
-    /**
-     * Set the value of regime
-     */
-    public function setRegime(string $regime): self
-    {
+    public function setRegime(?string $regime): void {
         $this->regime = $regime;
-
-        return $this;
     }
 
-    /**
-     * Get the value of salrio
-     */
-    public function getSalario(): float
-    {
+    public function getSalario(): ?float {
         return $this->salario;
     }
 
-    /**
-     * Set the value of salrio
-     */
-    public function setSalario(float $salrio): self
-    {
-        $this->salario = $salrio;
-
-        return $this;
+    public function setSalario(?float $salario): void {
+        $this->salario = $salario;
     }
 
-    /**
-     * Get the value of descricao
-     */
-    public function getDescricao(): string
-    {
+    public function getDescricao(): ?string {
         return $this->descricao;
     }
 
-    /**
-     * Set the value of descricao
-     */
-    public function setDescricao(string $descricao): self
-    {
+    public function setDescricao(?string $descricao): void {
         $this->descricao = $descricao;
-
-        return $this;
     }
 
-    /**
-     * Get the value of requisitos
-     */
-    public function getRequisitos(): string
-    {
+    public function getRequisitos(): ?string {
         return $this->requisitos;
     }
 
-    /**
-     * Set the value of requisitos
-     */
-    public function setRequisitos(string $requisitos): self
-    {
+    public function setRequisitos(?string $requisitos): void {
         $this->requisitos = $requisitos;
-
-        return $this;
     }
 
-    /**
-     * Get the value of empresa
-     */
-    public function getEmpresa(): ?Usuario
-    {
+    public function getEmpresa(): ?Usuario {
         return $this->empresa;
     }
 
-    /**
-     * Set the value of empresa
-     */
-    public function setEmpresa(?Usuario $empresa): self
-    {
+    public function setEmpresa(?Usuario $empresa): void {
         $this->empresa = $empresa;
-
-        return $this;
     }
 
-    /**
-     * Get the value of gargo
-     */
-    public function getCargo(): ?Cargo
-    {
+    public function getCargo(): ?Cargo {
         return $this->cargo;
     }
 
-    /**
-     * Set the value of gargo
-     */
-    public function setCargo(?Cargo $cargo): self
-    {
+    public function setCargo(?Cargo $cargo): void {
         $this->cargo = $cargo;
-
-        return $this;
     }
+    
+
+  
 }

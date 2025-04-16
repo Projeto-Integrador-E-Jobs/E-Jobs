@@ -39,8 +39,8 @@ CREATE TABLE cargos (
 CREATE TABLE vaga (
     id INT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(255),
-    modalidade ENUM('HOME_OFFICE', 'PRESENCIAL', 'HIBRIDO'),
-    horario ENUM('40h', 'PRESENCIAL', 'HIBRIDO'),
+    modalidade ENUM('HOME OFFICE', 'PRESENCIAL', 'HIBRIDO'),
+    horario ENUM('20h', '30h', '40h', '44h', 'Outros'),
     regime ENUM('CLT', 'PJ', 'ESTÁGIO'),
     salario DECIMAL(10,2),
     descricao TEXT,
@@ -95,7 +95,7 @@ INSERT INTO tipo_usuario (nome) VALUES
 ('ADMINISTRADOR'),
 ('EMPRESA');
 
-INSERT INTO cargo (nome) VALUES 
+INSERT INTO cargos (nome) VALUES 
 ('Desenvolvedor Backend'),
 ('Designer UI/UX'),
 ('Analista de Dados');
@@ -108,4 +108,6 @@ INSERT INTO usuario (nome, email, senha, documento, descricao, estado_id, cidade
 ('Maria Admin', 'admin@maria.com', '$2y$10$9H8nNzW7tM7cGhy6r59gYuKuflEGKzKGOMPv86yUhJbySUNnnY42y', '987.654.321-00',
  'Administrador do sistema', 3, 'Rio de Janeiro', 'Rua das Laranjeiras', 'Centro', '200', '', '(21)97777-7777', 'Ativo', 3);
 
-
+INSERT INTO vaga (titulo, modalidade, horario, regime, salario, descricao, requisitos, empresa_id, cargos_id) VALUES 
+('Desenvolvedor PHP Pleno', 'HOME_OFFICE', '40h', 'CLT', 5000.00, 'Desenvolvimento de aplicações web em PHP', 'Experiência com Laravel, MySQL, Git', 2, 1),
+('Designer UI/UX', 'PRESENCIAL', '40h', 'PJ', 4500.00, 'Criação de interfaces modernas', 'Figma, Adobe XD, criatividade', 2, 2);
