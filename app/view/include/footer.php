@@ -2,8 +2,8 @@
 <footer class="text-center text-lg-start bg-light text-muted" style="margin-top: 10px;">
     <!-- Copyright -->
     <div class="text-center p-4">
-        © 2023 Copyright:
-        <a class="text-reset fw-bold" href="https://foz.ifpr.edu.br" target="blank">IFPR (Campus Foz do Iguaçu)</a>
+        © 2025 Copyright:
+        <a class="text-reset fw-bold" href="/" target="blank"> Ejobs - Alguns Direitor Reservados</a>
     </div>      
 </footer>
 

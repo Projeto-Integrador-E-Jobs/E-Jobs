@@ -1,17 +1,18 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once(__DIR__ . "/Controller.php");
 
 class HomeController extends Controller {
 
     //Método construtor do controller - será executado a cada requisição a está classe
     public function __construct() {
-        if(! $this->usuarioLogado())
-            exit;
-
         $this->handleAction();
     }
-
+    
     //Acão para carregar a página inicial
     public function home() {
         $dados["qtdUsuarios"] = 30;

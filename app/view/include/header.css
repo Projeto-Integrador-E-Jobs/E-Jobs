@@ -1,0 +1,9 @@
+.btn-cadastro {
+    background-color: #28e28c; /* verde claro personalizado */
+    color: white;
+    border: none;
+}
+
+.btn-cadastro:hover {
+    background-color: #20c27a; /* um tom mais escuro no hover */
+}

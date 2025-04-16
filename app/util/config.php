@@ -11,11 +11,11 @@ error_reporting(E_ALL);
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'ejobs');
 define('DB_USER', 'root');
-define('DB_PASSWORD', 'bancodedados');
+define('DB_PASSWORD', 'root');
 
 //Caminho para adionar imagens, scripts e chamar páginas no sistema
 //Deve ter o nome da pasta do projeto no servidor APACHE
-define('BASEURL', '/E-Jobs/app');
+define('BASEURL', '/ejobs_copia/app');
 
 //Nome do sistema
 define('APP_NAME', 'Template do Projeto Integrador');
