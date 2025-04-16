@@ -16,7 +16,7 @@ require_once(__DIR__ . "/../include/menu.php");
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-8">
-                            <form id="frmCargo" method="POST" 
+                            <form id="frmUsuario" method="POST" 
                                 action="<?= BASEURL ?>/controller/CargoController.php?action=save">
                                 
                                 <div class="form-group mb-3">
@@ -27,13 +27,13 @@ require_once(__DIR__ . "/../include/menu.php");
                                         </span>
                                         <input class="form-control" type="text" id="txtNome" name="nome" 
                                             maxlength="70" placeholder="Informe o nome do cargo"
-                                            value="<?= isset($dados["cargo"]) ? $dados["cargo"]->getNome() : '' ?>" 
+                                            value="<?php echo (isset($dados["cargo"]) ? $dados["cargo"]->getNome() : ''); ?>" 
                                             />
                                     </div>
                                 </div>
                                 
                                 <input type="hidden" id="hddId" name="id" 
-                                    value="<?= $dados['id'] ?? 0 ?>" />
+                                    value="<?= $dados['id']; ?>" />
                                 
                                 <div class="d-flex mt-4">
                                     <button type="submit" class="btn btn-success me-2">
@@ -62,7 +62,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                     </p>
                                 </div>
                             </div>
-
+                            
                             <?php require_once(__DIR__ . "/../include/msg.php"); ?>
                         </div>
                     </div>
