@@ -24,7 +24,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
             <ul class="navbar-nav mr-auto">
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Vagas</a>
+                    <a class="nav-link" href="<?= BASEURL . '/controller/VagaController.php?action=listPublic' ?>">Vagas</a>
                 </li>
 
                 <li class="nav-item">

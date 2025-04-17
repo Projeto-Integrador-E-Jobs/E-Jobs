@@ -28,7 +28,24 @@ class VagaDAO {
         return $this->mapVagas($result);
     }
 
-    
+    public function findByEmpresa(int $id) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM vaga v" .
+               " WHERE v.empresa_id = ?";
+        $stm = $conn->prepare($sql);    
+        $stm->execute([$id]);
+        $result = $stm->fetchAll();
+
+        $vagas = $this->mapVagas($result);
+
+        return $vagas;
+        
+
+        die("VagaDAO.findById()" . 
+            " - Erro: mais de um usuário encontrado.");
+    }
+
     public function findById(int $id) {
         $conn = Connection::getConn();
 
