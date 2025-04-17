@@ -111,7 +111,7 @@ class VagaController extends Controller {
                 $this->list("", $msg);
                 exit;
             } catch (PDOException $e) {
-                $erros = "[Erro ao salvar a vaga na base de dados.]";                
+                $erros = ["Erro ao salvar a vaga na base de dados.", $e];
             }
         }
 
@@ -120,7 +120,7 @@ class VagaController extends Controller {
         //Carregar os valores recebidos por POST de volta para o formulário
         
         $dados["vaga"] = $vaga;
-        $dados["modalidade"] = Modalidade::getAllAsArray();
+        $dados["modalidades"] = Modalidade::getAllAsArray();
         $dados["horario"] = Horario::getAllAsArray();
         $dados["regime"] = Regime::getAllAsArray();
         $dados["cargos"] = $this->cargoDao->list();

@@ -62,10 +62,10 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light btn-sm mr-2 px-3" href="<?= BASEURL ?>/login.php">Login</a>
+                        <a class="nav-link btn btn-outline-light btn-sm mr-2 px-3" href="<?= BASEURL ?>/controller/LoginController.php?action=login">Login</a>
                     </li>
                     <li class="nav-item">
-                         <a class="nav-link btn btn-cadastro btn-sm px-3" href="<?= BASEURL ?>/cadastro.php">Cadastre-se</a>
+                         <a class="nav-link btn btn-cadastro btn-sm px-3" href="<?= BASEURL ?>/controller/UsuarioController.php?action=create">Cadastre-se</a>
 
                     </li>
                 <?php endif; ?>

@@ -91,7 +91,7 @@ INSERT INTO estado (nome, sigla) VALUES
 ('Tocantins', 'TO');
 
 INSERT INTO tipo_usuario (nome) VALUES
-('USUARIO'),
+('CANDIDATO'),
 ('ADMINISTRADOR'),
 ('EMPRESA');
 

@@ -57,7 +57,7 @@ class VagaDAO {
         $sql = "INSERT INTO vaga (titulo, modalidade, horario, regime,
          salario, descricao, requisitos, empresa_id, cargos_id)" .
                " VALUES (:titulo, :modalidade, :horario, :regime, :salario,
-               :descricao, :descricao, :requisitos, :empresa_id, :cargos_id)";
+               :descricao, :requisitos, :empresa_id, :cargos_id)";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("titulo", $vaga->getTitulo());
