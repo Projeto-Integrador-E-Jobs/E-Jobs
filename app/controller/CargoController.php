@@ -9,6 +9,11 @@ class CargoController extends Controller {
     private CargoService $cargoService; 
 
     public function __construct() { 
+        if(! $this->usuarioLogado())
+            exit;
+        $tiposUsuario = "ADMINISTRADOR";
+        if(! $this->usuarioPossuiPapel($tiposUsuario))
+            exit;
         $this->cargoDao = new CargoDAO();
         $this->cargoService = new CargoService();
         $this->handleAction();

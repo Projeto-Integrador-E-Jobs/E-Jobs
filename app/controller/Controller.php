@@ -61,18 +61,19 @@ class Controller {
     }
 
     //Método que verifica se o usuário possui um papel necessário
-    public function usuarioPossuiPapel(array $papeisNecessarios) {
+    public function usuarioPossuiPapel(String $papel) {
         if(isset($_SESSION[SESSAO_USUARIO_ID])) {
-            $papeisUsuario = $_SESSION[SESSAO_USUARIO_PAPEL];
+            $papelUsuario = $_SESSION[SESSAO_USUARIO_PAPEL];
 
             //Percorre os papeis necessários e verifica se existem nos papéis do usuário
-            foreach($papeisNecessarios as $papel) {
-                if(in_array($papel, $papeisUsuario))
-                    return true;
+            
+            if($papel != $papelUsuario){
+                echo("Usuário não possui permissão necessária");
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
 }

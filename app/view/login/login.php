@@ -17,14 +17,14 @@ require_once(__DIR__ . "/../include/header.php");
                     <div class="form-group">
                         <label for="txtLogin">Email:</label>
                         <input type="text" class="form-control" name="email" id="txtLogin"
-                            maxlength="15" placeholder="Informe o email"
+                            placeholder="Informe o email"
                             value="<?php echo isset($dados['email']) ? $dados['email'] : '' ?>" />        
                     </div>
 
                     <div class="form-group">
                         <label for="txtSenha">Senha:</label>
                         <input type="password" class="form-control" name="senha" id="txtSenha"
-                            maxlength="15" placeholder="Informe a senha"
+                            placeholder="Informe a senha"
                             value="<?php echo isset($dados['senha']) ? $dados['senha'] : '' ?>" />        
                     </div>
 
