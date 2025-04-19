@@ -5,6 +5,8 @@
 $nome = "(Sessão expirada)";
 if (isset($_SESSION[SESSAO_USUARIO_NOME]))
     $nome = $_SESSION[SESSAO_USUARIO_NOME];
+if (isset($_SESSION[SESSAO_USUARIO_PAPEL]))
+    $papel = $_SESSION[SESSAO_USUARIO_PAPEL];
 
 $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
 ?>
@@ -55,7 +57,13 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#">Meu Perfil</a>
-                            <a class="dropdown-item" href="#">Minhas Candidaturas</a>
+                            <?php if ($papel == "USUARIO"): ?>
+                                <a class="dropdown-item" href="#">Minhas Candidaturas</a>
+                            <?php elseif ($papel == "EMPRESA"): ?>
+                                    <a class="dropdown-item" href="#">Minhas Vagas</a>    
+                            <?php else: ?>
+                                <a class="dropdown-item" href="#">Cargos</a>
+                            <?php endif; ?>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="<?= LOGOUT_PAGE ?>">Sair</a>
                         </div>
@@ -65,7 +73,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                         <a class="nav-link btn btn-outline-light btn-sm mr-2 px-3" href="<?= BASEURL ?>/controller/LoginController.php?action=login">Login</a>
                     </li>
                     <li class="nav-item">
-                         <a class="nav-link btn btn-cadastro btn-sm px-3" href="<?= BASEURL ?>/controller/UsuarioController.php?action=create">Cadastre-se</a>
+                         <a class="nav-link btn btn-cadastro btn-sm px-3" href="<?= BASEURL ?>/controller/CadastroController.php?action=create">Cadastre-se</a>
 
                     </li>
                 <?php endif; ?>

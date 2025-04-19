@@ -25,7 +25,7 @@ CREATE TABLE usuario (
     end_numero VARCHAR(100),
     end_complemento VARCHAR(100),
     telefone VARCHAR(20),
-    status ENUM('Ativo', 'Inativo'),
+    status ENUM('Ativo', 'Inativo','Pendente'),
     tipo_usuario_id INT,
     FOREIGN KEY (tipo_usuario_id) REFERENCES tipo_usuario(id),
     FOREIGN KEY (estado_id) REFERENCES estado(id)

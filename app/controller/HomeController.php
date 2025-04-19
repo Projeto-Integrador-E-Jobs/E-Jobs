@@ -15,6 +15,11 @@ class HomeController extends Controller {
     
     //Acão para carregar a página inicial
     public function home() {
+        
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
         $dados["qtdUsuarios"] = 30;
 
         $this->loadView("home/home.php", $dados);

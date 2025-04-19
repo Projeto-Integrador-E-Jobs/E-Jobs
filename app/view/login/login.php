@@ -1,8 +1,7 @@
 <?php
-#Nome do arquivo: login/login.php
-#Objetivo: interface para logar no sistema
-
+# Objetivo: página de login
 require_once(__DIR__ . "/../include/header.php");
+require_once(__DIR__ . "/../include/menu.php");
 ?>
 
 <div class="container">
