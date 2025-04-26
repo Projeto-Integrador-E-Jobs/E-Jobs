@@ -5,6 +5,7 @@
 require_once(__DIR__ . "/../include/header.php");
 require_once(__DIR__ . "/../include/menu.php");
 ?>
+<script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js"></script>
 
 <div class="container py-4">
     <div class="row">
@@ -12,31 +13,32 @@ require_once(__DIR__ . "/../include/menu.php");
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <?php if($dados['id'] == 0) echo "Cadastrar"; else echo "Alterar"; ?> Usuário
+                        Cadastrar Usuário
                     </h4>
                 </div>
-                
+
                 <div class="card-body">
-                    <form id="frmUsuario" method="POST" 
-                          action="<?= BASEURL ?>/controller/CadastroController.php?action=save">
-                        
+                    <form id="frmUsuario" method="POST"
+                        action="<?= BASEURL ?>/controller/CadastroController.php?action=save">
+
                         <div class="row">
+                            
+                            <!-- COLUNA ESQUERDA -->
                             <div class="col-md-6">
-                            <div class="form-group mb-3">
+                                <div class="form-group mb-3">
                                     <label for="selPapel" class="form-label fw-bold">Papel:</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-user-tag"></i>
                                         </span>
-                                        <select class="form-control" name="tipoUsuario" id="selPapel">
+                                        <select class="form-control" name="tipoUsuario" id="selPapel" onchange="aplicarMascara()">
                                             <option value="">Selecione o papel</option>
-                                            <?php foreach($dados["papeis"] as $papel): ?>
-                                                <option value="<?= $papel->getId() ?>" 
-                                                    <?php 
-                                                        if(isset($dados["usuario"]) && $dados["usuario"]->getTipoUsuario()?->getId() == $papel->getId()) 
-                                                            echo "selected";
-                                                    ?>    
-                                                >
+                                            <?php foreach ($dados["papeis"] as $papel): ?>
+                                                <option value="<?= $papel->getId() ?>"
+                                                    <?php
+                                                    if (isset($dados["usuario"]) && $dados["usuario"]->getTipoUsuario()?->getId() == $papel->getId())
+                                                        echo "selected";
+                                                    ?>>
                                                     <?= $papel->getNome() ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -49,21 +51,21 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-user"></i>
                                         </span>
-                                        <input class="form-control" type="text" id="txtNome" name="nome" 
+                                        <input class="form-control" type="text" id="txtNome" name="nome"
                                             maxlength="70" placeholder="Informe o nome"
-                                            value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getNome() : ''); ?>" required />
+                                            value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getNome() : ''); ?>" />
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group mb-3">
                                     <label for="txtLogin" class="form-label fw-bold">Email:</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-envelope"></i>
                                         </span>
-                                        <input class="form-control" type="email" id="txtLogin" name="email" 
+                                        <input class="form-control" type="email" id="txtLogin" name="email"
                                             maxlength="100" placeholder="Informe o email"
-                                            value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEmail() : ''); ?>" required />
+                                            value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEmail() : ''); ?>" />
                                     </div>
                                 </div>
 
@@ -73,7 +75,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-lock"></i>
                                         </span>
-                                        <input class="form-control" type="password" id="txtPassword" name="senha" 
+                                        <input class="form-control" type="password" id="txtPassword" name="senha"
                                             maxlength="15" placeholder="Informe a senha"
                                             value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getSenha() : ''); ?>" />
                                     </div>
@@ -85,9 +87,9 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-lock"></i>
                                         </span>
-                                        <input class="form-control" type="password" id="txtConfSenha" name="conf_senha" 
+                                        <input class="form-control" type="password" id="txtConfSenha" name="conf_senha"
                                             maxlength="15" placeholder="Informe a confirmação da senha"
-                                            value="<?php echo isset($dados['confSenha']) ? $dados['confSenha'] : '';?>" />
+                                            value="<?php echo isset($dados['confSenha']) ? $dados['confSenha'] : ''; ?>" />
                                     </div>
                                 </div>
 
@@ -97,7 +99,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-id-card"></i>
                                         </span>
-                                        <input class="form-control" type="text" id="txtDocumento" name="documento" 
+                                        <input class="form-control" type="text" id="txtDocumento" name="documento"
                                             maxlength="20" placeholder="Informe o documento"
                                             value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getDocumento() : ''); ?>" />
                                     </div>
@@ -109,14 +111,13 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-align-left"></i>
                                         </span>
-                                        <textarea class="form-control" id="txtDescricao" name="descricao" rows="3"
+                                        <textarea class="form-control" id="txtDescricao" name="descricao" rows="3" cols="30"
                                             placeholder="Informe a descrição"><?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getDescricao() : ''); ?></textarea>
                                     </div>
                                 </div>
-
-                                
                             </div>
-                            
+
+                            <!-- COLUNA DIREITA -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="selEstado" class="form-label fw-bold">Estado:</label>
@@ -126,13 +127,12 @@ require_once(__DIR__ . "/../include/menu.php");
                                         </span>
                                         <select class="form-control" name="estado" id="selEstado">
                                             <option value="">Selecione o estado</option>
-                                            <?php foreach($dados["estados"] as $estado): ?>
-                                                <option value="<?= $estado->getId() ?>" 
-                                                    <?php 
-                                                        if(isset($dados["usuario"]) && $dados["usuario"]->getEstado()?->getId() == $estado->getId()) 
-                                                            echo "selected";
-                                                    ?>    
-                                                >
+                                            <?php foreach ($dados["estados"] as $estado): ?>
+                                                <option value="<?= $estado->getCodigoUf() ?>"
+                                                    <?php
+                                                    if (isset($dados["usuario"]) && $dados["usuario"]->getCidade()->getEstado()->getCodigoUf() == $estado->getCodigoUf())
+                                                        echo "selected";
+                                                    ?>>
                                                     <?= $estado->getNome() ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -146,9 +146,9 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-city"></i>
                                         </span>
-                                        <input class="form-control" type="text" id="txtCidade" name="cidade" 
-                                            maxlength="20" placeholder="Informe a Cidade"
-                                            value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getCidade() : ''); ?>" />
+                                        <select class="form-control" name="cidade" id="selCidade">
+                                            <option value="">Selecione o cidade</option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -158,7 +158,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-road"></i>
                                         </span>
-                                        <input class="form-control" type="text" id="txtEndLogradouro" name="endLogradouro" 
+                                        <input class="form-control" type="text" id="txtEndLogradouro" name="endLogradouro"
                                             maxlength="50" placeholder="Informe o Endereço Logradouro"
                                             value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEndLogradouro() : ''); ?>" />
                                     </div>
@@ -170,7 +170,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-map"></i>
                                         </span>
-                                        <input class="form-control" type="text" id="txtEndBairro" name="endBairro" 
+                                        <input class="form-control" type="text" id="txtEndBairro" name="endBairro"
                                             maxlength="30" placeholder="Informe o Bairro"
                                             value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEndBairro() : ''); ?>" />
                                     </div>
@@ -182,7 +182,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-map-pin"></i>
                                         </span>
-                                        <input class="form-control" type="text" id="txtEndNumero" name="endNumero" 
+                                        <input class="form-control" type="text" id="txtEndNumero" name="endNumero"
                                             maxlength="10" placeholder="Informe o Número"
                                             value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getEndNumero() : ''); ?>" />
                                     </div>
@@ -194,34 +194,31 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-phone"></i>
                                         </span>
-                                        <input class="form-control" type="text" id="txtTelefone" name="telefone" 
+                                        <input class="form-control" type="text" id="txtTelefone" name="telefone"
                                             maxlength="20" placeholder="Informe o Telefone"
                                             value="<?php echo (isset($dados["usuario"]) ? $dados["usuario"]->getTelefone() : ''); ?>" />
                                     </div>
                                 </div>
 
-    
                             </div>
                         </div>
-                     
+
                         <div class="row mt-3">
                             <div class="col-12">
                                 <?php require_once(__DIR__ . "/../include/msg.php"); ?>
                             </div>
                         </div>
-                        
-                     
+
+
                         <div class="row mt-4">
                             <div class="col-12">
-                                <input type="hidden" id="hddId" name="id" value="<?= $dados['id']; ?>" />
-                                
                                 <button type="submit" class="btn btn-success me-2">
                                     <i class="fas fa-save me-1"></i> Salvar
                                 </button>
                                 <button type="reset" class="btn btn-danger me-2">
                                     <i class="fas fa-eraser me-1"></i> Limpar
                                 </button>
-                                <a class="btn btn-secondary" 
+                                <a class="btn btn-secondary"
                                     href="<?= BASEURL ?>/controller/HomeController.php?action=home">
                                     <i class="fas fa-arrow-left me-1"></i> Voltar
                                 </a>
@@ -234,6 +231,35 @@ require_once(__DIR__ . "/../include/menu.php");
     </div>
 </div>
 
-<?php  
+<script>
+        function aplicarMascara() {
+            const tipo = parseInt(document.getElementById("selPapel").value);
+            const input = document.getElementById("txtDocumento");
+            if (tipo === 1) {
+                Inputmask("999.999.999-99").mask(input);
+                input.disabled = false;
+            } else if (tipo === 3) {
+                Inputmask("99.999.999/9999-99").mask(input);
+                input.disabled = false;
+            } else {
+                input.disabled = true;
+            }
+        }
+
+        function aplicarMascaraTelefone() {
+            const input = document.getElementById("txtTelefone");
+            Inputmask("(99)99999-9999").mask(input);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Aplica a máscara ao carregar a página, caso o tipo de usuário já esteja selecionado
+            aplicarMascara();
+            aplicarMascaraTelefone();
+            // Garante que a máscara seja atualizada ao mudar o tipo de usuário
+            document.getElementById("selPapel").addEventListener("change", aplicarMascara);
+        });
+</script>
+
+<?php
 require_once(__DIR__ . "/../include/footer.php");
 ?>

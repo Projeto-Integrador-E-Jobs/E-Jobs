@@ -42,7 +42,7 @@ require_once(__DIR__ . "/../include/menu.php");
                             <td><?= $usu->getNome(); ?></td>
                             <td><?= $usu->getEmail(); ?></td>
                             <td><?= $usu->getTipoUsuario()->getNome(); ?></td>
-                            <td><?= $usu->getEndCompleto(); ?></td>
+                            <td><?= $usu->getEnderecoCompleto(); ?></td>
                             <td><a class="btn btn-primary" 
                                 href="<?= BASEURL ?>/controller/UsuarioController.php?action=edit&id=<?= $usu->getId() ?>">
                                 Alterar</a> 

@@ -126,9 +126,9 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <select class="form-control" name="estado" id="selEstado">
                                             <option value="">Selecione o estado</option>
                                             <?php foreach($dados["estados"] as $estado): ?>
-                                                <option value="<?= $estado->getId() ?>" 
+                                                <option value="<?= $estado->getCodigoUf() ?>" 
                                                     <?php 
-                                                        if(isset($dados["usuario"]) && $dados["usuario"]->getEstado()?->getId() == $estado->getId()) 
+                                                        if(isset($dados["usuario"]) && $dados["usuario"]->getEstado()?->getCodigoUf() == $estado->getCodigoUf()) 
                                                             echo "selected";
                                                     ?>    
                                                 >

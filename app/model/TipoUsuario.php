@@ -2,6 +2,10 @@
 
 class TipoUsuario {
 
+    public const ID_CANDIDATO = 1;
+    public const ID_ADMINISTRADOR = 2;
+    public const ID_EMPRESA = 3;
+
     private ?int $id;
     private ?string $nome;
 

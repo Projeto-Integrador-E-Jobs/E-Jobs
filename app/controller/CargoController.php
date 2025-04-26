@@ -3,6 +3,7 @@
 include_once(__DIR__ . "/../dao/CargoDAO.php");
 include_once(__DIR__ . "/../service/CargoService.php");
 require_once(__DIR__ . "/Controller.php");
+require_once(__DIR__ . "/../model/TipoUsuario.php");
 
 class CargoController extends Controller { 
     private CargoDAO $cargoDao;
@@ -11,8 +12,7 @@ class CargoController extends Controller {
     public function __construct() { 
         if(! $this->usuarioLogado())
             exit;
-        $tiposUsuario = "ADMINISTRADOR";
-        if(! $this->usuarioPossuiPapel($tiposUsuario))
+        if(! $this->usuarioPossuiPapel(TipoUsuario::ID_ADMINISTRADOR))
             exit;
         $this->cargoDao = new CargoDAO();
         $this->cargoService = new CargoService();

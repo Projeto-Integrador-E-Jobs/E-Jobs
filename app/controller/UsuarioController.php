@@ -4,6 +4,7 @@ require_once(__DIR__ . "/Controller.php");
 require_once(__DIR__ . "/../dao/UsuarioDAO.php");
 require_once(__DIR__ . "/../dao/TipoUsuarioDAO.php");
 require_once(__DIR__ . "/../dao/EstadoDAO.php");
+require_once(__DIR__ . "/../dao/CidadeDAO.php");
 require_once(__DIR__ . "/../service/UsuarioService.php");
 require_once(__DIR__ . "/../model/Usuario.php");
 require_once(__DIR__ . "/../model/enum/Status.php");
@@ -13,6 +14,7 @@ class UsuarioController extends Controller {
     private UsuarioDAO $usuarioDao;
     private TipoUsuarioDAO $tipoUsuarioDAO;
     private EstadoDAO $estadoDAO;
+    private CidadeDAO $cidadeDAO;
     private UsuarioService $usuarioService;
 
     //Método construtor do controller - será executado a cada requisição a está classe
@@ -72,7 +74,8 @@ class UsuarioController extends Controller {
         $descricao = trim($_POST['descricao']) ? trim($_POST['descricao']) : NULL;
         $estadoId = isset($_POST['estado']) && is_numeric($_POST['estado']) && (int)$_POST['estado'] > 0 ? (int)$_POST['estado'] : NULL;
         $estado = $estadoId !== null ? $this->estadoDAO->findById($estadoId) : NULL;
-        $cidade = trim($_POST['cidade']) ? trim($_POST['cidade']) : NULL;
+        $cidadeId = isset($_POST['cidade']) && is_numeric($_POST['cidade']) && (int)$_POST['cidade'] > 0 ? (int)$_POST['estado'] : NULL;
+        $cidade = $cidadeId !== null ? $this->cidadeDAO->findById($cidadeId) : NULL;
         $endLogradouro = trim($_POST['endLogradouro']) ? trim($_POST['endLogradouro']) : NULL;
         $endBairro = trim($_POST['endBairro']) ? trim($_POST['endBairro']) : NULL;
         $endNumero = trim($_POST['endNumero']) ? trim($_POST['endNumero']) : NULL;
@@ -88,7 +91,6 @@ class UsuarioController extends Controller {
         $usuario->setSenha($senha);
         $usuario->setDocumento($documento);
         $usuario->setDescricao($descricao);
-        $usuario->setEstado($estado);
         $usuario->setCidade($cidade);
         $usuario->setEndLogradouro($endLogradouro);
         $usuario->setEndBairro($endBairro);
@@ -102,8 +104,6 @@ class UsuarioController extends Controller {
         if(empty($erros)) {
             //Persiste o objeto
             try {
-                $endCompleto = $estado->getNome() . ", " . $cidade . ", " . $endLogradouro . ", " . $endBairro . ", " . $endNumero;
-                $usuario->setEndCompleto($endCompleto);
                 if($dados["id"] == 0){ //Inserindo
                     $this->usuarioDao->insert($usuario);
                 } else { //Alterando

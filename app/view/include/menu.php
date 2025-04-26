@@ -42,6 +42,8 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                             <a class="dropdown-item"
                                 href="<?= BASEURL . '/controller/UsuarioController.php?action=list' ?>">Usuários</a>
                             <a class="dropdown-item" href="#">Outro cadastro</a>
+                            <a class="dropdown-item"
+                                href="<?= BASEURL . '/controller/CargoController.php?action=list' ?>">Cargos</a>
                         </div>
                     </li>
                 <?php endif; ?>
@@ -57,7 +59,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#">Meu Perfil</a>
-                            <?php if ($papel == "USUARIO"): ?>
+                            <?php if ($papel == "CANDIDATO"): ?>
                                 <a class="dropdown-item" href="#">Minhas Candidaturas</a>
                             <?php elseif ($papel == "EMPRESA"): ?>
                                     <a class="dropdown-item" href="#">Minhas Vagas</a>    

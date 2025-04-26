@@ -31,7 +31,6 @@ class CadastroController extends Controller {
     }
 
     protected function create() {
-        $dados["id"] = 0;
         $dados["estados"] = $this->estadoDAO->list();
         $dados["papeis"] = $this->tipoUsuarioDAO->listSemADM();
         
@@ -39,62 +38,82 @@ class CadastroController extends Controller {
         
     }
 
-
     protected function save() {
         //Captura os dados do formulário
         $idTipoUsuario = isset($_POST['tipoUsuario']) && is_numeric($_POST['tipoUsuario']) ? (int)$_POST['tipoUsuario'] : NULL;
-        $tipoUsuario = $idTipoUsuario ? $this->tipoUsuarioDAO->findById($idTipoUsuario) : null;
         $nome = trim($_POST['nome']) ? trim($_POST['nome']) : NULL;
         $email = trim($_POST['email']) ? trim($_POST['email']) : NULL;
         $senha = trim($_POST['senha']) ? trim($_POST['senha']) : NULL;
         $confSenha = trim($_POST['conf_senha']) ? trim($_POST['conf_senha']) : NULL;
         $documento = trim($_POST['documento']) ? trim($_POST['documento']) : NULL;
         $descricao = trim($_POST['descricao']) ? trim($_POST['descricao']) : NULL;
-        $estadoId = isset($_POST['estado']) && is_numeric($_POST['estado']) && (int)$_POST['estado'] > 0 ? (int)$_POST['estado'] : NULL;
-        $estado = $estadoId !== null ? $this->estadoDAO->findById($estadoId) : NULL;
-        $cidade = trim($_POST['cidade']) ? trim($_POST['cidade']) : NULL;
+        $estadoId = isset($_POST['estado']) && is_numeric($_POST['estado']) ? $_POST['estado'] : NULL;
+        $cidadeId = trim($_POST['cidade']) ? trim($_POST['cidade']) : NULL;
         $endLogradouro = trim($_POST['endLogradouro']) ? trim($_POST['endLogradouro']) : NULL;
         $endBairro = trim($_POST['endBairro']) ? trim($_POST['endBairro']) : NULL;
         $endNumero = trim($_POST['endNumero']) ? trim($_POST['endNumero']) : NULL;
         $telefone = trim($_POST['telefone']) ? trim($_POST['telefone']) : NULL;
         
-        
-
         //Cria objeto Usuario
         $usuario = new Usuario();
-        $usuario->setTipoUsuario($tipoUsuario);
+
+        if($idTipoUsuario) {
+            $tipoUsuario = new TipoUsuario();
+            $tipoUsuario->setId($idTipoUsuario);
+            $usuario->setTipoUsuario($tipoUsuario);
+        } else
+            $usuario->setTipoUsuario(null);
+
         $usuario->setNome($nome);
         $usuario->setEmail($email);
         $usuario->setSenha($senha);
         $usuario->setDocumento($documento);
         $usuario->setDescricao($descricao);
-        $usuario->setEstado($estado);
+        
+        $cidade = new Cidade();
+        if($cidadeId)
+            $cidade->setCodigoIbge($cidadeId);
+        else
+            //$cidade->setCodigoIbge(null);
+            $cidade->setCodigoIbge(1100015);
+        $cidade->setEstado(new Estado());
+        $cidade->getEstado()->setCodigoUf($estadoId);
         $usuario->setCidade($cidade);
+
         $usuario->setEndLogradouro($endLogradouro);
         $usuario->setEndBairro($endBairro);
         $usuario->setEndNumero($endNumero);
         $usuario->setTelefone($telefone);
-        if($usuario->getTipoUsuario() != null)
-            if($usuario->getTipoUsuario()->getNome() == "EMPRESA"){
-                $usuario->setStatus("Pendente");
-            }else
-                $usuario->setStatus("Ativo");
+        if($usuario->getTipoUsuario() != null && $usuario->getTipoUsuario()->getId() == TipoUsuario::ID_EMPRESA)
+            $usuario->setStatus(Status::PENDENTE);
+        else
+            $usuario->setStatus(Status::ATIVO);
+        
         //Validar os dados
         $erros = $this->usuarioService->validarDados($usuario, $confSenha);
+        if(empty($erros)){
+            if($usuario->getTipoUsuario()->getId() == TipoUsuario::ID_CANDIDATO){
+                if (! $this->usuarioService->validarCPF($usuario->getDocumento())) {
+                    array_push($erros, "O CPF informado é inválido.");
+                }
+                
+            }
+            if(empty($erros)){
+            $erros = array_merge($erros,$this->usuarioService->validarDocumento($usuario->getDocumento()));
+            $erros = array_merge($erros,$this->usuarioService->validarEmail($usuario->getEmail()));
+            }
+        }
         if(empty($erros)) {
             //Persiste o objeto
             try {
-                $endCompleto = $estado->getNome() . ", " . $cidade . ", " . $endLogradouro . ", " . $endBairro . ", " . $endNumero;
-                $usuario->setEndCompleto($endCompleto);
                 $this->usuarioDao->insert($usuario);
                
                 $usuario = $this->usuarioDao->findByLoginSenha($usuario->getEmail(),$usuario->getSenha());                    
-                
                 $this->loginService->salvarUsuarioSessao($usuario);
                 header("location: " . HOME_PAGE);
                 exit;
             } catch (PDOException $e) {
-                $erros = "[Erro ao salvar o usuário na base de dados.]";                
+                $erros = ["Erro ao salvar o usuário na base de dados."];                
             }
         }
 

@@ -2,25 +2,45 @@
 
 class Estado {
 
-    private ?int $id;
+    private ?int $codigoUf;
+    private ?string $uf;
     private ?string $nome;
-    private ?string $sigla;
-
+    private ?float $latitude;
+    private ?float $longitude;
+    private ?string $regiao;
 
     /**
-     * Get the value of id
+     * Get the value of codigoUf
      */
-    public function getId(): ?int
+    public function getCodigoUf(): ?int
     {
-        return $this->id;
+        return $this->codigoUf;
     }
 
     /**
-     * Set the value of id
+     * Set the value of codigoUf
      */
-    public function setId(?int $id): self
+    public function setCodigoUf(?int $codigoUf): self
     {
-        $this->id = $id;
+        $this->codigoUf = $codigoUf;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of uf
+     */
+    public function getUf(): ?string
+    {
+        return $this->uf;
+    }
+
+    /**
+     * Set the value of uf
+     */
+    public function setUf(?string $uf): self
+    {
+        $this->uf = $uf;
 
         return $this;
     }
@@ -44,19 +64,55 @@ class Estado {
     }
 
     /**
-     * Get the value of sigla
+     * Get the value of latitude
      */
-    public function getSigla(): ?string
+    public function getLatitude(): ?float
     {
-        return $this->sigla;
+        return $this->latitude;
     }
 
     /**
-     * Set the value of sigla
+     * Set the value of latitude
      */
-    public function setSigla(?string $sigla): self
+    public function setLatitude(?float $latitude): self
     {
-        $this->sigla = $sigla;
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of longitude
+     */
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * Set the value of longitude
+     */
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of regiao
+     */
+    public function getRegiao(): ?string
+    {
+        return $this->regiao;
+    }
+
+    /**
+     * Set the value of regiao
+     */
+    public function setRegiao(?string $regiao): self
+    {
+        $this->regiao = $regiao;
 
         return $this;
     }

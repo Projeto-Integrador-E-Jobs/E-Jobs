@@ -61,7 +61,7 @@ class Controller {
     }
 
     //Método que verifica se o usuário possui um papel necessário
-    public function usuarioPossuiPapel(String $papel) {
+    public function usuarioPossuiPapel(int $papel) {
         if(isset($_SESSION[SESSAO_USUARIO_ID])) {
             $papelUsuario = $_SESSION[SESSAO_USUARIO_PAPEL];
 

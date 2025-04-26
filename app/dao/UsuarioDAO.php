@@ -4,17 +4,17 @@
 
 include_once(__DIR__ . "/../connection/Connection.php");
 include_once(__DIR__ . "/../dao/TipoUsuarioDAO.php");
-include_once(__DIR__ . "/../dao/EstadoDAO.php");
+include_once(__DIR__ . "/../dao/CidadeDAO.php");
 include_once(__DIR__ . "/../model/Usuario.php");
 include_once(__DIR__ . "/../model/TipoUsuario.php");
 
 class UsuarioDAO {
     private TipoUsuarioDAO $tipoUsuarioDao;
-    private EstadoDAO $estadoDAO;
+    private CidadeDAO $cidadeDAO;
 
     public function __construct() {
 
-        $this->estadoDAO = new EstadoDAO;
+        $this->cidadeDAO = new CidadeDAO;
         $this->tipoUsuarioDao = new TipoUsuarioDAO;
        
     }
@@ -52,6 +52,40 @@ class UsuarioDAO {
             " - Erro: mais de um usuário encontrado.");
     }
 
+    public function findByDocumento(string $documento) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM usuario u" .
+               " WHERE u.documento = ?";
+        $stm = $conn->prepare($sql);    
+        $stm->execute([$documento]);
+        $result = $stm->fetchAll();
+
+        $usuarios = $this->mapUsuarios($result);
+
+        if(count($usuarios) == 1)
+            return $usuarios[0];
+        elseif(count($usuarios) == 0)
+            return null;
+    }
+
+    public function findByEmail(string $email) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM usuario u" .
+               " WHERE u.email = ?";
+        $stm = $conn->prepare($sql);    
+        $stm->execute([$email]);
+        $result = $stm->fetchAll();
+
+        $usuarios = $this->mapUsuarios($result);
+
+        if(count($usuarios) == 1)
+            return $usuarios[0];
+        elseif(count($usuarios) == 0)
+            return null;
+    }
+
 
     //Método para buscar um usuário por seu login e senha
     public function findByLoginSenha(string $email, string $senha) {
@@ -83,11 +117,11 @@ class UsuarioDAO {
         $conn = Connection::getConn();
 
         $sql = "INSERT INTO usuario (nome, email, senha,
-        documento, descricao, estado_id, cidade, end_logradouro,
-        end_bairro, end_numero,end_complemento, telefone, status, tipo_usuario_id)" .
+        documento, descricao, cidade_id, end_logradouro,
+        end_bairro, end_numero, telefone, status, tipo_usuario_id)" .
                " VALUES (:nome, :email, :senha, :documento, :descricao,
-               :estado, :cidade, :endLogradouro, :endBairro, :endNumero,
-               :endCompleto, :telefone, :status, :tipoUsuario)";
+               :cidade, :endLogradouro, :endBairro, :endNumero,
+               :telefone, :status, :tipoUsuario)";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
@@ -95,12 +129,10 @@ class UsuarioDAO {
         $stm->bindValue("senha", password_hash($usuario->getSenha(), PASSWORD_DEFAULT));
         $stm->bindValue("documento", $usuario->getDocumento());
         $stm->bindValue("descricao", $usuario->getDescricao());
-        $stm->bindValue("estado", $usuario->getEstado()->getId());
-        $stm->bindValue("cidade", $usuario->getCidade());
+        $stm->bindValue("cidade", $usuario->getCidade()->getCodigoIbge());
         $stm->bindValue("endLogradouro", $usuario->getEndLogradouro());
         $stm->bindValue("endBairro", $usuario->getEndBairro());
         $stm->bindValue("endNumero", $usuario->getEndNumero());
-        $stm->bindValue("endCompleto", $usuario->getEndCompleto());
         $stm->bindValue("telefone", $usuario->getTelefone());
         $stm->bindValue("status", $usuario->getStatus());
         $stm->bindValue("tipoUsuario", $usuario->getTipoUsuario()->getId());
@@ -113,7 +145,7 @@ class UsuarioDAO {
 
         $sql = "UPDATE usuario SET nome = :nome, email = :email," . 
                " senha = :senha, documento = :documento, descricao = :descricao," .
-               "estado_id = :estado, cidade = :cidade, end_logradouro = :endLogradouro," .
+               "cidade = :cidade, end_logradouro = :endLogradouro," .
                "end_bairro = :endBairro, end_numero = :endNumero, end_complemento = :endCompleto," . 
                "telefone = :telefone, status = :status, tipo_usuario_id = :tipoUsuario" .     
                " WHERE id = :id";
@@ -124,12 +156,10 @@ class UsuarioDAO {
         $stm->bindValue("senha", password_hash($usuario->getSenha(), PASSWORD_DEFAULT));
         $stm->bindValue("documento", $usuario->getDocumento());
         $stm->bindValue("descricao", $usuario->getDescricao());
-        $stm->bindValue("estado", $usuario->getEstado()->getId());
-        $stm->bindValue("cidade", $usuario->getCidade());
+        $stm->bindValue("cidade", $usuario->getCidade()->getCodigoIbge());
         $stm->bindValue("endLogradouro", $usuario->getEndLogradouro());
         $stm->bindValue("endBairro", $usuario->getEndBairro());
         $stm->bindValue("endNumero", $usuario->getEndNumero());
-        $stm->bindValue("endCompleto", $usuario->getEndCompleto());
         $stm->bindValue("telefone", $usuario->getTelefone());
         $stm->bindValue("status", $usuario->getStatus());
         $stm->bindValue("tipoUsuario", $usuario->getTipoUsuario()->getId());
@@ -159,12 +189,10 @@ class UsuarioDAO {
             $usuario->setSenha($reg['senha']);
             $usuario->setDocumento($reg['documento']);
             $usuario->setDescricao($reg['descricao']);
-            $usuario->setEstado($this->estadoDAO->findById($reg['estado_id']));
-            $usuario->setCidade($reg['cidade']);
+            $usuario->setCidade($this->cidadeDAO->findById($reg['cidade_id']));
             $usuario->setEndLogradouro($reg['end_logradouro']);
             $usuario->setEndBairro($reg['end_bairro']);
             $usuario->setEndNumero($reg['end_numero']);
-            $usuario->setEndCompleto($reg['end_complemento']);
             $usuario->setTelefone($reg['telefone']);
             $usuario->setStatus($reg['status']);
             $usuario->setTipoUsuario($this->tipoUsuarioDao->findById($reg['tipo_usuario_id']));

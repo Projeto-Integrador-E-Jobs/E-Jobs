@@ -35,6 +35,11 @@ class VagaController extends Controller {
     }
 
     protected function listPublic(string $msgErro = "", string $msgSucesso = "") {
+        
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
         $vagas = $this->vagaDao->list();
         //print_r($usuarios);
         $dados["lista"] = $vagas;

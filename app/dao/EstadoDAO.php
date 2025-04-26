@@ -7,7 +7,7 @@ class EstadoDAO {
     public function list() {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM estado";
+        $sql = "SELECT * FROM estados ORDER BY nome";
         $stm = $conn->prepare($sql);    
         $stm->execute();
         $result = $stm->fetchAll();
@@ -18,8 +18,8 @@ class EstadoDAO {
     public function findById(int $id) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM estado e" .
-               " WHERE e.id = ?";
+        $sql = "SELECT * FROM estados e" .
+               " WHERE e.codigo_uf = ?";
         $stm = $conn->prepare($sql);    
         $stm->execute([$id]);
         $result = $stm->fetchAll();
@@ -40,9 +40,12 @@ class EstadoDAO {
         $estados = array();
         foreach ($result as $dado) {
             $estado = new Estado();
-            $estado->setId($dado['id']);
+            $estado->setCodigoUf($dado['codigo_uf']);
             $estado->setNome($dado['nome']);
-            $estado->setSigla($dado['sigla']);
+            $estado->setUf($dado['uf']);
+            $estado->setLatitude($dado['latitude']);
+            $estado->setLongitude($dado['longitude']);
+            $estado->setRegiao($dado['regiao']);
             array_push($estados, $estado);
         }
 

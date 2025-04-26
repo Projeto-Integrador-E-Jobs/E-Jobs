@@ -12,17 +12,17 @@ class Usuario {
     private ?string $senha;
     private ?string $documento;
     private ?string $descricao;
-    private ?Estado $estado;
-    private ?string $cidade;
+    private ?Cidade $cidade;
     private ?string $endLogradouro;
     private ?string $endBairro;
     private ?string $endNumero;
-    private ?string $endCompleto;
     private ?string $telefone;
     private ?string $status;
     private ?TipoUsuario $tipoUsuario;
     
-
+    public function getEnderecoCompleto() {
+        return $this->endLogradouro . ", " . $this->endBairro . ", " . $this->endNumero;
+    }
 
     /**
      * Get the value of id
@@ -132,28 +132,11 @@ class Usuario {
         return $this;
     }
 
-    /**
-     * Get the value of estado
-     */
-    public function getEstado(): ?Estado
-    {
-        return $this->estado;
-    }
-
-    /**
-     * Set the value of estado
-     */
-    public function setEstado(?Estado $estado): self
-    {
-        $this->estado = $estado;
-
-        return $this;
-    }
 
     /**
      * Get the value of cidade
      */
-    public function getCidade(): ?string
+    public function getCidade(): ?Cidade
     {
         return $this->cidade;
     }
@@ -161,7 +144,7 @@ class Usuario {
     /**
      * Set the value of cidade
      */
-    public function setCidade(?string $cidade): self
+    public function setCidade(?Cidade $cidade): self
     {
         $this->cidade = $cidade;
 
@@ -222,24 +205,7 @@ class Usuario {
         return $this;
     }
 
-    /**
-     * Get the value of endCompleto
-     */
-    public function getEndCompleto(): ?string
-    {
-        return $this->endCompleto;
-    }
-
-    /**
-     * Set the value of endCompleto
-     */
-    public function setEndCompleto(?string $endCompleto): self
-    {
-        $this->endCompleto = $endCompleto;
-
-        return $this;
-    }
-
+    
     /**
      * Get the value of telefone
      */

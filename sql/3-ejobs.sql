@@ -4,13 +4,6 @@ CREATE TABLE tipo_usuario (
     nome VARCHAR(255)
 );
 
-CREATE TABLE estado (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(100),
-    sigla CHAR(2)
-);
-
-
 CREATE TABLE usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255),
@@ -18,17 +11,15 @@ CREATE TABLE usuario (
     senha VARCHAR(255),
     documento VARCHAR(255),
     descricao TEXT,
-    estado_id INT,
-    cidade VARCHAR(100),
+    cidade_id INT,
     end_logradouro VARCHAR(100),
     end_bairro VARCHAR(100),
     end_numero VARCHAR(100),
-    end_complemento VARCHAR(100),
     telefone VARCHAR(20),
     status ENUM('Ativo', 'Inativo','Pendente'),
     tipo_usuario_id INT,
     FOREIGN KEY (tipo_usuario_id) REFERENCES tipo_usuario(id),
-    FOREIGN KEY (estado_id) REFERENCES estado(id)
+    FOREIGN KEY (cidade_id) REFERENCES cidades(codigo_ibge)
 );
 
 CREATE TABLE cargos (
@@ -61,35 +52,6 @@ CREATE TABLE candidatura (
     FOREIGN KEY (vaga_id) REFERENCES vaga(id)
 );
 
-INSERT INTO estado (nome, sigla) VALUES
-('Acre', 'AC'),
-('Alagoas', 'AL'),
-('Amapá', 'AP'),
-('Amazonas', 'AM'),
-('Bahia', 'BA'),
-('Ceará', 'CE'),
-('Distrito Federal', 'DF'),
-('Espírito Santo', 'ES'),
-('Goiás', 'GO'),
-('Maranhão', 'MA'),
-('Mato Grosso', 'MT'),
-('Mato Grosso do Sul', 'MS'),
-('Minas Gerais', 'MG'),
-('Pará', 'PA'),
-('Paraíba', 'PB'),
-('Paraná', 'PR'),
-('Pernambuco', 'PE'),
-('Piauí', 'PI'),
-('Rio de Janeiro', 'RJ'),
-('Rio Grande do Norte', 'RN'),
-('Rio Grande do Sul', 'RS'),
-('Rondônia', 'RO'),
-('Roraima', 'RR'),
-('Santa Catarina', 'SC'),
-('São Paulo', 'SP'),
-('Sergipe', 'SE'),
-('Tocantins', 'TO');
-
 INSERT INTO tipo_usuario (nome) VALUES
 ('CANDIDATO'),
 ('ADMINISTRADOR'),
@@ -100,14 +62,23 @@ INSERT INTO cargos (nome) VALUES
 ('Designer UI/UX'),
 ('Analista de Dados');
 
-INSERT INTO usuario (nome, email, senha, documento, descricao, estado_id, cidade, end_logradouro, end_bairro, end_numero, end_complemento, telefone, status, tipo_usuario_id) VALUES 
+mysql -u root -p ejobs < estados.sql
+mysql -u root -p ejobs < municipios.sql
+
+INSERT INTO usuario (
+    nome, email, senha, documento, descricao, cidade_id,
+    end_logradouro, end_bairro, end_numero, end_complemento,
+    telefone, status, tipo_usuario_id
+) VALUES 
 ('João da Silva', 'joao@email.com', '$2y$10$9H8nNzW7tM7cGhy6r59gYuKuflEGKzKGOMPv86yUhJbySUNnnY42y', '123.456.789-00',
- 'Candidato com experiência em TI', 1, 'São Paulo', 'Rua A', 'Centro', '123', 'Apto 12', '(11)99999-9999', 'Ativo', 1),
+ 'Candidato com experiência em TI', 3550308, 'Rua A', 'Centro', '123', 'Apto 12', '(11)99999-9999', 'Ativo', 1),
+
 ('Empresa XYZ', 'contato@xyz.com', '$2y$10$PrnFrYArQJto/SlnMTFTpOSDKU9XS5PfeHHUvJlzMxeJH5KdnI/Sm', '12.345.678/0001-99',
- 'Empresa de tecnologia', 2, 'Belo Horizonte', 'Av. Brasil', 'Funcionários', '500', 'Sala 10', '(31)98888-8888', 'Ativo', 2),
+ 'Empresa de tecnologia', 3106200, 'Av. Brasil', 'Funcionários', '500', 'Sala 10', '(31)98888-8888', 'Ativo', 2),
+
 ('Maria Admin', 'admin@maria.com', '$2y$10$9H8nNzW7tM7cGhy6r59gYuKuflEGKzKGOMPv86yUhJbySUNnnY42y', '987.654.321-00',
- 'Administrador do sistema', 3, 'Rio de Janeiro', 'Rua das Laranjeiras', 'Centro', '200', '', '(21)97777-7777', 'Ativo', 3);
+ 'Administrador do sistema', 3304557, 'Rua das Laranjeiras', 'Centro', '200', '', '(21)97777-7777', 'Ativo', 3);
 
 INSERT INTO vaga (titulo, modalidade, horario, regime, salario, descricao, requisitos, empresa_id, cargos_id) VALUES 
-('Desenvolvedor PHP Pleno', 'HOME_OFFICE', '40h', 'CLT', 5000.00, 'Desenvolvimento de aplicações web em PHP', 'Experiência com Laravel, MySQL, Git', 2, 1),
+('Desenvolvedor PHP Pleno', 'HOME OFFICE', '40h', 'CLT', 5000.00, 'Desenvolvimento de aplicações web em PHP', 'Experiência com Laravel, MySQL, Git', 2, 1),
 ('Designer UI/UX', 'PRESENCIAL', '40h', 'PJ', 4500.00, 'Criação de interfaces modernas', 'Figma, Adobe XD, criatividade', 2, 2);
