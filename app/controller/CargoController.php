@@ -12,8 +12,9 @@ class CargoController extends Controller {
     public function __construct() { 
         if(! $this->usuarioLogado())
             exit;
-        if(! $this->usuarioPossuiPapel(TipoUsuario::ID_ADMINISTRADOR))
-            exit;
+        // - Apenas comentei este trecho para testar algumas funcionalidades  
+        //if(! $this->usuarioPossuiPapel(TipoUsuario::ID_ADMINISTRADOR)) 
+           // exit;
         $this->cargoDao = new CargoDAO();
         $this->cargoService = new CargoService();
         $this->handleAction();

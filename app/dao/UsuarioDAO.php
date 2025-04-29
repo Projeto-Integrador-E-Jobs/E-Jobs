@@ -189,7 +189,7 @@ class UsuarioDAO {
             $usuario->setSenha($reg['senha']);
             $usuario->setDocumento($reg['documento']);
             $usuario->setDescricao($reg['descricao']);
-            $usuario->setCidade($this->cidadeDAO->findById($reg['cidade_id']));
+            $usuario->setCidade($this->cidadeDAO->findById($reg['estado_id']));
             $usuario->setEndLogradouro($reg['end_logradouro']);
             $usuario->setEndBairro($reg['end_bairro']);
             $usuario->setEndNumero($reg['end_numero']);
