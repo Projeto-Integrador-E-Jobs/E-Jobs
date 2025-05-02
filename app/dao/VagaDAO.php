@@ -123,6 +123,23 @@ class VagaDAO {
         $stm->execute();
     }
 
+    public function searchByTitle($title) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM vaga v WHERE LOWER(v.titulo) LIKE LOWER(:title) ORDER BY v.titulo";
+        $stm = $conn->prepare($sql);    
+        $stm->bindValue("title", "%" . $title . "%", PDO::PARAM_STR);
+        $stm->execute();
+        $result = $stm->fetchAll();
+        
+        // Debug information
+        error_log("SQL Query: " . $sql);
+        error_log("Search term: " . $title);
+        error_log("Number of results: " . count($result));
+        
+        return $this->mapVagas($result);
+    }
+
     private function mapVagas($result) {
         $vagas = array();
         foreach ($result as $reg) {

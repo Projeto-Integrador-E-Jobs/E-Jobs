@@ -15,17 +15,15 @@ require_once(__DIR__ . "/../include/menu.php");
         <div class="col-12 text-center py-5 bg-primary text-white rounded banner">
             <h1 class="display-4">Encontre seu próximo emprego</h1>
             <p class="lead">Milhares de vagas disponíveis para você</p>
-            
-            <form class="mt-4 job-search-form">
+
+            <form class="mt-4 job-search-form" method="GET" action="<?= BASEURL ?>/controller/VagaController.php">
+                <input type="hidden" name="action" value="listPublic">
                 <div class="row justify-content-center">
-                    <div class="col-md-4">
-                        <input type="text" class="form-control form-control-lg" placeholder="Cargo ou palavra-chave">
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control form-control-lg">
-                            <option value="">Localização</option>
-                            <option value="SP">Foz do Iguaçu</option>
-                        </select>
+                    <div class="col-md-6">
+                        <input type="text" name="search" class="form-control form-control-lg"
+                            placeholder="Digite o título da vaga"
+                            value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>"
+                            required>
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-success btn-lg btn-block">Buscar</button>
@@ -34,12 +32,12 @@ require_once(__DIR__ . "/../include/menu.php");
             </form>
         </div>
     </div>
-    
+
     <div class="row mb-5">
         <div class="col-12">
             <h2 class="text-center mb-4">Categorias Populares</h2>
         </div>
-        
+
         <?php
         $categorias = [
             ["nome" => "Tecnologia", "icone" => "fa-laptop-code", "vagas" => 240],
@@ -47,7 +45,7 @@ require_once(__DIR__ . "/../include/menu.php");
             ["nome" => "Vendas", "icone" => "fa-chart-line", "vagas" => 142],
             ["nome" => "Design", "icone" => "fa-paint-brush", "vagas" => 104]
         ];
-        
+
         foreach ($categorias as $categoria) {
         ?>
             <div class="col-md-3 mb-4">
@@ -64,10 +62,9 @@ require_once(__DIR__ . "/../include/menu.php");
         }
         ?>
     </div>
-    
-  
 
-<?php  
-require_once(__DIR__ . "/../include/footer.php");
-?>
 
+
+    <?php
+    require_once(__DIR__ . "/../include/footer.php");
+    ?>

@@ -35,14 +35,18 @@ class VagaController extends Controller {
     }
 
     protected function listPublic(string $msgErro = "", string $msgSucesso = "") {
-        
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
 
-        $vagas = $this->vagaDao->list();
-        //print_r($usuarios);
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        if ($search !== '') {
+            $vagas = $this->vagaDao->searchByTitle($search);
+        } else {
+            $vagas = $this->vagaDao->list();
+        }
         $dados["lista"] = $vagas;
+        $dados["search_term"] = $search;
 
         $this->loadView("vaga/vagaPublica_list.php", $dados,  $msgErro, $msgSucesso);
     }

@@ -3,72 +3,112 @@ require_once(__DIR__ . "/../include/header.php");
 require_once(__DIR__ . "/../include/menu.php");
 ?>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="<?= BASEURL ?>/view/include/header.css">
-<link rel="stylesheet" href="<?= BASEURL ?>/view/vaga/vaga.css">
+<style>
+.vaga-card {
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    border: 1.5px solid #e3e3e3;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: #fff;
+}
+.vaga-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-color: #0d6efd;
+    z-index: 2;
+}
+.vaga-icon {
+    width: 22px;
+    text-align: center;
+    color: #0d6efd;
+    margin-right: 8px;
+}
+.vaga-label {
+    font-weight: 500;
+    color: #333;
+}
+.vaga-info {
+    color: #555;
+}
+</style>
 
+<h3 class="text-center">Vagas</h3>
 
-<h3 class="text-center mb-4">Vagas Disponíveis</h3>
+<?php if (!empty($dados['search_term'])): ?>
+    <h5 class="text-center">Resultados para: "<?= htmlspecialchars($dados['search_term']) ?>"</h5>
+<?php endif; ?>
 
 <div class="container">
     <div class="row">
-        <div class="col-12">
+        <div class="col-9">
             <?php require_once(__DIR__ . "/../include/msg.php"); ?>
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <?php foreach($dados['lista'] as $vaga): ?>
-            <div class="col">
-                <div class="card h-100 border-0 rounded-3 shadow-sm hover-shadow transition-all">
-                    <div class="card-header bg-primary text-white rounded-top-3">
-                        <h5 class="card-title mb-0"><?= $vaga->getTitulo(); ?></h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="company-logo me-3">
-                                <i class="fas fa-building fa-2x text-primary"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0"><?= $vaga->getEmpresa()->getNome(); ?></h6>
-                                <small class="text-muted"><?= $vaga->getCargo()->getNome(); ?></small>
+    <div class="row" style="margin-top: 10px;">
+        <div class="col-12">
+            <?php if (empty($dados['lista'])): ?>
+                <div class="alert alert-warning text-center">Nenhuma vaga encontrada.</div>
+            <?php else: ?>
+                <div class="row">
+                    <?php foreach($dados['lista'] as $vaga): ?>
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="vaga-card h-100 p-4 d-flex flex-column">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-briefcase vaga-icon"></i>
+                                    <span class="vaga-label fs-5 flex-grow-1"> <?= htmlspecialchars($vaga->getTitulo()); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-building vaga-icon"></i>
+                                    <span class="vaga-label">Empresa:</span>
+                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getEmpresa()->getNome()); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-laptop-house vaga-icon"></i>
+                                    <span class="vaga-label">Modalidade:</span>
+                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getModalidade()); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-clock vaga-icon"></i>
+                                    <span class="vaga-label">Horário:</span>
+                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getHorario()); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-file-contract vaga-icon"></i>
+                                    <span class="vaga-label">Regime:</span>
+                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getRegime()); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-money-bill-wave vaga-icon"></i>
+                                    <span class="vaga-label">Salário:</span>
+                                    <span class="vaga-info ms-1"> R$ <?= number_format($vaga->getSalario(), 2, ',', '.'); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-user-tie vaga-icon"></i>
+                                    <span class="vaga-label">Cargo:</span>
+                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getCargo()->getNome()); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-tasks vaga-icon"></i>
+                                    <span class="vaga-label">Requisitos:</span>
+                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getRequisitos()); ?> </span>
+                                </div>
+                                <div class="d-flex align-items-start mb-2">
+                                    <i class="fas fa-align-left vaga-icon mt-1"></i>
+                                    <span class="vaga-label">Descrição:</span>
+                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getDescricao()); ?> </span>
+                                </div>
+                                <div class="mt-auto text-end">
+                                    <!-- Botão de detalhes pode ser adicionado aqui futuramente -->
+                                </div>
                             </div>
                         </div>
-
-                        <div class="job-details">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span><i class="fas fa-clock text-primary"></i> <?= $vaga->getHorario(); ?></span>
-                                <span><i class="fas fa-calendar-alt text-primary"></i> <?= $vaga->getRegime(); ?></span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span><i class="fas fa-laptop-house text-primary"></i> <?= $vaga->getModalidade(); ?></span>
-                                <span><i class="fas fa-money-bill-wave text-primary"></i> <?= $vaga->getSalario(); ?></span>
-                            </div>
-                        </div>
-
-                        <div class="mt-3">
-                            <h6 class="text-primary mb-2">Descrição</h6>
-                            <p class="small text-muted"><?= $vaga->getDescricao(); ?></p>
-                        </div>
-
-                        <div class="mt-3">
-                            <h6 class="text-primary mb-2">Requisitos</h6>
-                            <p class="small text-muted"><?= $vaga->getRequisitos(); ?></p>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-top-0">
-                        <button class="btn btn-outline-primary w-100">
-                            <i class="fas fa-paper-plane me-2"></i> Candidatar-se
-                        </button>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
-            </div>
-        <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
-
-
 
 <?php  
 require_once(__DIR__ . "/../include/footer.php");
