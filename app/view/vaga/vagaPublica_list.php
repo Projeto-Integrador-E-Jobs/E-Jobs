@@ -29,8 +29,10 @@ require_once(__DIR__ . "/../include/menu.php");
 }
 .vaga-info {
     color: #555;
+    
 }
 </style>
+<link rel="stylesheet" href="/app/view/vaga/vaga.css"> 
 
 <h3 class="text-center">Vagas</h3>
 
@@ -99,7 +101,9 @@ require_once(__DIR__ . "/../include/menu.php");
                                     <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getDescricao()); ?> </span>
                                 </div>
                                 <div class="mt-auto text-end">
-                                    <!-- Botão de detalhes pode ser adicionado aqui futuramente -->
+                                    <a href="VagaController.php?action=viewVagas&id=<?= $vaga->getId() ?>" class="btn btn-primary">
+                                        <i class="fas fa-info-circle me-1"></i>Detalhes
+                                    </a>
                                 </div>
                             </div>
                         </div>

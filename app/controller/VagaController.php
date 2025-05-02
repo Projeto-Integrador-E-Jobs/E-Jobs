@@ -168,6 +168,16 @@ class VagaController extends Controller {
         return $vaga;
     }
 
+    protected function viewVagas() {
+        $vaga = $this->findVagaById();
+        if($vaga) {
+            $dados["vaga"] = $vaga;
+            $this->loadView("vaga/vaga_detalhes.php", $dados);
+        } else {
+            $this->listPublic("Vaga não encontrada.");
+        }
+    }
+
 }
 
 new VagaController();
