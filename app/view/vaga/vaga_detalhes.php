@@ -60,6 +60,12 @@ require_once(__DIR__ . "/../include/menu.php");
                             <span class="detalhes-label">Salário:</span>
                             <span class="detalhes-info">R$ <?= number_format($dados['vaga']->getSalario(), 2, ',', '.'); ?></span>
                         </div>
+
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-toggle-on detalhes-icon"></i>
+                            <span class="detalhes-label">Status:</span>
+                            <span class="detalhes-info"><?= htmlspecialchars($dados['vaga']->getStatus()); ?></span>
+                        </div>
                     </div>
                 </div>
 

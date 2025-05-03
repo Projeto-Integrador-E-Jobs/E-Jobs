@@ -9,6 +9,7 @@ class Vaga {
     private ?float $salario;
     private ?string $descricao;
     private ?string $requisitos;
+    private ?string $status;
     private ?Usuario $empresa;
     private ?Cargo $cargo;   
     
@@ -75,6 +76,18 @@ class Vaga {
     public function setRequisitos(?string $requisitos): void {
         $this->requisitos = $requisitos;
     }
+  
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+    
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
 
     public function getEmpresa(): ?Usuario {
         return $this->empresa;
@@ -92,6 +105,8 @@ class Vaga {
         $this->cargo = $cargo;
     }
     
+
+  
 
   
 }

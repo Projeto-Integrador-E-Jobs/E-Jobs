@@ -4,36 +4,43 @@ require_once(__DIR__ . "/../include/header.php");
 require_once(__DIR__ . "/../include/menu.php");
 ?>
 
-<div class="container">
-    <div class="row" style="margin-top: 20px;">
-        <div class="col-6">
-            <div class="alert alert-info">
-                <h4>Informe os dados para logar:</h4>
-                <br>
+<link rel="stylesheet" href="<?= BASEURL ?>/view/login/login.css">
 
-                <!-- Formulário de login -->
-                <form id="frmLogin" action="./LoginController.php?action=logon" method="POST" >
-                    <div class="form-group">
-                        <label for="txtLogin">Email:</label>
-                        <input type="text" class="form-control" name="email" id="txtLogin"
-                            placeholder="Informe o email"
-                            value="<?php echo isset($dados['email']) ? $dados['email'] : '' ?>" />        
-                    </div>
-
-                    <div class="form-group">
-                        <label for="txtSenha">Senha:</label>
-                        <input type="password" class="form-control" name="senha" id="txtSenha"
-                            placeholder="Informe a senha"
-                            value="<?php echo isset($dados['senha']) ? $dados['senha'] : '' ?>" />        
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Logar</button>
-                </form>
-            </div>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h4>Bem-vindo ao E-Jobs</h4>
+            <p class="text-muted">Faça login para continuar</p>
         </div>
 
-        <div class="col-6">
-            <?php include_once(__DIR__ . "/../include/msg.php") ?>
+        <?php include_once(__DIR__ . "/../include/msg.php") ?>
+
+        <form id="frmLogin" class="login-form" action="./LoginController.php?action=logon" method="POST">
+            <div class="form-group">
+                <label for="txtLogin">
+                    <i class="fas fa-envelope me-2"></i>Email
+                </label>
+                <input type="text" class="form-control" name="email" id="txtLogin"
+                    placeholder="Informe seu email"
+                    value="<?php echo isset($dados['email']) ? $dados['email'] : '' ?>" />        
+            </div>
+
+            <div class="form-group">
+                <label for="txtSenha">
+                    <i class="fas fa-lock me-2"></i>Senha
+                </label>
+                <input type="password" class="form-control" name="senha" id="txtSenha"
+                    placeholder="Informe sua senha"
+                    value="<?php echo isset($dados['senha']) ? $dados['senha'] : '' ?>" />        
+            </div>
+
+            <button type="submit" class="btn btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i>Entrar
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p>Não tem uma conta? <a href="<?= BASEURL ?>/controller/CadastroController.php?action=create">Cadastre-se</a></p>
         </div>
     </div>
 </div>

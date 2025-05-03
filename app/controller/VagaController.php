@@ -8,9 +8,11 @@ require_once(__DIR__ . "/../model/Vaga.php");
 require_once(__DIR__ . "/../model/enum/Modalidade.php");
 require_once(__DIR__ . "/../model/enum/Regime.php");
 require_once(__DIR__ . "/../model/enum/Horario.php");
+require_once(__DIR__ . "/../model/enum/Status.php");
 
 
-class VagaController extends Controller {
+class VagaController extends Controller
+{
 
     private VagaDAO $vagaDao;
     private UsuarioDAO $usuarioDao;
@@ -18,7 +20,8 @@ class VagaController extends Controller {
     private VagaService $vagaService;
 
     //Método construtor do controller - será executado a cada requisição a está classe
-    public function __construct() {
+    public function __construct()
+    {
         $action = $_GET["action"];
         $list = "listPublic";
 
@@ -30,11 +33,12 @@ class VagaController extends Controller {
         $this->cargoDao = new CargoDAO();
         $this->usuarioDao = new UsuarioDAO();
         $this->vagaService = new VagaService();
-        
+
         $this->handleAction();
     }
 
-    protected function listPublic(string $msgErro = "", string $msgSucesso = "") {
+    protected function listPublic(string $msgErro = "", string $msgSucesso = "")
+    {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
@@ -51,32 +55,37 @@ class VagaController extends Controller {
         $this->loadView("vaga/vagaPublica_list.php", $dados,  $msgErro, $msgSucesso);
     }
 
-    protected function listUsuario(string $msgErro = "", string $msgSucesso = "") {
+    protected function listUsuario(string $msgErro = "", string $msgSucesso = "")
+    {
         $vagas = $this->vagaDao->findByEmpresa($_SESSION[SESSAO_USUARIO_ID]);
         $dados["lista"] = $vagas;
 
         $this->loadView("vaga/vaga_list.php", $dados,  $msgErro, $msgSucesso);
     }
 
-    protected function create() {
+    protected function create()
+    {
         $usuario = $this->usuarioDao->findById($_SESSION[SESSAO_USUARIO_ID]);
         $dados["id"] = 0;
         $dados["modalidades"] = Modalidade::getAllAsArray();
         $dados["horarios"] = Horario::getAllAsArray();
         $dados["regimes"] = Regime::getAllAsArray();
+        $dados["status"] = Status::getAllAsArray();
         $dados["cargos"] = $this->cargoDao->list();
         $dados["empresa"] = $this->usuarioDao->findById($usuario->getId());
         $this->loadView("vaga/vaga_form.php", $dados);
     }
 
-    protected function edit() {
+    protected function edit()
+    {
         $vaga = $this->findVagaById();
-        if($vaga) {
+        if ($vaga) {
             $dados["id"] = $vaga->getId();
             $dados["vaga"] = $vaga;
             $dados["modalidades"] = Modalidade::getAllAsArray();
             $dados["horarios"] = Horario::getAllAsArray();
             $dados["regimes"] = Regime::getAllAsArray();
+            $dados["status"] = Status::getAllAsArray();
             $dados["cargos"] = $this->cargoDao->list();
             $dados["empresa"] = $this->usuarioDao->findById($vaga->getEmpresa()->getId());
 
@@ -85,7 +94,8 @@ class VagaController extends Controller {
             $this->listUsuario("Vaga não encontrado.");
     }
 
-    protected function save() {
+    protected function save()
+    {
         //Captura os dados do formulário
         $dados["id"] = isset($_POST['id']) ? $_POST['id'] : 0;
         $titulo = trim($_POST['titulo']) ? trim($_POST['titulo']) : NULL;
@@ -95,6 +105,7 @@ class VagaController extends Controller {
         $salario = trim($_POST['salario']) ? trim($_POST['salario']) : NULL;
         $descricao = trim($_POST['descricao']) ? trim($_POST['descricao']) : NULL;
         $requisitos = trim($_POST['requisitos']) ? trim($_POST['requisitos']) : NULL;
+        $status = trim($_POST['status']) ? trim($_POST['status']) : Status::ATIVO;
         $cargoId = isset($_POST['cargo']) && is_numeric($_POST['cargo']) && (int)$_POST['cargo'] > 0 ? (int)$_POST['cargo'] : NULL;
         $cargo = $cargoId !== null ? $this->cargoDao->findById($cargoId) : NULL;
         $usuarioId = isset($_POST['usuarioId']) && is_numeric($_POST['usuarioId']) ? (int)$_POST['usuarioId'] : NULL;
@@ -109,36 +120,37 @@ class VagaController extends Controller {
         $vaga->setSalario($salario);
         $vaga->setDescricao($descricao);
         $vaga->setRequisitos($requisitos);
+        $vaga->setStatus($status);
         $vaga->setCargo($cargo);
         $vaga->setEmpresa($empresa);
         
 
+
         //Validar os dados
         $erros = $this->vagaService->validarDados($vaga);
-        if(empty($erros)) {
+        if (empty($erros)) {
             //Persiste o objeto
             try {
-    
-                if($dados["id"] == 0){ //Inserindo
+
+                if ($dados["id"] == 0) { //Inserindo
                     $this->vagaDao->insert($vaga);
+                    //Redireciona para a listagem do usuário após criar uma nova vaga
+                    header("location: " . BASEURL . "/controller/VagaController.php?action=list");
+                    exit;
                 } else { //Alterando
                     $vaga->setId($dados["id"]);
                     $this->vagaDao->update($vaga);
+                    //Mantém o redirecionamento para a listagem do usuário após editar
+                    $msg = "Vaga salva com sucesso.";
+                    $this->listUsuario("", $msg);
+                    exit;
                 }
-
-                //TODO - Enviar mensagem de sucesso
-                $msg = "Vaga salva com sucesso.";
-                $this->listUsuario("", $msg);
-                exit;
             } catch (PDOException $e) {
                 $erros = ["Erro ao salvar a vaga na base de dados.", $e];
             }
         }
 
         //Se há erros, volta para o formulário
-        
-        //Carregar os valores recebidos por POST de volta para o formulário
-        
         $dados["vaga"] = $vaga;
         $dados["modalidades"] = Modalidade::getAllAsArray();
         $dados["horarios"] = Horario::getAllAsArray();
@@ -150,27 +162,30 @@ class VagaController extends Controller {
         $this->loadView("vaga/vaga_form.php", $dados, $msgsErro);
     }
 
-    protected function delete() {
+    protected function delete()
+    {
         $vaga = $this->findVagaById();
-        if($vaga) {
+        if ($vaga) {
             $this->vagaDao->deleteById($vaga->getId());
             header("location: " . BASEURL . "/controller/VagaController.php?action=list");
         } else
             $this->listUsuario("Usuario não econtrado!");
     }
 
-    private function findVagaById() {
+    private function findVagaById()
+    {
         $id = 0;
-        if(isset($_GET['id']))
+        if (isset($_GET['id']))
             $id = $_GET['id'];
 
         $vaga = $this->vagaDao->findById($id);
         return $vaga;
     }
 
-    protected function viewVagas() {
+    protected function viewVagas()
+    {
         $vaga = $this->findVagaById();
-        if($vaga) {
+        if ($vaga) {
             $dados["vaga"] = $vaga;
             $this->loadView("vaga/vaga_detalhes.php", $dados);
         } else {
@@ -178,6 +193,19 @@ class VagaController extends Controller {
         }
     }
 
+    protected function list(string $msgErro = "", string $msgSucesso = "")
+    {
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+        if (!empty($search)) {
+            $vagas = $this->vagaDao->searchByTitle($search);
+        } else {
+            $vagas = $this->vagaDao->findByEmpresa($_SESSION[SESSAO_USUARIO_ID]);
+        }
+
+        $dados["lista"] = $vagas;
+        $this->loadView("vaga/vaga_list.php", $dados, $msgErro, $msgSucesso);
+    }
 }
 
 new VagaController();

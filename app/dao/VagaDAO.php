@@ -72,9 +72,9 @@ class VagaDAO {
         $conn = Connection::getConn();
 
         $sql = "INSERT INTO vaga (titulo, modalidade, horario, regime,
-         salario, descricao, requisitos, empresa_id, cargos_id)" .
+         salario, descricao, requisitos, status, empresa_id, cargos_id)" .
                " VALUES (:titulo, :modalidade, :horario, :regime, :salario,
-               :descricao, :requisitos, :empresa_id, :cargos_id)";
+               :descricao, :requisitos, :status, :empresa_id, :cargos_id)";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("titulo", $vaga->getTitulo());
@@ -84,6 +84,7 @@ class VagaDAO {
         $stm->bindValue("salario", $vaga->getSalario());
         $stm->bindValue("descricao", $vaga->getDescricao());
         $stm->bindValue("requisitos", $vaga->getRequisitos());
+        $stm->bindValue("status", $vaga->getStatus());
         $stm->bindValue("empresa_id", $vaga->getEmpresa()->getId());
         $stm->bindValue("cargos_id", $vaga->getCargo()->getId());
         
@@ -96,7 +97,7 @@ class VagaDAO {
 
         $sql = "UPDATE vaga SET titulo = :titulo, modalidade = :modalidade," . 
                " horario = :horario, regime = :regime, salario = :salario, descricao = :descricao," .
-               " requisitos = :requisitos, empresa_id = :empresa_id, cargos_id = :cargos_id" .   
+               " requisitos = :requisitos, status = :status, empresa_id = :empresa_id, cargos_id = :cargos_id" .   
                " WHERE id = :id";
         
         $stm = $conn->prepare($sql);
@@ -107,6 +108,7 @@ class VagaDAO {
         $stm->bindValue("salario", $vaga->getSalario());
         $stm->bindValue("descricao", $vaga->getDescricao());
         $stm->bindValue("requisitos", $vaga->getRequisitos());
+        $stm->bindValue("status", $vaga->getStatus());
         $stm->bindValue("empresa_id", $vaga->getEmpresa()->getId());
         $stm->bindValue("cargos_id", $vaga->getCargo()->getId());
         $stm->bindValue("id", $vaga->getId());
@@ -128,14 +130,9 @@ class VagaDAO {
 
         $sql = "SELECT * FROM vaga v WHERE LOWER(v.titulo) LIKE LOWER(:title) ORDER BY v.titulo";
         $stm = $conn->prepare($sql);    
-        $stm->bindValue("title", "%" . $title . "%", PDO::PARAM_STR);
+        $stm->bindValue("title", "%" . $title . "%");
         $stm->execute();
         $result = $stm->fetchAll();
-        
-        // Debug information
-        error_log("SQL Query: " . $sql);
-        error_log("Search term: " . $title);
-        error_log("Number of results: " . count($result));
         
         return $this->mapVagas($result);
     }
@@ -152,6 +149,7 @@ class VagaDAO {
             $vaga->setSalario($reg['salario']);
             $vaga->setDescricao($reg['descricao']);
             $vaga->setRequisitos($reg['requisitos']);
+            $vaga->setStatus($reg['status']);
             $vaga->setEmpresa($this->usuarioDao->findById($reg['empresa_id']));
             $vaga->setCargo($this->cargoDao->findById($reg['cargos_id']));
             array_push($vagas, $vaga);
