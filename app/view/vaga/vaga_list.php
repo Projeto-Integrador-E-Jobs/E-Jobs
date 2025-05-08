@@ -13,7 +13,27 @@ require_once(__DIR__ . "/../include/menu.php");
                 <i class="fas fa-plus me-1"></i>Inserir</a>
         </div>
 
-        <div class="col-9">
+        <?php if(isset($dados["show_status_filter"]) && $dados["show_status_filter"]): ?>
+        <div class="col-3">
+            <form method="GET" action="<?= BASEURL ?>/controller/VagaController.php" class="d-flex">
+                <input type="hidden" name="action" value="listUsuario">
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todos os Status</option>
+                    <?php 
+                    if(isset($dados["status"]) && is_array($dados["status"])) {
+                        foreach($dados["status"] as $status): ?>
+                            <option value="<?= $status ?>" <?= (isset($dados["selected_status"]) && $dados["selected_status"] == $status) ? "selected" : "" ?>>
+                                <?= $status ?>
+                            </option>
+                        <?php endforeach;
+                    }
+                    ?>
+                </select>
+            </form>
+        </div>
+        <?php endif; ?>
+
+        <div class="col-<?= isset($dados["show_status_filter"]) && $dados["show_status_filter"] ? '6' : '9' ?>">
             <?php require_once(__DIR__ . "/../include/msg.php"); ?>
         </div>
     </div>
@@ -62,7 +82,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                         </a>
                                     </div>
 
-                                    <!-- Modal de Detalhes -->
+                    
                                     <div class="modal fade" id="modalDetalhes<?= $vaga->getId() ?>" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">

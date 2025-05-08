@@ -15,9 +15,21 @@ require_once(__DIR__ . "/../include/menu.php");
                         <a href="VagaController.php?action=listPublic" class="btn btn-outline-primary me-2">
                             <i class="fas fa-arrow-left me-1"></i>Voltar
                         </a>
-                        <a href="VagaController.php?action=candidatar&id=<?= $dados['vaga']->getId() ?>" class="btn btn-success">
-                            <i class="fas fa-paper-plane me-1"></i>Candidatar-se
-                        </a>
+                        <?php if (isset($_SESSION[SESSAO_USUARIO_ID])): ?>
+                            <?php if (isset($dados['candidatura'])): ?>
+                                <button class="btn btn-secondary" disabled>
+                                    <i class="fas fa-check me-1"></i>Candidatura já realizada
+                                </button>
+                            <?php else: ?>
+                                <a href="CandidaturaController.php?action=candidatar&id=<?= $dados['vaga']->getId() ?>" class="btn btn-success">
+                                    <i class="fas fa-paper-plane me-1"></i>Candidatar-se
+                                </a>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a href="<?= BASEURL ?>/controller/LoginController.php?action=login" class="btn btn-success">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login para se candidatar
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -75,7 +87,7 @@ require_once(__DIR__ . "/../include/menu.php");
                             <i class="fas fa-tasks detalhes-icon"></i>
                             Requisitos
                         </h5>
-                        <p class="detalhes-info"><?= nl2br(htmlspecialchars($dados['vaga']->getRequisitos())); ?></p>
+                        <p class="detalhes-info"><?= (htmlspecialchars($dados['vaga']->getRequisitos())); ?></p>
                     </div>
 
                     <div>
@@ -83,7 +95,7 @@ require_once(__DIR__ . "/../include/menu.php");
                             <i class="fas fa-align-left detalhes-icon"></i>
                             Descrição
                         </h5>
-                        <p class="detalhes-info"><?= nl2br(htmlspecialchars($dados['vaga']->getDescricao())); ?></p>
+                        <p class="detalhes-info"><?= (htmlspecialchars($dados['vaga']->getDescricao())); ?></p>
                     </div>
                 </div>
             </div>

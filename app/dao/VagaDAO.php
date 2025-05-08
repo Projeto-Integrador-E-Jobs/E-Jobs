@@ -137,6 +137,31 @@ class VagaDAO {
         return $this->mapVagas($result);
     }
 
+    public function filterByStatus($status) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM vaga v WHERE v.status = :status ORDER BY v.titulo";
+        $stm = $conn->prepare($sql);    
+        $stm->bindValue("status", $status);
+        $stm->execute();
+        $result = $stm->fetchAll();
+        
+        return $this->mapVagas($result);
+    }
+
+    public function filterByStatusAndEmpresa($status, $empresaId) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM vaga v WHERE v.status = :status AND v.empresa_id = :empresa_id ORDER BY v.titulo";
+        $stm = $conn->prepare($sql);    
+        $stm->bindValue("status", $status);
+        $stm->bindValue("empresa_id", $empresaId);
+        $stm->execute();
+        $result = $stm->fetchAll();
+        
+        return $this->mapVagas($result);
+    }
+
     private function mapVagas($result) {
         $vagas = array();
         foreach ($result as $reg) {
