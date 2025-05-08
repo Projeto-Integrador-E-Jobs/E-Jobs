@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS candidatura (
     FOREIGN KEY (candidato_id) REFERENCES usuario(id),
     FOREIGN KEY (vaga_id) REFERENCES vaga(id),
     UNIQUE KEY unique_candidatura (candidato_id, vaga_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
+); 
