@@ -30,9 +30,9 @@ CREATE TABLE cargos (
 CREATE TABLE vaga (
     id INT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(255),
-    modalidade ENUM('HOME OFFICE', 'PRESENCIAL', 'HIBRIDO'),
+    modalidade ENUM('Home Office', 'Presencial', 'Híbrido'),
     horario ENUM('20h', '30h', '40h', '44h', 'Outros'),
-    regime ENUM('CLT', 'PJ', 'ESTÁGIO'),
+    regime ENUM('CLT', 'PJ', 'Estágio'),
     salario DECIMAL(10,2),
     descricao TEXT,
     requisitos TEXT,
@@ -53,9 +53,9 @@ CREATE TABLE candidatura (
 );
 
 INSERT INTO tipo_usuario (nome) VALUES
-('CANDIDATO'),
-('ADMINISTRADOR'),
-('EMPRESA');
+('Candidato'),
+('Administrador'),
+('Empresa');
 
 INSERT INTO cargos (nome) VALUES 
 ('Desenvolvedor Backend'),

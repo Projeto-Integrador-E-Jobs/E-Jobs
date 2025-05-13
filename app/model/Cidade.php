@@ -1,6 +1,6 @@
 <?php
 
-class Cidade {
+class Cidade implements JsonSerializable {
 
     private ?int $codigoIbge;
     private ?string $nome;
@@ -11,6 +11,14 @@ class Cidade {
     private ?string $fusoHorario;
     private ?string $siafiId;
     private ?Estado $estado; // relação com Estado
+
+    public function jsonSerialize(): array
+    {
+        return array(
+            "id" => $this->codigoIbge,
+            "nome" => $this->nome
+        );
+    }
 
     /**
      * Get the value of codigoIbge

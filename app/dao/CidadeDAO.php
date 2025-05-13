@@ -49,6 +49,18 @@ class CidadeDAO {
             " - Erro: mais de uma cidade encontrada.");
     }
 
+    public function findByEstado(int $id) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM cidades c" .
+               " WHERE c.codigo_uf = ?";
+        $stm = $conn->prepare($sql);    
+        $stm->execute([$id]);
+        $result = $stm->fetchAll();
+
+        return $this->mapCidades($result);
+
+    }
 
     //Método para converter um registro da base de dados em um objeto Usuario
     private function mapCidades($result) {

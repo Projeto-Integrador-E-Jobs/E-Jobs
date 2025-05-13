@@ -45,7 +45,11 @@ class CadastroController extends Controller {
         $email = trim($_POST['email']) ? trim($_POST['email']) : NULL;
         $senha = trim($_POST['senha']) ? trim($_POST['senha']) : NULL;
         $confSenha = trim($_POST['conf_senha']) ? trim($_POST['conf_senha']) : NULL;
-        $documento = trim($_POST['documento']) ? trim($_POST['documento']) : NULL;
+        
+        $documento = NULL;
+        if(isset($_POST['documento']))
+            $documento = trim($_POST['documento']) ? trim($_POST['documento']) : NULL;
+        
         $descricao = trim($_POST['descricao']) ? trim($_POST['descricao']) : NULL;
         $estadoId = isset($_POST['estado']) && is_numeric($_POST['estado']) ? $_POST['estado'] : NULL;
         $cidadeId = trim($_POST['cidade']) ? trim($_POST['cidade']) : NULL;
@@ -74,8 +78,7 @@ class CadastroController extends Controller {
         if($cidadeId)
             $cidade->setCodigoIbge($cidadeId);
         else
-            //$cidade->setCodigoIbge(null);
-            $cidade->setCodigoIbge(1100015);
+            $cidade->setCodigoIbge(null);
         $cidade->setEstado(new Estado());
         $cidade->getEstado()->setCodigoUf($estadoId);
         $usuario->setCidade($cidade);
@@ -125,7 +128,7 @@ class CadastroController extends Controller {
         $dados["usuario"] = $usuario;
         $dados["confSenha"] = $confSenha;
         $dados["estados"] = $this->estadoDAO->list();
-        $dados["papeis"] = $this->tipoUsuarioDAO->list();
+        $dados["papeis"] = $this->tipoUsuarioDAO->listSemADM();
 
         $msgsErro = is_array($erros) ? implode("<br>", $erros) : $erros;
         $this->loadView("usuario/form_cadastro.php", $dados, $msgsErro);
