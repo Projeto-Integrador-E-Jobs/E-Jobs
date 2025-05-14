@@ -59,9 +59,9 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#">Meu Perfil</a>
-                            <?php if ($papel == "CANDIDATO"): ?>
-                                <a class="dropdown-item" href="#">Minhas Candidaturas</a>
-                            <?php elseif ($papel == "EMPRESA"): ?>
+                            <?php if ($papel == 1): ?>
+                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=minhasCandidaturas">Minhas Candidaturas</a>
+                            <?php elseif ($papel == 3): ?>
                                     <a class="dropdown-item" href="#">Minhas Vagas</a>    
                             <?php else: ?>
                                 <a class="dropdown-item" href="#">Cargos</a>

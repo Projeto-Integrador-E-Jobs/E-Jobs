@@ -58,6 +58,65 @@ class CandidaturaDAO {
         return $candidaturas;
     }
 
+    public function findByCandidato($candidatoId) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT c.*, v.*, u.nome as empresa_nome, car.nome as cargo_nome 
+                FROM candidatura c 
+                JOIN vaga v ON c.vaga_id = v.id 
+                JOIN usuario u ON v.empresa_id = u.id 
+                JOIN cargos car ON v.cargos_id = car.id 
+                WHERE c.candidato_id = :candidato_id 
+                ORDER BY c.data_candidatura DESC";
+        
+        $stm = $conn->prepare($sql);    
+        $stm->bindValue("candidato_id", $candidatoId);
+        $stm->execute();
+        $result = $stm->fetchAll();
+        
+        return $this->mapCandidaturasComVaga($result);
+    }
+
+    private function mapCandidaturasComVaga($result) {
+        $candidaturas = array();
+        foreach ($result as $dado) {
+            $candidatura = new Candidatura();
+            $candidatura->setId($dado['id']);
+            
+            $candidato = new Usuario();
+            $candidato->setId($dado['candidato_id']);
+            $candidatura->setCandidato($candidato);
+
+            $vaga = new Vaga();
+            $vaga->setId($dado['vaga_id']);
+            $vaga->setTitulo($dado['titulo']);
+            $vaga->setModalidade($dado['modalidade']);
+            $vaga->setHorario($dado['horario']);
+            $vaga->setRegime($dado['regime']);
+            $vaga->setSalario($dado['salario']);
+            $vaga->setDescricao($dado['descricao']);
+            $vaga->setRequisitos($dado['requisitos']);
+            $vaga->setStatus($dado['status']);
+
+            $empresa = new Usuario();
+            $empresa->setId($dado['empresa_id']);
+            $empresa->setNome($dado['empresa_nome']);
+            $vaga->setEmpresa($empresa);
+
+            $cargo = new Cargo();
+            $cargo->setId($dado['cargos_id']);
+            $cargo->setNome($dado['cargo_nome']);
+            $vaga->setCargo($cargo);
+
+            $candidatura->setVaga($vaga);
+            $candidatura->setDataCandidatura($dado['data_candidatura']);
+            $candidatura->setStatus($dado['status']);
+            
+            array_push($candidaturas, $candidatura);
+        }
+        return $candidaturas;
+    }
+
 
         
 

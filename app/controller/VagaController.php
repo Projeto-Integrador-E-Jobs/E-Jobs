@@ -25,17 +25,15 @@ class VagaController extends Controller
     public function __construct()
     {
         $action = $_GET["action"];
-        $allowedActions = ["listPublic", "viewVagas"];
+        $allowedActions = ["listPublic", "viewVagas", "minhasCandidaturas"];
 
         if (!in_array($action, $allowedActions) && !$this->usuarioLogado()) {
             exit;
         }
 
-        // Add role-based access control
         if ($this->usuarioLogado()) {
             $userId = $_SESSION[SESSAO_USUARIO_ID];
             if ($userId == 1 && !in_array($action, $allowedActions)) {
-                // Redirect common users (ID 1) to listPublic if they try to access other actions
                 header("location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
                 exit;
             }
@@ -243,7 +241,20 @@ class VagaController extends Controller
         $dados["show_status_filter"] = true; 
         $this->loadView("vaga/vaga_list.php", $dados, $msgErro, $msgSucesso);
     }
-    
+
+    protected function minhasCandidaturas(string $msgErro = "", string $msgSucesso = "")
+    {
+        if (!$this->usuarioLogado()) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+
+        $candidatoId = $_SESSION[SESSAO_USUARIO_ID];
+        $candidaturas = $this->candidaturaDao->findByCandidato($candidatoId);
+        
+        $dados["lista"] = $candidaturas;
+        $this->loadView("vaga/minhas_candidaturas.php", $dados, $msgErro, $msgSucesso);
+    }
 }
 
 new VagaController();

@@ -22,7 +22,9 @@ class LoginService {
 
     public function salvarUsuarioSessao(Usuario $usuario) {
         //Habilitar o recurso de sessão no PHP nesta página
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         //Setar usuário na sessão do PHP
         $_SESSION[SESSAO_USUARIO_ID]   = $usuario->getId();
@@ -32,7 +34,9 @@ class LoginService {
 
     public function removerUsuarioSessao() {
         //Habilitar o recurso de sessão no PHP nesta página
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         //Remover variáveis
         session_unset();
