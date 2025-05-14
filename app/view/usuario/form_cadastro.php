@@ -125,8 +125,8 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-map-marker-alt"></i>
                                         </span>
-                                        <select class="form-control" name="estado" id="selEstado">
-                                            <option value="">Selecione o estado</option>
+                                        <select class="form-control" name="estado" id="selEstado" onchange="carregarCidades('<?= BASEURL ?>', 0)">
+                                            <option value="0">Selecione o estado</option>
                                             <?php foreach ($dados["estados"] as $estado): ?>
                                                 <option value="<?= $estado->getCodigoUf() ?>"
                                                     <?php
@@ -147,7 +147,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                             <i class="fas fa-city"></i>
                                         </span>
                                         <select class="form-control" name="cidade" id="selCidade">
-                                            <option value="">Selecione o cidade</option>
+                                            <option value="">Selecione a cidade</option>
                                         </select>
                                     </div>
                                 </div>
@@ -232,33 +232,12 @@ require_once(__DIR__ . "/../include/menu.php");
 </div>
 
 <script>
-        function aplicarMascara() {
-            const tipo = parseInt(document.getElementById("selPapel").value);
-            const input = document.getElementById("txtDocumento");
-            if (tipo === 1) {
-                Inputmask("999.999.999-99").mask(input);
-                input.disabled = false;
-            } else if (tipo === 3) {
-                Inputmask("99.999.999/9999-99").mask(input);
-                input.disabled = false;
-            } else {
-                input.disabled = true;
-            }
-        }
-
-        function aplicarMascaraTelefone() {
-            const input = document.getElementById("txtTelefone");
-            Inputmask("(99)99999-9999").mask(input);
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            // Aplica a máscara ao carregar a página, caso o tipo de usuário já esteja selecionado
-            aplicarMascara();
-            aplicarMascaraTelefone();
-            // Garante que a máscara seja atualizada ao mudar o tipo de usuário
-            document.getElementById("selPapel").addEventListener("change", aplicarMascara);
-        });
+    var idCidadeSelecionada = "<?= (isset($dados["usuario"]) && $dados["usuario"]->getCidade() ? $dados["usuario"]->getCidade()->getCodigoIbge() : '0') ?>";
+    var BASEURL = "<?= BASEURL ?>";
 </script>
+<script src="<?= BASEURL ?>/view/usuario/js/cidades.js"></script>
+<script src="<?= BASEURL ?>/view/usuario/js/mascara.js"></script>
+
 
 <?php
 require_once(__DIR__ . "/../include/footer.php");

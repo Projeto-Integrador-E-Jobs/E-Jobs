@@ -4,9 +4,9 @@ class Modalidade{
     
     public static string $SEPARADOR = "|";
 
-    const HOME_OFFICE = "HOME OFFICE";
-    const PRESENCIAL = "PRESENCIAL";
-    const HIBRIDO = "HIBRIDO";
+    const HOME_OFFICE = "Home Office";
+    const PRESENCIAL = "Presencial";
+    const HIBRIDO = "Híbrido";
     
 
     public static function getAllAsArray() {
