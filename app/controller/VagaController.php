@@ -25,10 +25,20 @@ class VagaController extends Controller
     public function __construct()
     {
         $action = $_GET["action"];
-        $list = "listPublic";
+        $allowedActions = ["listPublic", "viewVagas"];
 
-        if ($action != $list && ! $this->usuarioLogado()) {
+        if (!in_array($action, $allowedActions) && !$this->usuarioLogado()) {
             exit;
+        }
+
+        // Add role-based access control
+        if ($this->usuarioLogado()) {
+            $userId = $_SESSION[SESSAO_USUARIO_ID];
+            if ($userId == 1 && !in_array($action, $allowedActions)) {
+                // Redirect common users (ID 1) to listPublic if they try to access other actions
+                header("location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+                exit;
+            }
         }
 
         $this->vagaDao = new VagaDAO();

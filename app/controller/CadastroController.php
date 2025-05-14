@@ -85,7 +85,7 @@ class CadastroController extends Controller {
         $usuario->setEndNumero($endNumero);
         $usuario->setTelefone($telefone);
         if($usuario->getTipoUsuario() != null && $usuario->getTipoUsuario()->getId() == TipoUsuario::ID_EMPRESA)
-            $usuario->setStatus(Status::PENDENTE);
+            $usuario->setStatus(Status::INATIVO);
         else
             $usuario->setStatus(Status::ATIVO);
         
