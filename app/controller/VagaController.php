@@ -74,6 +74,11 @@ class VagaController extends Controller
 
     protected function listUsuario(string $msgErro = "", string $msgSucesso = "")
     {
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
         $status = isset($_GET['status']) ? trim($_GET['status']) : '';
         $empresaId = $_SESSION[SESSAO_USUARIO_ID];
         
@@ -93,6 +98,11 @@ class VagaController extends Controller
 
     protected function create()
     {
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
         $usuario = $this->usuarioDao->findById($_SESSION[SESSAO_USUARIO_ID]);
         $dados["id"] = 0;
         $dados["modalidades"] = Modalidade::getAllAsArray();
@@ -106,6 +116,11 @@ class VagaController extends Controller
 
     protected function edit()
     {
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
         $vaga = $this->findVagaById();
         if ($vaga) {
             $dados["id"] = $vaga->getId();
@@ -125,6 +140,11 @@ class VagaController extends Controller
     protected function save()
     {
         //Captura os dados do formulário
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
         $dados["id"] = isset($_POST['id']) ? $_POST['id'] : 0;
         $titulo = trim($_POST['titulo']) ? trim($_POST['titulo']) : NULL;
         $modalidade = trim($_POST['modalidade']) ? trim($_POST['modalidade']) : NULL;
@@ -190,6 +210,11 @@ class VagaController extends Controller
 
     protected function delete()
     {
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
         $vaga = $this->findVagaById();
         if ($vaga) {
             $this->vagaDao->deleteById($vaga->getId());
@@ -228,6 +253,11 @@ class VagaController extends Controller
 
     protected function list(string $msgErro = "", string $msgSucesso = "")
     {
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
         $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         $status = isset($_GET['status']) ? trim($_GET['status']) : '';
         $empresaId = $_SESSION[SESSAO_USUARIO_ID];
