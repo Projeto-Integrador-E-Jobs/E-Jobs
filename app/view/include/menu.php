@@ -2,6 +2,7 @@
 #Nome do arquivo: view/include/menu.php
 #Objetivo: menu da aplicação para ser incluído em outras páginas
 
+
 $nome = "(Sessão expirada)";
 if (isset($_SESSION[SESSAO_USUARIO_NOME]))
     $nome = $_SESSION[SESSAO_USUARIO_NOME];
@@ -55,14 +56,21 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown"
                             role="button" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false">
-                            <i class="fas fa-user-circle mr-1"></i> <?= $nome ?>
+                            <?php if ($papel == 3): ?>
+                                <i class="fas fa-building mr-1"></i>
+                            <?php else: ?>
+                                <i class="fas fa-user-circle mr-1"></i>
+                            <?php endif; ?>
+                            <?= $nome ?>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#">Meu Perfil</a>
                             <?php if ($papel == 1): ?>
                                 <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=minhasCandidaturas">Minhas Candidaturas</a>
+                            <?php elseif ($papel == 2): ?>
+                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Cargos</a>
                             <?php elseif ($papel == 3): ?>
-                                    <a class="dropdown-item" href="#">Minhas Vagas</a>    
+                                    <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Minhas Vagas</a>    
                             <?php else: ?>
                                 <a class="dropdown-item" href="#">Cargos</a>
                             <?php endif; ?>
