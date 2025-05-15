@@ -27,6 +27,12 @@ CREATE TABLE cargos (
     nome VARCHAR(255)
 );
 
+CREATE TABLE categorias (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255),
+    icone VARCHAR(255)
+);
+
 CREATE TABLE vaga (
     id INT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(255),
@@ -38,8 +44,11 @@ CREATE TABLE vaga (
     requisitos TEXT,
     empresa_id INT,
     cargos_id INT,
+    status ENUM('Ativo', 'Inativo'),
+    categoria_id INT,
     FOREIGN KEY (empresa_id) REFERENCES usuario(id),
-    FOREIGN KEY (cargos_id) REFERENCES cargos(id)
+    FOREIGN KEY (cargos_id) REFERENCES cargos(id),
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
 
 CREATE TABLE candidatura (
@@ -62,23 +71,27 @@ INSERT INTO cargos (nome) VALUES
 ('Designer UI/UX'),
 ('Analista de Dados');
 
-mysql -u root -p ejobs < estados.sql
-mysql -u root -p ejobs < municipios.sql
 
 INSERT INTO usuario (
     nome, email, senha, documento, descricao, cidade_id,
-    end_logradouro, end_bairro, end_numero, end_complemento,
+    end_logradouro, end_bairro, end_numero,
     telefone, status, tipo_usuario_id
 ) VALUES 
 ('João da Silva', 'joao@email.com', '$2y$10$9H8nNzW7tM7cGhy6r59gYuKuflEGKzKGOMPv86yUhJbySUNnnY42y', '123.456.789-00',
- 'Candidato com experiência em TI', 3550308, 'Rua A', 'Centro', '123', 'Apto 12', '(11)99999-9999', 'Ativo', 1),
+ 'Candidato com experiência em TI', 3550308, 'Rua A', 'Centro', '123', '(11)99999-9999', 'Ativo', 1),
 
 ('Empresa XYZ', 'contato@xyz.com', '$2y$10$PrnFrYArQJto/SlnMTFTpOSDKU9XS5PfeHHUvJlzMxeJH5KdnI/Sm', '12.345.678/0001-99',
- 'Empresa de tecnologia', 3106200, 'Av. Brasil', 'Funcionários', '500', 'Sala 10', '(31)98888-8888', 'Ativo', 2),
+ 'Empresa de tecnologia', 3106200, 'Av. Brasil', 'Funcionários', '500', '(31)98888-8888', 'Ativo', 2),
 
 ('Maria Admin', 'admin@maria.com', '$2y$10$9H8nNzW7tM7cGhy6r59gYuKuflEGKzKGOMPv86yUhJbySUNnnY42y', '987.654.321-00',
- 'Administrador do sistema', 3304557, 'Rua das Laranjeiras', 'Centro', '200', '', '(21)97777-7777', 'Ativo', 3);
+ 'Administrador do sistema', 3304557, 'Rua das Laranjeiras', 'Centro', '200','(21)97777-7777', 'Ativo', 3);
 
-INSERT INTO vaga (titulo, modalidade, horario, regime, salario, descricao, requisitos, empresa_id, cargos_id) VALUES 
-('Desenvolvedor PHP Pleno', 'HOME OFFICE', '40h', 'CLT', 5000.00, 'Desenvolvimento de aplicações web em PHP', 'Experiência com Laravel, MySQL, Git', 2, 1),
-('Designer UI/UX', 'PRESENCIAL', '40h', 'PJ', 4500.00, 'Criação de interfaces modernas', 'Figma, Adobe XD, criatividade', 2, 2);
+ insert into categorias (nome, icone) values 
+('Tecnologia','fa-laptop-code'),
+('Marketing','fa-bullhorn'),
+('Vendas','fa-chart-line'),
+('Design','fa-paint-brush');
+
+INSERT INTO vaga (titulo, modalidade, horario, regime, salario, descricao, requisitos, empresa_id, cargos_id, status, categoria_id) VALUES 
+('Desenvolvedor PHP Pleno', 'HOME OFFICE', '40h', 'CLT', 5000.00, 'Desenvolvimento de aplicações web em PHP', 'Experiência com Laravel, MySQL, Git', 2, 1, 'Ativo', 1),
+('Designer UI/UX', 'PRESENCIAL', '40h', 'PJ', 4500.00, 'Criação de interfaces modernas', 'Figma, Adobe XD, criatividade', 2, 2, 'Ativo', 1);

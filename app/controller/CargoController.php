@@ -14,7 +14,7 @@ class CargoController extends Controller {
             exit;
 
         $userId = $_SESSION[SESSAO_USUARIO_ID];
-        if ($userId == 1) {
+        if ($userId == TipoUsuario::ID_ADMINISTRADOR) {
             header("location: " . HOME_PAGE);
             exit;
         }

@@ -28,6 +28,27 @@ class VagaDAO {
         return $this->mapVagas($result);
     }
 
+    public function listByFiltros($idCategoria) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM vaga v 
+                WHERE v.status = 'Ativo'";
+
+        if($idCategoria > 0)
+            $sql .= " AND v.categoria_id = :id_categoria";
+
+        $sql .= " ORDER BY v.titulo";
+        $stm = $conn->prepare($sql); 
+        
+        if($idCategoria > 0)
+            $stm->bindValue("id_categoria", $idCategoria);
+        
+        $stm->execute();
+        $result = $stm->fetchAll();
+        
+        return $this->mapVagas($result);
+    }
+
     public function findByEmpresa(int $id) {
         $conn = Connection::getConn();
 
