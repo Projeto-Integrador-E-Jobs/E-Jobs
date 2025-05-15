@@ -42,7 +42,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item"
                                 href="<?= BASEURL . '/controller/UsuarioController.php?action=list' ?>">Usuários</a>
-                            <a class="dropdown-item" href="#">Outro cadastro</a>
+                            <a class="dropdown-item" href="<?= BASEURL . '/controller/CategoriaController.php?action=list' ?>">Categorias</a>
                             <a class="dropdown-item"
                                 href="<?= BASEURL . '/controller/CargoController.php?action=list' ?>">Cargos</a>
                         </div>
@@ -72,7 +72,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                             <?php elseif ($papel == 3): ?>
                                     <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Minhas Vagas</a>    
                             <?php else: ?>
-                                <a class="dropdown-item" href="#">Cargos</a>
+                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/CargoController.php?action=list">Cargos</a>
                             <?php endif; ?>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="<?= LOGOUT_PAGE ?>">Sair</a>

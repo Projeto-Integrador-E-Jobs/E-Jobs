@@ -54,11 +54,16 @@ class VagaController extends Controller
             session_start();
         }
 
+        $idCategoria = 0;
+        if(isset($_GET["idCategoria"]))
+            $idCategoria = $_GET["idCategoria"];
+
         $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         if ($search !== '') {
             $vagas = $this->vagaDao->searchByTitle($search);
         } else {
-            $vagas = $this->vagaDao->list();
+            //$vagas = $this->vagaDao->list();
+            $vagas = $this->vagaDao->listByFiltros($idCategoria);
         }
         $dados["lista"] = $vagas;
         $dados["search_term"] = $search;

@@ -6,14 +6,17 @@ error_reporting(E_ALL);
 
 require_once(__DIR__ . "/Controller.php");
 require_once(__DIR__ . "/../dao/VagaDAO.php");
+require_once(__DIR__ . "/../dao/CategoriaDAO.php");
 
 class HomeController extends Controller {
 
     private VagaDAO $vagaDao;
+    private CategoriaDAO $categoriaDao;
 
     //Método construtor do controller - será executado a cada requisição a está classe
     public function __construct() {
         $this->vagaDao = new VagaDAO();
+        $this->categoriaDao = new CategoriaDAO();
         $this->handleAction();
     }
     
@@ -23,6 +26,8 @@ class HomeController extends Controller {
         }
 
         $dados = [];
+
+        $dados["categorias"] = $this->categoriaDao->list();
         
         if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
             $searchTerm = trim($_GET['search']);

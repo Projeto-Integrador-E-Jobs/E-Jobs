@@ -39,22 +39,17 @@ require_once(__DIR__ . "/../include/menu.php");
         </div>
 
         <?php
-        $categorias = [
-            ["nome" => "Tecnologia", "icone" => "fa-laptop-code", "vagas" => 240],
-            ["nome" => "Marketing", "icone" => "fa-bullhorn", "vagas" => 186],
-            ["nome" => "Vendas", "icone" => "fa-chart-line", "vagas" => 142],
-            ["nome" => "Design", "icone" => "fa-paint-brush", "vagas" => 104]
-        ];
 
-        foreach ($categorias as $categoria) {
+        foreach($dados['categorias'] as $categoria){
         ?>
             <div class="col-md-3 mb-4">
                 <div class="card text-center category-card">
                     <div class="card-body">
-                        <i class="fas <?= $categoria['icone'] ?> fa-3x mb-3 text-primary"></i>
-                        <h5 class="card-title"><?= $categoria['nome'] ?></h5>
-                        <p class="card-text text-muted"><?= $categoria['vagas'] ?> vagas disponíveis</p>
-                        <a href="<?= BASEURL ?>/job/list.php?categoria=<?= urlencode($categoria['nome']) ?>" class="stretched-link"></a>
+                        <i class="fas <?= $categoria->getIcone() ?> fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title"><?= $categoria->getNome() ?></h5>
+                        <p class="card-text text-muted"><?= $categoria->getTotalVagas() ?> vagas disponíveis</p>
+                        <a href="<?= BASEURL ?>/controller/VagaController.php?action=listPublic&idCategoria=<?= $categoria->getId() ?>" 
+                                class="stretched-link">Clique aqui</a>
                     </div>
                 </div>
             </div>
