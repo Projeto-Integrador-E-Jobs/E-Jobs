@@ -34,7 +34,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                     <a class="nav-link" href="#">Empresas</a>
                 </li>
 
-                <?php if ($logado): ?>
+                <?php if ($logado && ($papel == 3)): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
                             role="button" data-toggle="dropdown" aria-haspopup="true"

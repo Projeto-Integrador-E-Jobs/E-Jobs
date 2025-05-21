@@ -13,8 +13,8 @@ class CargoController extends Controller {
         if(! $this->usuarioLogado())
             exit;
 
-        $userId = $_SESSION[SESSAO_USUARIO_ID];
-        if ($userId == TipoUsuario::ID_ADMINISTRADOR) {
+        $papel = $_SESSION[SESSAO_USUARIO_PAPEL];
+        if ($papel == TipoUsuario::ID_CANDIDATO) {
             header("location: " . HOME_PAGE);
             exit;
         }
