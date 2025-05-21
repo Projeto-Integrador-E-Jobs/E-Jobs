@@ -117,6 +117,44 @@ class CandidaturaDAO {
         return $candidaturas;
     }
 
+    public function findByVaga(int $vagaId) {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT c.*, u.nome, u.email 
+                FROM candidatura c 
+                JOIN usuario u ON c.candidato_id = u.id 
+                WHERE c.vaga_id = ?";
+        $stm = $conn->prepare($sql);    
+        $stm->execute([$vagaId]);
+        $result = $stm->fetchAll();
+
+        return $this->mapCandidaturasComCandidato($result);
+    }
+
+    private function mapCandidaturasComCandidato($result) {
+        $candidaturas = array();
+        foreach ($result as $dado) {
+            $candidatura = new Candidatura();
+            $candidatura->setId($dado['id']);
+            
+            $candidato = new Usuario();
+            $candidato->setId($dado['candidato_id']);
+            $candidato->setNome($dado['nome']);
+            $candidato->setEmail($dado['email']);
+            $candidatura->setCandidato($candidato);
+
+            $vaga = new Vaga();
+            $vaga->setId($dado['vaga_id']);
+            $candidatura->setVaga($vaga);
+            
+            $candidatura->setDataCandidatura($dado['data_candidatura']);
+            $candidatura->setStatus($dado['status']);
+            
+            array_push($candidaturas, $candidatura);
+        }
+        return $candidaturas;
+    }
+
 
         
 

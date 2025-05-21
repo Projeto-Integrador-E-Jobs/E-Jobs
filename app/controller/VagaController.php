@@ -270,10 +270,12 @@ class VagaController extends Controller
             $vagas = $this->vagaDao->findByEmpresa($empresaId);
         }
 
+        $vagas = $this->vagaDao->findByEmpresa($_SESSION[SESSAO_USUARIO_ID]);
         $dados["lista"] = $vagas;
         $dados["status"] = Status::getAllAsArray();
         $dados["selected_status"] = $status;
-        $dados["show_status_filter"] = true; 
+        $dados["show_status_filter"] = true;
+
         $this->loadView("vaga/vaga_list.php", $dados, $msgErro, $msgSucesso);
     }
 
@@ -289,6 +291,24 @@ class VagaController extends Controller
         
         $dados["lista"] = $candidaturas;
         $this->loadView("vaga/minhas_candidaturas.php", $dados, $msgErro, $msgSucesso);
+    }
+
+    protected function viewCandidatos(string $msgErro = "", string $msgSucesso = "")
+    {
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
+        $vaga = $this->findVagaById();
+        if ($vaga) {
+            $candidaturas = $this->candidaturaDao->findByVaga($vaga->getId());
+            $dados["vaga"] = $vaga;
+            $dados["lista"] = $candidaturas;
+            $this->loadView("vaga/candidatos_list.php", $dados, $msgErro, $msgSucesso);
+        } else {
+            $this->listUsuario("Vaga não encontrada.");
+        }
     }
 }
 

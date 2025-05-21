@@ -43,15 +43,16 @@ require_once(__DIR__ . "/../include/menu.php");
         foreach($dados['categorias'] as $categoria){
         ?>
             <div class="col-md-3 mb-4">
-                <div class="card text-center category-card">
-                    <div class="card-body">
-                        <i class="fas <?= $categoria->getIcone() ?> fa-3x mb-3 text-primary"></i>
-                        <h5 class="card-title"><?= $categoria->getNome() ?></h5>
-                        <p class="card-text text-muted"><?= $categoria->getTotalVagas() ?> vagas disponíveis</p>
-                        <a href="<?= BASEURL ?>/controller/VagaController.php?action=listPublic&idCategoria=<?= $categoria->getId() ?>" 
-                                class="stretched-link">Clique aqui</a>
+                <a href="<?= BASEURL ?>/controller/VagaController.php?action=listPublic&idCategoria=<?= $categoria->getId() ?>" 
+                   class="text-decoration-none">
+                    <div class="card text-center category-card">
+                        <div class="card-body">
+                            <i class="fas <?= $categoria->getIcone() ?> fa-3x mb-3 text-primary"></i>
+                            <h5 class="card-title"><?= $categoria->getNome() ?></h5>
+                            <p class="card-text text-muted"><?= $categoria->getTotalVagas() ?> vagas disponíveis</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         <?php
         }

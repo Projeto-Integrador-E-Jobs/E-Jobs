@@ -3,14 +3,14 @@ require_once(__DIR__ . "/../include/header.php");
 require_once(__DIR__ . "/../include/menu.php");
 ?>
 
-<h3 class="text-center mb-4">Vagas</h3>
+<h3 class="text-center">Vagas</h3>
 
 <div class="container">
-    <div class="row mb-4">
+    <div class="row">
         <div class="col-3">
             <a class="btn btn-success" 
                 href="<?= BASEURL ?>/controller/VagaController.php?action=create">
-                <i class="fas fa-plus me-1"></i>Inserir</a>
+                Inserir</a>
         </div>
 
         <?php if(isset($dados["show_status_filter"]) && $dados["show_status_filter"]): ?>
@@ -22,9 +22,7 @@ require_once(__DIR__ . "/../include/menu.php");
                     <?php 
                     if(isset($dados["status"]) && is_array($dados["status"])) {
                         foreach($dados["status"] as $status): ?>
-                            <option value="<?= $status ?>" <?= (isset($dados["selected_status"]) && $dados["selected_status"] == $status) ? "selected" : "" ?>>
-                                <?= $status ?>
-                            </option>
+                            <option value="<?= $status ?>"><?= $status ?></option>
                         <?php endforeach;
                     }
                     ?>
@@ -38,82 +36,56 @@ require_once(__DIR__ . "/../include/menu.php");
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" style="margin-top: 10px;">
         <div class="col-12">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-primary">
+            <?php if (empty($dados['lista'])): ?>
+                <div class="alert alert-warning text-center">Nenhuma vaga encontrada.</div>
+            <?php else: ?>
+                <table id="tabVagas" class='table table-striped table-bordered'>
+                    <thead>
                         <tr>
                             <th>Título</th>
-                            <th>Empresa</th>
-                            <th>Cargo</th>
                             <th>Modalidade</th>
+                            <th>Horário</th>
                             <th>Regime</th>
-                            <th>Salário</th>
                             <th>Status</th>
-                            <th class="text-center">Ações</th>
+                            <th>Alterar</th>
+                            <th>Excluir</th>
+                            <th>Candidatos</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach($dados['lista'] as $vaga): ?>
                             <tr>
-                                <td><?= $vaga->getTitulo(); ?></td>
-                                <td><?= $vaga->getEmpresa()->getNome(); ?></td>
-                                <td><?= $vaga->getCargo()->getNome(); ?></td>
-                                <td><?= $vaga->getModalidade(); ?></td>
-                                <td><?= $vaga->getRegime(); ?></td>
-                                <td>R$ <?= number_format($vaga->getSalario(), 2, ',', '.'); ?></td>
-                                <td><?= $vaga->getStatus(); ?></td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-info btn-sm" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalDetalhes<?= $vaga->getId() ?>">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <a class="btn btn-primary btn-sm" 
-                                            href="<?= BASEURL ?>/controller/VagaController.php?action=edit&id=<?= $vaga->getId() ?>">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a class="btn btn-danger btn-sm" 
-                                            onclick="return confirm('Confirma a exclusão da vaga?');"
-                                            href="<?= BASEURL ?>/controller/VagaController.php?action=delete&id=<?= $vaga->getId() ?>">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-
-                    
-                                    <div class="modal fade" id="modalDetalhes<?= $vaga->getId() ?>" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-primary text-white">
-                                                    <h5 class="modal-title">Detalhes da Vaga</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <p><strong>Descrição:</strong></p>
-                                                            <p><?= nl2br($vaga->getDescricao()); ?></p>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <p><strong>Requisitos:</strong></p>
-                                                            <p><?= nl2br($vaga->getRequisitos()); ?></p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <td><?= htmlspecialchars($vaga->getTitulo()) ?></td>
+                                <td><?= htmlspecialchars($vaga->getModalidade()) ?></td>
+                                <td><?= htmlspecialchars($vaga->getHorario()) ?></td>
+                                <td><?= htmlspecialchars($vaga->getRegime()) ?></td>
+                                <td><?= htmlspecialchars($vaga->getStatus()) ?></td>
+                                <td>
+                                    <a class="btn btn-primary" 
+                                        href="<?= BASEURL ?>/controller/VagaController.php?action=edit&id=<?= $vaga->getId() ?>">
+                                        Alterar
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-danger" 
+                                        onclick="return confirm('Confirma a exclusão da vaga?');"
+                                        href="<?= BASEURL ?>/controller/VagaController.php?action=delete&id=<?= $vaga->getId() ?>">
+                                        Excluir
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-info" 
+                                        href="<?= BASEURL ?>/controller/VagaController.php?action=viewCandidatos&id=<?= $vaga->getId() ?>">
+                                        Visualizar Candidatos
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
