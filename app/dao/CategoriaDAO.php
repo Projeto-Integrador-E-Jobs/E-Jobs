@@ -12,7 +12,7 @@ class CategoriaDAO {
                 FROM categorias c  
                 LEFT JOIN vaga v ON v.categoria_id = c.id AND v.status = 'Ativo'
                 GROUP BY c.id, c.nome, c.icone
-                ORDER BY total_vagas DESC LIMIT 4";
+                ORDER BY c.nome ASC" ;
         $stm = $conn->prepare($sql);    
         $stm->execute();
         $result = $stm->fetchAll();
