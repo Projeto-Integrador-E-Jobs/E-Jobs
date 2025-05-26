@@ -5,7 +5,20 @@ include_once(__DIR__ . "/../model/Categoria.php");
 
 class CategoriaDAO { 
     
-    public function list() {
+     public function list() {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT *
+                FROM categorias c  
+                ORDER BY c.nome DESC ";
+        $stm = $conn->prepare($sql);    
+        $stm->execute();
+        $result = $stm->fetchAll();
+        
+        return $this->mapCategoria($result);
+    }
+
+    public function listHome() {
         $conn = Connection::getConn();
 
         $sql = "SELECT c.id, c.nome, c.icone, COUNT(v.id) AS total_vagas

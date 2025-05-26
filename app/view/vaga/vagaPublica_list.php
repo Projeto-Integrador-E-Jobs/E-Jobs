@@ -46,6 +46,69 @@ require_once(__DIR__ . "/../include/menu.php");
             <?php require_once(__DIR__ . "/../include/msg.php"); ?>
         </div>
     </div>
+    <form method="GET" action="<?= BASEURL ?>/controller/VagaController.php">
+        <input type="hidden" name="action" value="listPublic">
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-2">
+                <select class="form-control" name="modalidade">
+                    <option value="">Modalidade</option>
+                    <?php foreach($dados["modalidades"] as $modal): ?>
+                        <option value="<?= $modal ?>" <?= (isset($_GET["modalidade"]) && $_GET["modalidade"] === $modal) ? "selected" : "" ?>>
+                            <?= $modal ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select class="form-control" name="horario">
+                    <option value="">Horário</option>
+                    <?php foreach($dados["horarios"] as $horario): ?>
+                        <option value="<?= $horario ?>" <?= (isset($_GET["horario"]) && $_GET["horario"] === $horario) ? "selected" : "" ?>>
+                            <?= $horario ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select class="form-control" name="regime">
+                    <option value="">Regime</option>
+                    <?php foreach($dados["regimes"] as $regime): ?>
+                        <option value="<?= $regime ?>" <?= (isset($_GET["regime"]) && $_GET["regime"] === $regime) ? "selected" : "" ?>>
+                            <?= $regime ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select class="form-control" name="salario">
+                    <option value="">Salário</option>
+                    <?php foreach($dados["salarios"] as $salario): ?>
+                        <option value="<?= $salario ?>" <?= (isset($_GET["salario"]) && $_GET["salario"] === $salario) ? "selected" : "" ?>>
+                            <?= $salario ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select class="form-control" name="cargo_id">
+                    <option value="">Cargo</option>
+                    <?php foreach($dados["cargos"] as $cargo): ?>
+                        <option value="<?= $cargo->getId() ?>" <?= (isset($_GET["cargo_id"]) && $_GET["cargo_id"] == $cargo->getId()) ? "selected" : "" ?>>
+                            <?= $cargo->getNome() ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">Filtrar</button>
+            </div>
+        </div>
+    </form>
 
     <div class="row" style="margin-top: 10px;">
         <div class="col-12">
@@ -112,6 +175,21 @@ require_once(__DIR__ . "/../include/menu.php");
             <?php endif; ?>
         </div>
     </div>
+    <?php if ($dados['total_paginas'] > 1): ?>
+    <nav>
+        <ul class="pagination d-flex justify-content-center mt-4" >
+            <?php for ($i = 1; $i <= $dados['total_paginas']; $i++): ?>
+                <li class="page-item <?= ($dados['pagina_atual'] == $i) ? 'active' : '' ?>">
+                     <a class="page-link" href="<?= BASEURL ?>/controller/VagaController.php?action=listPublic&page=<?= $i ?>&<?= $dados["queryString"] ?>">
+                        <?= $i ?>
+                    </a>
+                </li>
+            <?php endfor; ?>
+        </ul>
+    </nav>
+    <?php endif; ?>
+
+
 </div>
 
 <?php  

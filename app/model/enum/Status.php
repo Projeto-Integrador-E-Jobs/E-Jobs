@@ -2,8 +2,6 @@
 
 class Status{
     
-    public static string $SEPARADOR = "|";
-
     const ATIVO = "Ativo";
     const INATIVO = "Inativo";
 

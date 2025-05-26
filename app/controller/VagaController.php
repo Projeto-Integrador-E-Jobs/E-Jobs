@@ -11,6 +11,7 @@ require_once(__DIR__ . "/../model/enum/Modalidade.php");
 require_once(__DIR__ . "/../model/enum/Regime.php");
 require_once(__DIR__ . "/../model/enum/Horario.php");
 require_once(__DIR__ . "/../model/enum/Status.php");
+require_once(__DIR__ . "/../model/enum/Salario.php");
 
 
 class VagaController extends Controller
@@ -54,20 +55,62 @@ class VagaController extends Controller
             session_start();
         }
 
+        // para paginação
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 12; 
+        $offset = ($page - 1) * $limit;
+        $totalPaginas = 1;
+
         $idCategoria = 0;
         if(isset($_GET["idCategoria"]))
             $idCategoria = $_GET["idCategoria"];
+        $modalidade = "";
+        if(isset($_GET["modalidade"]))
+            $modalidade = $_GET["modalidade"];
+        $cargaHoraria = "";
+        if(isset($_GET["horario"]))
+            $cargaHoraria = $_GET["horario"];
+        $regime = "";
+        if(isset($_GET["regime"]))
+            $regime = $_GET["regime"];
+        $salario = "";
+        if(isset($_GET["salario"]))
+            $salario = $_GET["salario"];
+        $cargo = 0;
+        if(isset($_GET["cargo_id"]))
+            $cargo = $_GET["cargo_id"];
+
+        //monta url com os filtros
+        $queryString = http_build_query([
+            'idCategoria' => $idCategoria,
+            'modalidade' => $modalidade,
+            'horario' => $cargaHoraria,
+            'regime' => $regime,
+            'salario' => $salario,
+            'cargo' => $cargo
+        ]);
+
 
         $search = isset($_GET['search']) ? trim($_GET['search']) : '';
         if ($search !== '') {
             $vagas = $this->vagaDao->searchByTitle($search);
         } else {
-            //$vagas = $this->vagaDao->list();
-            $vagas = $this->vagaDao->listByFiltros($idCategoria);
+            $vagas = $this->vagaDao->listByFiltros($idCategoria,$modalidade,$cargaHoraria,$regime,$salario,$cargo, $limit, $offset);
+            $totalVagas = $this->vagaDao->countFiltros($idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo);
+            $totalPaginas = ceil($totalVagas / $limit);
         }
         $dados["lista"] = $vagas;
         $dados["search_term"] = $search;
         $dados["show_status_filter"] = false;
+        $dados["modalidades"] = Modalidade::getAllAsArray();
+        $dados["horarios"] = Horario::getAllAsArray();
+        $dados["regimes"] = Regime::getAllAsArray();
+        $dados["status"] = Status::getAllAsArray();
+        $dados["cargos"] = $this->cargoDao->list();
+        $dados["salarios"] = Salario::getAllAsArray();
+        $dados["pagina_atual"] = $page;
+        $dados["queryString"] = $queryString;
+        $dados["total_paginas"] = $totalPaginas;
 
         $this->loadView("vaga/vagaPublica_list.php", $dados,  $msgErro, $msgSucesso);
     }
