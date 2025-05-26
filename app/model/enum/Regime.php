@@ -2,8 +2,6 @@
 
 class Regime{
     
-    public static string $SEPARADOR = "|";
-
     const CLT = "CLT";
     const PJ = "PJ";
     const ESTAGIO = "Estágio";

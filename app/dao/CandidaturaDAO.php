@@ -61,7 +61,7 @@ class CandidaturaDAO {
     public function findByCandidato($candidatoId) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT c.*, v.*, u.nome as empresa_nome, car.nome as cargo_nome 
+        $sql = "SELECT c.*,c.status AS candidatura_status, v.*, u.nome as empresa_nome, car.nome as cargo_nome 
                 FROM candidatura c 
                 JOIN vaga v ON c.vaga_id = v.id 
                 JOIN usuario u ON v.empresa_id = u.id 
@@ -110,7 +110,7 @@ class CandidaturaDAO {
 
             $candidatura->setVaga($vaga);
             $candidatura->setDataCandidatura($dado['data_candidatura']);
-            $candidatura->setStatus($dado['status']);
+            $candidatura->setStatus($dado['candidatura_status']);
             
             array_push($candidaturas, $candidatura);
         }

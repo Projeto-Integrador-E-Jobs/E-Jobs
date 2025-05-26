@@ -1,8 +1,6 @@
 <?php
 
 class Horario{
-    
-    public static string $SEPARADOR = "|";
 
     const H20 = "20h";
     const H30 = "30h";

@@ -2,8 +2,6 @@
 
 class Modalidade{
     
-    public static string $SEPARADOR = "|";
-
     const HOME_OFFICE = "Home Office";
     const PRESENCIAL = "Presencial";
     const HIBRIDO = "Híbrido";
