@@ -68,7 +68,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                             <?php if ($papel == 1): ?>
                                 <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=minhasCandidaturas">Minhas Candidaturas</a>
                             <?php elseif ($papel == 2): ?>
-                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Cargos</a>
+                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Random Text</a>
                             <?php elseif ($papel == 3): ?>
                                     <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Minhas Vagas</a>    
                             <?php else: ?>
