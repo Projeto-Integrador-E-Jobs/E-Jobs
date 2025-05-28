@@ -34,7 +34,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                     <a class="nav-link" href="#">Empresas</a>
                 </li>
 
-                <?php if ($logado && ($papel == 3)): ?>
+                <?php if ($logado && ($papel == TipoUsuario::ID_ADMINISTRADOR)): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
                             role="button" data-toggle="dropdown" aria-haspopup="true"
@@ -65,11 +65,11 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#">Meu Perfil</a>
-                            <?php if ($papel == 1): ?>
+                            <?php if ($papel == TipoUsuario::ID_CANDIDATO): ?>
                                 <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=minhasCandidaturas">Minhas Candidaturas</a>
-                            <?php elseif ($papel == 2): ?>
-                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Random Text</a>
-                            <?php elseif ($papel == 3): ?>
+                            <?php elseif ($papel == TipoUsuario::ID_ADMINISTRADOR): ?>
+                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/CargoController.php?action=list">Cargos</a>
+                            <?php elseif ($papel == TipoUsuario::ID_EMPRESA): ?>
                                     <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Minhas Vagas</a>    
                             <?php else: ?>
                                 <a class="dropdown-item" href="<?= BASEURL ?>/controller/CargoController.php?action=list">Cargos</a>

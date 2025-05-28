@@ -2,6 +2,7 @@
 
 include_once(__DIR__ . "/../connection/Connection.php");
 include_once(__DIR__ . "/../model/Vaga.php");
+include_once(__DIR__ . "/../model/enum/Salario.php");
 include_once(__DIR__ . "/../dao/UsuarioDAO.php");
 include_once(__DIR__ . "/../dao/CargoDAO.php");
 
@@ -28,7 +29,7 @@ class VagaDAO {
         return $this->mapVagas($result);
     }
 
-    public function listByFiltros($idCategoria) {
+        public function listByFiltros($idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo, $limit, $offset) {
         $conn = Connection::getConn();
 
         $sql = "SELECT * FROM vaga v 
@@ -36,18 +37,81 @@ class VagaDAO {
 
         if($idCategoria > 0)
             $sql .= " AND v.categoria_id = :id_categoria";
+        if(!empty($modalidade))
+            $sql .= " AND v.modalidade = :modalidade";
+        if(!empty($cargaHoraria))
+            $sql .= " AND v.horario = :horario";
+        if(!empty($regime))
+            $sql .= " AND v.regime = :regime";
+        if(!empty($salario))
+            $sql .= " AND v.salario >= :salario";
+        if($cargo > 0)
+            $sql .= " AND v.cargos_id = :cargo_id";
+        
 
-        $sql .= " ORDER BY v.titulo";
+        $sql .= " ORDER BY v.titulo LIMIT :limit OFFSET :offset";
         $stm = $conn->prepare($sql); 
         
         if($idCategoria > 0)
             $stm->bindValue("id_categoria", $idCategoria);
+        if(!empty($modalidade))
+            $stm->bindValue("modalidade", $modalidade);
+        if(!empty($cargaHoraria))
+            $stm->bindValue("horario", $cargaHoraria);
+        if(!empty($regime))
+            $stm->bindValue("regime", $regime);
+        if(!empty($salario)){
+            $salario = Salario::getValorNumerico($salario);
+            $stm->bindValue("salario", $salario);
+        }            
+        if($cargo > 0)
+            $stm->bindValue("cargo_id", $cargo);
+        $stm->bindValue("limit", (int)$limit, PDO::PARAM_INT);
+        $stm->bindValue("offset", (int)$offset, PDO::PARAM_INT);
         
         $stm->execute();
         $result = $stm->fetchAll();
         
         return $this->mapVagas($result);
     }
+
+    public function countFiltros($idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo) {
+    $conn = Connection::getConn();
+
+    $sql = "SELECT COUNT(*) as total FROM vaga v WHERE v.status = 'Ativo'";
+    
+    if ($idCategoria > 0)
+        $sql .= " AND v.categoria_id = :id_categoria";
+    if (!empty($modalidade))
+        $sql .= " AND v.modalidade = :modalidade";
+    if (!empty($cargaHoraria))
+        $sql .= " AND v.horario = :horario";
+    if (!empty($regime))
+        $sql .= " AND v.regime = :regime";
+    if ($salario > 0)
+        $sql .= " AND v.salario = :salario";
+    if ($cargo > 0)
+        $sql .= " AND v.cargos_id = :cargo_id";
+
+    $stm = $conn->prepare($sql);
+
+    if ($idCategoria > 0)
+        $stm->bindValue(":id_categoria", $idCategoria, PDO::PARAM_INT);
+    if (!empty($modalidade))
+        $stm->bindValue(":modalidade", $modalidade);
+    if (!empty($cargaHoraria))
+        $stm->bindValue(":horario", $cargaHoraria);
+    if (!empty($regime))
+        $stm->bindValue(":regime", $regime);
+    if ($salario > 0)
+        $stm->bindValue(":salario", $salario);
+    if ($cargo > 0)
+        $stm->bindValue(":cargo_id", $cargo, PDO::PARAM_INT);
+
+    $stm->execute();
+    $result = $stm->fetch();
+    return $result['total'];
+}
 
     public function findByEmpresa(int $id) {
         $conn = Connection::getConn();

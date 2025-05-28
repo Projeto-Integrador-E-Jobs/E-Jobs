@@ -27,7 +27,7 @@ class HomeController extends Controller {
 
         $dados = [];
 
-        $dados["categorias"] = $this->categoriaDao->list();
+        $dados["categorias"] = $this->categoriaDao->listHome();
         
         if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
             $searchTerm = trim($_GET['search']);
