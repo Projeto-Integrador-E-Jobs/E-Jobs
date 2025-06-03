@@ -113,7 +113,21 @@ class CadastroController extends Controller {
                
                 $usuario = $this->usuarioDao->findByLoginSenha($usuario->getEmail(),$usuario->getSenha());                    
                 $this->loginService->salvarUsuarioSessao($usuario);
-                header("location: " . HOME_PAGE);
+                
+                // Redireciona baseado no tipo de usuário
+                switch ($usuario->getTipoUsuario()->getId()) {
+                    case 1: // Candidato
+                        header("location: " . BASEURL . "/controller/VagaController.php?action=minhasCandidaturas");
+                        break;
+                    case 2: // Administrador
+                        header("location: " . BASEURL . "/controller/HomeController.php?action=dashboard");
+                        break;
+                    case 3: // Empresa
+                        header("location: " . BASEURL . "/controller/EmpresaController.php?action=home");
+                        break;
+                    default:
+                        header("location: " . HOME_PAGE);
+                }
                 exit;
             } catch (PDOException $e) {
                 $erros = ["Erro ao salvar o usuário na base de dados."];                
