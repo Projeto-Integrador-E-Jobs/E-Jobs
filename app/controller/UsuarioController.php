@@ -63,6 +63,92 @@ class UsuarioController extends Controller {
             $this->list("Usuário não encontrado.");
     }
 
+    protected function viewProfile() {
+        if (!$this->usuarioLogado()) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+
+        $usuarioId = $_SESSION[SESSAO_USUARIO_ID];
+        $usuario = $this->usuarioDao->findById($usuarioId);
+        
+        if ($usuario) {
+            $dados["usuario"] = $usuario;
+            $this->loadView("usuario/profile.php", $dados);
+        } else {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+    }
+
+    protected function editProfile() {
+        if (!$this->usuarioLogado()) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+
+        $usuarioId = $_SESSION[SESSAO_USUARIO_ID];
+        $usuario = $this->usuarioDao->findById($usuarioId);
+        
+        if ($usuario) {
+            $dados["usuario"] = $usuario;
+            $dados["estados"] = $this->estadoDAO->list();
+            $this->loadView("usuario/profile_edit.php", $dados);
+        } else {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+    }
+
+    protected function saveProfile() {
+        if (!$this->usuarioLogado()) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+
+        $usuarioId = $_SESSION[SESSAO_USUARIO_ID];
+        $usuario = $this->usuarioDao->findById($usuarioId);
+        
+        if (!$usuario) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+
+        // Captura apenas os dados básicos do perfil
+        $nome = trim($_POST['nome']) ? trim($_POST['nome']) : NULL;
+        $email = trim($_POST['email']) ? trim($_POST['email']) : NULL;
+        $documento = trim($_POST['documento']) ? trim($_POST['documento']) : NULL;
+        $telefone = trim($_POST['telefone']) ? trim($_POST['telefone']) : NULL;
+
+        // Validações básicas
+        $erros = array();
+        if (!$nome) array_push($erros, "O campo Nome é obrigatório.");
+        if (!$email) array_push($erros, "O campo Email é obrigatório.");
+        if (!$documento) array_push($erros, "O campo Documento é obrigatório.");
+        if (!$telefone) array_push($erros, "O campo Telefone é obrigatório.");
+
+        if (!empty($erros)) {
+            $dados["usuario"] = $usuario;
+            $this->loadView("usuario/profile_edit.php", $dados, implode("<br>", $erros));
+            return;
+        }
+
+        // Atualiza apenas os campos básicos
+        $usuario->setNome($nome);
+        $usuario->setEmail($email);
+        $usuario->setDocumento($documento);
+        $usuario->setTelefone($telefone);
+
+        try {
+            $this->usuarioDao->update($usuario);
+            header("location: " . BASEURL . "/controller/UsuarioController.php?action=viewProfile");
+            exit;
+        } catch (PDOException $e) {
+            $dados["usuario"] = $usuario;
+            $this->loadView("usuario/profile_edit.php", $dados, "Erro ao salvar as alterações.");
+        }
+    }
+
     protected function save() {
         //Captura os dados do formulário
         $dados["id"] = isset($_POST['id']) ? $_POST['id'] : 0;
