@@ -144,25 +144,14 @@ class UsuarioDAO {
         $conn = Connection::getConn();
 
         $sql = "UPDATE usuario SET nome = :nome, email = :email," . 
-               " senha = :senha, documento = :documento, descricao = :descricao," .
-               "cidade = :cidade, end_logradouro = :endLogradouro," .
-               "end_bairro = :endBairro, end_numero = :endNumero, end_complemento = :endCompleto," . 
-               "telefone = :telefone, status = :status, tipo_usuario_id = :tipoUsuario" .     
+               " documento = :documento, telefone = :telefone" .     
                " WHERE id = :id";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
         $stm->bindValue("email", $usuario->getEmail());
-        $stm->bindValue("senha", password_hash($usuario->getSenha(), PASSWORD_DEFAULT));
         $stm->bindValue("documento", $usuario->getDocumento());
-        $stm->bindValue("descricao", $usuario->getDescricao());
-        $stm->bindValue("cidade", $usuario->getCidade()->getCodigoIbge());
-        $stm->bindValue("endLogradouro", $usuario->getEndLogradouro());
-        $stm->bindValue("endBairro", $usuario->getEndBairro());
-        $stm->bindValue("endNumero", $usuario->getEndNumero());
         $stm->bindValue("telefone", $usuario->getTelefone());
-        $stm->bindValue("status", $usuario->getStatus());
-        $stm->bindValue("tipoUsuario", $usuario->getTipoUsuario()->getId());
         $stm->bindValue("id", $usuario->getId());
         $stm->execute();
     }
