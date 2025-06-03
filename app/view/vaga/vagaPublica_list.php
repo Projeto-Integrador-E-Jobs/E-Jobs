@@ -164,9 +164,15 @@ require_once(__DIR__ . "/../include/menu.php");
                                     <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getDescricao()); ?> </span>
                                 </div>
                                 <div class="mt-auto text-end">
-                                    <a href="VagaController.php?action=viewVagas&id=<?= $vaga->getId() ?>" class="btn btn-primary">
-                                        <i class="fas fa-info-circle me-1"></i>Detalhes
-                                    </a>
+                                    <?php if (isset($_SESSION[SESSAO_USUARIO_ID])): ?>
+                                        <a href="VagaController.php?action=viewVagas&id=<?= $vaga->getId() ?>" class="btn btn-primary">
+                                            <i class="fas fa-info-circle me-1"></i>Detalhes
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?= BASEURL ?>/controller/LoginController.php?action=login" class="btn btn-primary">
+                                            <i class="fas fa-info-circle me-1"></i>Detalhes
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

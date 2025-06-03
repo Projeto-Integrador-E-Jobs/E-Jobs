@@ -26,9 +26,10 @@ class VagaController extends Controller
     public function __construct()
     {
         $action = $_GET["action"];
-        $allowedActions = ["listPublic", "viewVagas", "minhasCandidaturas"];
+        $allowedActions = ["listPublic"];
 
         if (!in_array($action, $allowedActions) && !$this->usuarioLogado()) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
             exit;
         }
 
@@ -278,6 +279,11 @@ class VagaController extends Controller
 
     protected function viewVagas()
     {
+        if (!$this->usuarioLogado()) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+
         $vaga = $this->findVagaById();
         if ($vaga) {
             $dados["vaga"] = $vaga;
@@ -352,6 +358,15 @@ class VagaController extends Controller
         } else {
             $this->listUsuario("Vaga não encontrada.");
         }
+    }
+
+    // Sobrescreve o método usuarioLogado para permitir acesso público à listagem de vagas
+    protected function usuarioLogado() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        return isset($_SESSION[SESSAO_USUARIO_ID]);
     }
 }
 
