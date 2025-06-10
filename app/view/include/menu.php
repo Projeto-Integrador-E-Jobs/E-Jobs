@@ -13,7 +13,19 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="<?= isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 3 ? BASEURL . '/controller/EmpresaController.php?action=home' : HOME_PAGE ?>">
+        <a class="navbar-brand" href="<?php 
+            if (isset($_SESSION[SESSAO_USUARIO_PAPEL])) {
+                if ($_SESSION[SESSAO_USUARIO_PAPEL] == 3) { 
+                    echo BASEURL . '/controller/EmpresaController.php?action=home';
+                } elseif ($_SESSION[SESSAO_USUARIO_PAPEL] == 2) { 
+                    echo BASEURL . '/controller/AdminController.php?action=home';
+                } else { 
+                    echo HOME_PAGE;
+                }
+            } else { 
+                echo HOME_PAGE;
+            }
+        ?>">
             <strong>EJobs</strong>
         </a>
 
