@@ -38,10 +38,10 @@ class LoginController extends Controller {
                 // Redireciona baseado no tipo de usuário
                 switch ($usuario->getTipoUsuario()->getId()) {
                     case 1: // Candidato
-                        header("location: " . BASEURL . "/controller/VagaController.php?action=minhasCandidaturas");
+                        header("location: " . HOME_PAGE);
                         break;
                     case 2: // Administrador
-                        header("location: " . BASEURL . "/controller/HomeController.php?action=dashboard");
+                        header("location: " . BASEURL . "/controller/AdminController.php?action=home");
                         break;
                     case 3: // Empresa
                         header("location: " . BASEURL . "/controller/EmpresaController.php?action=home");

@@ -113,11 +113,10 @@ class CadastroController extends Controller {
                
                 $usuario = $this->usuarioDao->findByLoginSenha($usuario->getEmail(),$usuario->getSenha());                    
                 $this->loginService->salvarUsuarioSessao($usuario);
-                
                 // Redireciona baseado no tipo de usuário
                 switch ($usuario->getTipoUsuario()->getId()) {
                     case 1: // Candidato
-                        header("location: " . BASEURL . "/controller/VagaController.php?action=minhasCandidaturas");
+                        header("location: " . HOME_PAGE);
                         break;
                     case 2: // Administrador
                         header("location: " . BASEURL . "/controller/HomeController.php?action=dashboard");

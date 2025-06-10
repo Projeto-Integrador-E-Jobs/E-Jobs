@@ -13,7 +13,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="<?= HOME_PAGE ?>">
+        <a class="navbar-brand" href="<?= isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 3 ? BASEURL . '/controller/EmpresaController.php?action=home' : HOME_PAGE ?>">
             <strong>EJobs</strong>
         </a>
 
@@ -64,7 +64,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                             <?= $nome ?>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">Meu Perfil</a>
+                            <a class="dropdown-item" href="<?= BASEURL ?>/controller/UsuarioController.php?action=viewProfile">Meu Perfil</a>
                             <?php if ($papel == TipoUsuario::ID_CANDIDATO): ?>
                                 <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=minhasCandidaturas">Minhas Candidaturas</a>
                             <?php elseif ($papel == TipoUsuario::ID_ADMINISTRADOR): ?>
