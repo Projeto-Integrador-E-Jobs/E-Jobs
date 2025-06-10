@@ -5,16 +5,19 @@ include_once(__DIR__ . "/../model/Vaga.php");
 include_once(__DIR__ . "/../model/enum/Salario.php");
 include_once(__DIR__ . "/../dao/UsuarioDAO.php");
 include_once(__DIR__ . "/../dao/CargoDAO.php");
+include_once(__DIR__ . "/../dao/CategoriaDAO.php");
 
 class VagaDAO {
 
     private UsuarioDAO $usuarioDao;
     private CargoDAO $cargoDao;
+    private CategoriaDAO $categoriaDao;
 
     public function __construct() {
 
         $this->usuarioDao = new UsuarioDAO();
         $this->cargoDao = new CargoDAO();
+        $this->categoriaDao = new CategoriaDAO();
        
     }
 
@@ -157,9 +160,9 @@ class VagaDAO {
         $conn = Connection::getConn();
 
         $sql = "INSERT INTO vaga (titulo, modalidade, horario, regime,
-         salario, descricao, requisitos, status, empresa_id, cargos_id)" .
+         salario, descricao, requisitos, status, empresa_id, cargos_id, categoria_id)" .
                " VALUES (:titulo, :modalidade, :horario, :regime, :salario,
-               :descricao, :requisitos, :status, :empresa_id, :cargos_id)";
+               :descricao, :requisitos, :status, :empresa_id, :cargos_id, :categoria_id)";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("titulo", $vaga->getTitulo());
@@ -172,6 +175,7 @@ class VagaDAO {
         $stm->bindValue("status", $vaga->getStatus());
         $stm->bindValue("empresa_id", $vaga->getEmpresa()->getId());
         $stm->bindValue("cargos_id", $vaga->getCargo()->getId());
+        $stm->bindValue("categoria_id", $vaga->getCategoria()->getId());
         
         
         $stm->execute();
@@ -182,7 +186,7 @@ class VagaDAO {
 
         $sql = "UPDATE vaga SET titulo = :titulo, modalidade = :modalidade," . 
                " horario = :horario, regime = :regime, salario = :salario, descricao = :descricao," .
-               " requisitos = :requisitos, status = :status, empresa_id = :empresa_id, cargos_id = :cargos_id" .   
+               " requisitos = :requisitos, status = :status, empresa_id = :empresa_id, cargos_id = :cargos_id, categoria_id = :categoria_id" .   
                " WHERE id = :id";
         
         $stm = $conn->prepare($sql);
@@ -196,6 +200,7 @@ class VagaDAO {
         $stm->bindValue("status", $vaga->getStatus());
         $stm->bindValue("empresa_id", $vaga->getEmpresa()->getId());
         $stm->bindValue("cargos_id", $vaga->getCargo()->getId());
+        $stm->bindValue("categoria_id", $vaga->getCategoria()->getId());
         $stm->bindValue("id", $vaga->getId());
         $stm->execute();
     }
@@ -203,20 +208,18 @@ class VagaDAO {
     public function deleteById(int $id) {
         $conn = Connection::getConn();
 
-        $sql = "DELETE FROM vaga WHERE id = :id";
-        
+        $sql = "DELETE FROM vaga WHERE id = ?";
         $stm = $conn->prepare($sql);
-        $stm->bindValue("id", $id);
-        $stm->execute();
+        $stm->execute([$id]);
     }
 
     public function searchByTitle($title) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM vaga v WHERE LOWER(v.titulo) LIKE LOWER(:title) ORDER BY v.titulo";
-        $stm = $conn->prepare($sql);    
-        $stm->bindValue("title", "%" . $title . "%");
-        $stm->execute();
+        $sql = "SELECT * FROM vaga v" .
+               " WHERE v.titulo LIKE ?";
+        $stm = $conn->prepare($sql);
+        $stm->execute(["%" . $title . "%"]);
         $result = $stm->fetchAll();
         
         return $this->mapVagas($result);
@@ -225,23 +228,22 @@ class VagaDAO {
     public function filterByStatus($status) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM vaga v WHERE v.status = :status ORDER BY v.titulo";
-        $stm = $conn->prepare($sql);    
-        $stm->bindValue("status", $status);
-        $stm->execute();
+        $sql = "SELECT * FROM vaga v" .
+               " WHERE v.status = ?";
+        $stm = $conn->prepare($sql);
+        $stm->execute([$status]);
         $result = $stm->fetchAll();
-        
+
         return $this->mapVagas($result);
     }
 
     public function filterByStatusAndEmpresa($status, $empresaId) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM vaga v WHERE v.status = :status AND v.empresa_id = :empresa_id ORDER BY v.titulo";
-        $stm = $conn->prepare($sql);    
-        $stm->bindValue("status", $status);
-        $stm->bindValue("empresa_id", $empresaId);
-        $stm->execute();
+        $sql = "SELECT * FROM vaga v" .
+               " WHERE v.status = ? AND v.empresa_id = ?";
+        $stm = $conn->prepare($sql);
+        $stm->execute([$status, $empresaId]);
         $result = $stm->fetchAll();
         
         return $this->mapVagas($result);
@@ -249,19 +251,32 @@ class VagaDAO {
 
     private function mapVagas($result) {
         $vagas = array();
-        foreach ($result as $reg) {
+        foreach ($result as $dado) {
             $vaga = new Vaga();
-            $vaga->setId($reg['id']);
-            $vaga->setTitulo($reg['titulo']);
-            $vaga->setModalidade($reg['modalidade']);
-            $vaga->setHorario($reg['horario']);
-            $vaga->setRegime($reg['regime']);
-            $vaga->setSalario($reg['salario']);
-            $vaga->setDescricao($reg['descricao']);
-            $vaga->setRequisitos($reg['requisitos']);
-            $vaga->setStatus($reg['status']);
-            $vaga->setEmpresa($this->usuarioDao->findById($reg['empresa_id']));
-            $vaga->setCargo($this->cargoDao->findById($reg['cargos_id']));
+            $vaga->setId($dado['id']);
+            $vaga->setTitulo($dado['titulo']);
+            $vaga->setModalidade($dado['modalidade']);
+            $vaga->setHorario($dado['horario']);
+            $vaga->setRegime($dado['regime']);
+            $vaga->setSalario($dado['salario']);
+            $vaga->setDescricao($dado['descricao']);
+            $vaga->setRequisitos($dado['requisitos']);
+            $vaga->setStatus($dado['status']);
+
+            //Carregar empresa
+            $empresa = $this->usuarioDao->findById($dado['empresa_id']);
+            $vaga->setEmpresa($empresa);
+
+            //Carregar cargo
+            $cargo = $this->cargoDao->findById($dado['cargos_id']);
+            $vaga->setCargo($cargo);
+
+            //Carregar categoria
+            if(isset($dado['categoria_id'])) {
+                $categoria = $this->categoriaDao->findById($dado['categoria_id']);
+                $vaga->setCategoria($categoria);
+            }
+            
             array_push($vagas, $vaga);
         }
 
