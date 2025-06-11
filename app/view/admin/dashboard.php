@@ -3,10 +3,11 @@ require_once(__DIR__ . "/../include/header.php");
 require_once(__DIR__ . "/../include/menu.php");
 ?>
 
+<link rel="stylesheet" href="<?= BASEURL ?>/view/admin/dashboard.css">
+
 <div class="container py-4">
     <h2 class="text-center mb-4">Painel Administrativo</h2>
 
-    <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-4 mb-4">
             <div class="dashboard-card p-4 text-center">
@@ -48,7 +49,6 @@ require_once(__DIR__ . "/../include/menu.php");
         </div>
     </div>
 
-    <!-- Quick Actions -->
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -79,36 +79,5 @@ require_once(__DIR__ . "/../include/menu.php");
     </div>
 </div>
 
-<style>
-.dashboard-card {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-5px);
-}
-
-.dashboard-icon {
-    font-size: 2.5rem;
-    color: #0d6efd;
-    margin-bottom: 1rem;
-}
-
-.stat-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.stat-label {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 1rem;
-}
-</style>
 
 <?php require_once(__DIR__ . "/../include/footer.php"); ?> 
