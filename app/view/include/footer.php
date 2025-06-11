@@ -3,7 +3,7 @@
     <!-- Copyright -->
     <div class="text-center p-4">
         © 2025 Copyright:
-        <a class="text-reset fw-bold" href="/" target="blank"> Ejobs - Alguns Direitor Reservados</a>
+        <a class="text-reset fw-bold" href="/" target="blank"> Ejobs - Alguns Direitos Reservados</a>
     </div>      
 </footer>
 

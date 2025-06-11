@@ -28,7 +28,7 @@ class VagaController extends Controller
     public function __construct()
     {
         $action = $_GET["action"];
-        $allowedActions = ["listPublic"];
+        $allowedActions = ["listPublic", "viewVagas"];
 
         if (!in_array($action, $allowedActions) && !$this->usuarioLogado()) {
             header("location: " . BASEURL . "/controller/LoginController.php?action=login");
@@ -59,7 +59,6 @@ class VagaController extends Controller
             session_start();
         }
 
-        // para paginação
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $limit = 12; 
         $offset = ($page - 1) * $limit;
@@ -185,7 +184,7 @@ class VagaController extends Controller
 
     protected function save()
     {
-        //Captura os dados do formulário
+    
         if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
             header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
             exit;
@@ -205,7 +204,7 @@ class VagaController extends Controller
         $categoriaId = isset($_POST['categoria']) && is_numeric($_POST['categoria']) ? (int)$_POST['categoria'] : NULL;
         $categoria = $categoriaId ? $this->categoriaDao->findById($categoriaId) : null;
 
-        //Cria objeto Vaga
+        
         $vaga = new Vaga();
         $vaga->setTitulo($titulo);
         $vaga->setModalidade($modalidade);
@@ -219,10 +218,9 @@ class VagaController extends Controller
         $vaga->setCategoria($categoria);
         $vaga->setEmpresa($_SESSION['usuario']);
 
-        //Validar os dados
         $erros = $this->vagaService->validarDados($vaga);
         if(empty($erros)) {
-            //Persiste o objeto
+        
             try {
                 if ($dados["id"] == 0) { 
                     $this->vagaDao->insert($vaga);
@@ -282,20 +280,18 @@ class VagaController extends Controller
 
     protected function viewVagas()
     {
-        if (!$this->usuarioLogado()) {
-            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
-            exit;
-        }
-
         $vaga = $this->findVagaById();
         if ($vaga) {
             $dados["vaga"] = $vaga;
             
-            $candidatoId = $_SESSION[SESSAO_USUARIO_ID];
-
-            $candidatura = $this->candidaturaDao->findByCandidatoAndVaga($candidatoId, $vaga->getId());
-            if($candidatura)
-                $dados["candidatura"] = $candidatura;
+            // Verifica se o usuário está logado para mostrar informações de candidatura
+            if (isset($_SESSION[SESSAO_USUARIO_ID])) {
+                $candidatoId = $_SESSION[SESSAO_USUARIO_ID];
+                $candidatura = $this->candidaturaDao->findByCandidatoAndVaga($candidatoId, $vaga->getId());
+                if($candidatura) {
+                    $dados["candidatura"] = $candidatura;
+                }
+            }
             
             $this->loadView("vaga/vaga_detalhes.php", $dados);
         } else {
@@ -364,10 +360,6 @@ class VagaController extends Controller
     }
 
     protected function usuarioLogado() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
         return isset($_SESSION[SESSAO_USUARIO_ID]);
     }
 }
