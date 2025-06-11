@@ -31,6 +31,20 @@ class UsuarioDAO {
         return $this->mapUsuarios($result);
     }
 
+     public function listEmpresasPendentes() {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM usuario u 
+                WHERE u.status = 'Pendente' 
+                AND tipo_usuario_id = 3
+                ORDER BY u.nome";
+        $stm = $conn->prepare($sql);    
+        $stm->execute();
+        $result = $stm->fetchAll();
+        
+        return $this->mapUsuarios($result);
+    }
+
     //Método para buscar um usuário por seu ID
     public function findById(int $id) {
         $conn = Connection::getConn();
@@ -164,6 +178,17 @@ class UsuarioDAO {
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("id", $id);
+        $stm->execute();
+    }
+
+    public function aprovarEmpresa(Usuario $usuario) {
+        $conn = Connection::getConn();
+
+        $sql = "UPDATE usuario SET status = 'Ativo'".     
+               " WHERE id = :id";
+        
+        $stm = $conn->prepare($sql);
+        $stm->bindValue("id", $usuario->getId());
         $stm->execute();
     }
 
