@@ -32,10 +32,11 @@ class VagaDAO {
         return $this->mapVagas($result);
     }
 
-        public function listByFiltros($idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo, $limit, $offset) {
+    public function listByFiltros($search, $idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo, $limit, $offset, $idCidade) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM vaga v 
+        $sql = "SELECT v.* FROM vaga v 
+                JOIN usuario u ON v.empresa_id = u.id
                 WHERE v.status = 'Ativo'";
 
         if($idCategoria > 0)
@@ -50,13 +51,19 @@ class VagaDAO {
             $sql .= " AND v.salario >= :salario";
         if($cargo > 0)
             $sql .= " AND v.cargos_id = :cargo_id";
-        
+        if(!empty($search))
+            $sql .= " AND v.titulo = :search";
+        if ($idCidade > 0)
+            $sql .= " AND u.cidade_id = :id_cidade";
 
         $sql .= " ORDER BY v.titulo LIMIT :limit OFFSET :offset";
-        $stm = $conn->prepare($sql); 
-        
+
+        $stm = $conn->prepare($sql);
+
+        if(!empty($search))
+            $stm->bindValue("search", $search);
         if($idCategoria > 0)
-            $stm->bindValue("id_categoria", $idCategoria);
+            $stm->bindValue("id_categoria", $idCategoria, PDO::PARAM_INT);
         if(!empty($modalidade))
             $stm->bindValue("modalidade", $modalidade);
         if(!empty($cargaHoraria))
@@ -66,23 +73,30 @@ class VagaDAO {
         if(!empty($salario)){
             $salario = Salario::getValorNumerico($salario);
             $stm->bindValue("salario", $salario);
-        }            
+        }
         if($cargo > 0)
-            $stm->bindValue("cargo_id", $cargo);
+            $stm->bindValue("cargo_id", $cargo, PDO::PARAM_INT);
         $stm->bindValue("limit", (int)$limit, PDO::PARAM_INT);
         $stm->bindValue("offset", (int)$offset, PDO::PARAM_INT);
-        
+        if ($idCidade > 0)
+            $stm->bindValue("id_cidade", $idCidade, PDO::PARAM_INT);
+
         $stm->execute();
         $result = $stm->fetchAll();
-        
+
         return $this->mapVagas($result);
     }
 
-    public function countFiltros($idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo) {
+
+    public function countFiltros($search, $idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo, $idCidade) {
     $conn = Connection::getConn();
 
-    $sql = "SELECT COUNT(*) as total FROM vaga v WHERE v.status = 'Ativo'";
-    
+    $sql = "SELECT COUNT(*) as total FROM vaga v 
+            JOIN usuario u ON v.empresa_id = u.id
+            WHERE v.status = 'Ativo'";
+
+    if (!empty($search))
+        $sql .= " AND v.titulo = :search";
     if ($idCategoria > 0)
         $sql .= " AND v.categoria_id = :id_categoria";
     if (!empty($modalidade))
@@ -92,12 +106,16 @@ class VagaDAO {
     if (!empty($regime))
         $sql .= " AND v.regime = :regime";
     if ($salario > 0)
-        $sql .= " AND v.salario = :salario";
+        $sql .= " AND v.salario >= :salario";
     if ($cargo > 0)
         $sql .= " AND v.cargos_id = :cargo_id";
+    if ($idCidade > 0)
+        $sql .= " AND u.cidade_id = :id_cidade";
 
     $stm = $conn->prepare($sql);
 
+    if (!empty($search))
+        $stm->bindValue(":search", $search);
     if ($idCategoria > 0)
         $stm->bindValue(":id_categoria", $idCategoria, PDO::PARAM_INT);
     if (!empty($modalidade))
@@ -110,11 +128,15 @@ class VagaDAO {
         $stm->bindValue(":salario", $salario);
     if ($cargo > 0)
         $stm->bindValue(":cargo_id", $cargo, PDO::PARAM_INT);
+    if ($idCidade > 0)
+        $stm->bindValue(":id_cidade", $idCidade, PDO::PARAM_INT);
 
     $stm->execute();
     $result = $stm->fetch();
+
     return $result['total'];
 }
+
 
     public function findByEmpresa(int $id) {
         $conn = Connection::getConn();
@@ -208,18 +230,20 @@ class VagaDAO {
     public function deleteById(int $id) {
         $conn = Connection::getConn();
 
-        $sql = "DELETE FROM vaga WHERE id = ?";
+        $sql = "DELETE FROM vaga WHERE id = :id";
+        
         $stm = $conn->prepare($sql);
-        $stm->execute([$id]);
+        $stm->bindValue("id", $id);
+        $stm->execute();
     }
 
     public function searchByTitle($title) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM vaga v" .
-               " WHERE v.titulo LIKE ?";
-        $stm = $conn->prepare($sql);
-        $stm->execute(["%" . $title . "%"]);
+        $sql = "SELECT * FROM vaga v WHERE LOWER(v.titulo) LIKE LOWER(:title) ORDER BY v.titulo";
+        $stm = $conn->prepare($sql);    
+        $stm->bindValue("title", "%" . $title . "%");
+        $stm->execute();
         $result = $stm->fetchAll();
         
         return $this->mapVagas($result);
@@ -228,22 +252,23 @@ class VagaDAO {
     public function filterByStatus($status) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM vaga v" .
-               " WHERE v.status = ?";
-        $stm = $conn->prepare($sql);
-        $stm->execute([$status]);
+        $sql = "SELECT * FROM vaga v WHERE v.status = :status ORDER BY v.titulo";
+        $stm = $conn->prepare($sql);    
+        $stm->bindValue("status", $status);
+        $stm->execute();
         $result = $stm->fetchAll();
-
+        
         return $this->mapVagas($result);
     }
 
     public function filterByStatusAndEmpresa($status, $empresaId) {
         $conn = Connection::getConn();
 
-        $sql = "SELECT * FROM vaga v" .
-               " WHERE v.status = ? AND v.empresa_id = ?";
-        $stm = $conn->prepare($sql);
-        $stm->execute([$status, $empresaId]);
+        $sql = "SELECT * FROM vaga v WHERE v.status = :status AND v.empresa_id = :empresa_id ORDER BY v.titulo";
+        $stm = $conn->prepare($sql);    
+        $stm->bindValue("status", $status);
+        $stm->bindValue("empresa_id", $empresaId);
+        $stm->execute();
         $result = $stm->fetchAll();
         
         return $this->mapVagas($result);
@@ -251,32 +276,20 @@ class VagaDAO {
 
     private function mapVagas($result) {
         $vagas = array();
-        foreach ($result as $dado) {
+        foreach ($result as $reg) {
             $vaga = new Vaga();
-            $vaga->setId($dado['id']);
-            $vaga->setTitulo($dado['titulo']);
-            $vaga->setModalidade($dado['modalidade']);
-            $vaga->setHorario($dado['horario']);
-            $vaga->setRegime($dado['regime']);
-            $vaga->setSalario($dado['salario']);
-            $vaga->setDescricao($dado['descricao']);
-            $vaga->setRequisitos($dado['requisitos']);
-            $vaga->setStatus($dado['status']);
-
-            //Carregar empresa
-            $empresa = $this->usuarioDao->findById($dado['empresa_id']);
-            $vaga->setEmpresa($empresa);
-
-            //Carregar cargo
-            $cargo = $this->cargoDao->findById($dado['cargos_id']);
-            $vaga->setCargo($cargo);
-
-            //Carregar categoria
-            if(isset($dado['categoria_id'])) {
-                $categoria = $this->categoriaDao->findById($dado['categoria_id']);
-                $vaga->setCategoria($categoria);
-            }
-            
+            $vaga->setId($reg['id']);
+            $vaga->setTitulo($reg['titulo']);
+            $vaga->setModalidade($reg['modalidade']);
+            $vaga->setHorario($reg['horario']);
+            $vaga->setRegime($reg['regime']);
+            $vaga->setSalario($reg['salario']);
+            $vaga->setDescricao($reg['descricao']);
+            $vaga->setRequisitos($reg['requisitos']);
+            $vaga->setStatus($reg['status']);
+            $vaga->setEmpresa($this->usuarioDao->findById($reg['empresa_id']));
+            $vaga->setCargo($this->cargoDao->findById($reg['cargos_id']));
+            $vaga->setCategoria($this->categoriaDao->findById($reg['categoria_id']));
             array_push($vagas, $vaga);
         }
 

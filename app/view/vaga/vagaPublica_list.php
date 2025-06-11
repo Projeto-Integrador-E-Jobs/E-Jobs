@@ -49,6 +49,47 @@ require_once(__DIR__ . "/../include/menu.php");
     <form method="GET" action="<?= BASEURL ?>/controller/VagaController.php">
         <input type="hidden" name="action" value="listPublic">
         <div class="row justify-content-center mt-3">
+            <div class="col-md-3">
+                        <input type="text" name="search" class="form-control"
+                            placeholder="Digite o título da vaga"
+                            value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>"
+                            >
+            </div>
+
+            <div class="col-md-3">
+                        <input type="text" id="inputCidade" list="listaCidades" 
+                            name="cidade" class="form-control" autocomplete="off"
+                            placeholder="Busca por cidade"
+                            value="<?= isset($_GET['cidade']) ? htmlspecialchars($_GET['cidade']) : '' ?>"
+                            >
+                        <input type="hidden" id="cidadeId" name="cidade_id">    
+                        <datalist id="listaCidades"></datalist>
+                        
+            </div>
+
+            <div class="col-md-2">
+                <select class="form-control" name="idCategoria">
+                    <option value="">Categoria</option>
+                    <?php foreach($dados["categorias"] as $categoria): ?>
+                        <option value="<?= $categoria->getId() ?>" <?= (isset($_GET["idCategoria"]) && $_GET["idCategoria"] == $categoria->getId()) ? "selected" : "" ?>>
+                            <?= $categoria->getNome() ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select class="form-control" name="cargo_id">
+                    <option value="">Cargo</option>
+                    <?php foreach($dados["cargos"] as $cargo): ?>
+                        <option value="<?= $cargo->getId() ?>" <?= (isset($_GET["cargo_id"]) && $_GET["cargo_id"] == $cargo->getId()) ? "selected" : "" ?>>
+                            <?= $cargo->getNome() ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-3">
             <div class="col-md-2">
                 <select class="form-control" name="modalidade">
                     <option value="">Modalidade</option>
@@ -88,17 +129,6 @@ require_once(__DIR__ . "/../include/menu.php");
                     <?php foreach($dados["salarios"] as $salario): ?>
                         <option value="<?= $salario ?>" <?= (isset($_GET["salario"]) && $_GET["salario"] === $salario) ? "selected" : "" ?>>
                             <?= $salario ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <select class="form-control" name="cargo_id">
-                    <option value="">Cargo</option>
-                    <?php foreach($dados["cargos"] as $cargo): ?>
-                        <option value="<?= $cargo->getId() ?>" <?= (isset($_GET["cargo_id"]) && $_GET["cargo_id"] == $cargo->getId()) ? "selected" : "" ?>>
-                            <?= $cargo->getNome() ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -197,7 +227,8 @@ require_once(__DIR__ . "/../include/menu.php");
 
 
 </div>
-
+<script> var BASEURL = "<?= BASEURL ?>"; </script>
+<script src="<?= BASEURL ?>/view/vaga/js/cidades.js"></script>
 <?php  
 require_once(__DIR__ . "/../include/footer.php");
 ?>

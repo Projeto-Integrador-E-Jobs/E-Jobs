@@ -3,8 +3,8 @@ require_once(__DIR__ . "/Controller.php");
 require_once(__DIR__ . "/../dao/VagaDAO.php");
 require_once(__DIR__ . "/../dao/UsuarioDAO.php");
 require_once(__DIR__ . "/../dao/CargoDAO.php");
-require_once(__DIR__ . "/../dao/CandidaturaDAO.php");
 require_once(__DIR__ . "/../dao/CategoriaDAO.php");
+require_once(__DIR__ . "/../dao/CandidaturaDAO.php");
 require_once(__DIR__ . "/../service/VagaService.php");
 require_once(__DIR__ . "/../model/Vaga.php");
 require_once(__DIR__ . "/../model/Candidatura.php");
@@ -21,8 +21,8 @@ class VagaController extends Controller
     private VagaDAO $vagaDao;
     private UsuarioDAO $usuarioDao;
     private CargoDAO $cargoDao;
-    private CandidaturaDAO $candidaturaDao;
     private CategoriaDAO $categoriaDao;
+    private CandidaturaDAO $candidaturaDao;
     private VagaService $vagaService;
 
     public function __construct()
@@ -35,13 +35,6 @@ class VagaController extends Controller
             exit;
         }
 
-        if ($this->usuarioLogado()) {
-            $userId = $_SESSION[SESSAO_USUARIO_ID];
-            if ($userId == 1 && !in_array($action, $allowedActions)) {
-                header("location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
-                exit;
-            }
-        }
 
         $this->vagaDao = new VagaDAO();
         $this->cargoDao = new CargoDAO();
@@ -83,6 +76,13 @@ class VagaController extends Controller
         $cargo = 0;
         if(isset($_GET["cargo_id"]))
             $cargo = $_GET["cargo_id"];
+        $search = "";
+        if(isset($_GET['search']))
+            $search = trim($_GET['search']);
+        $idCidade = 0;
+        if(isset($_GET["cidade_id"]))
+            $idCidade = (int) $_GET["cidade_id"];
+
 
         //monta url com os filtros
         $queryString = http_build_query([
@@ -91,18 +91,15 @@ class VagaController extends Controller
             'horario' => $cargaHoraria,
             'regime' => $regime,
             'salario' => $salario,
-            'cargo' => $cargo
+            'cargo_id' => $cargo,
+            'search' => $search,
+            'cidade_id' => $idCidade
         ]);
-
-
-        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-        if ($search !== '') {
-            $vagas = $this->vagaDao->searchByTitle($search);
-        } else {
-            $vagas = $this->vagaDao->listByFiltros($idCategoria,$modalidade,$cargaHoraria,$regime,$salario,$cargo, $limit, $offset);
-            $totalVagas = $this->vagaDao->countFiltros($idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo);
-            $totalPaginas = ceil($totalVagas / $limit);
-        }
+        
+        $vagas = $this->vagaDao->listByFiltros($search,$idCategoria,$modalidade,$cargaHoraria,$regime,$salario,$cargo, $limit, $offset, $idCidade);
+        $totalVagas = $this->vagaDao->countFiltros($search, $idCategoria, $modalidade, $cargaHoraria, $regime, $salario, $cargo, $idCidade);
+        $totalPaginas = ceil($totalVagas / $limit);
+        
         $dados["lista"] = $vagas;
         $dados["search_term"] = $search;
         $dados["show_status_filter"] = false;
@@ -112,6 +109,7 @@ class VagaController extends Controller
         $dados["status"] = Status::getAllAsArray();
         $dados["cargos"] = $this->cargoDao->list();
         $dados["salarios"] = Salario::getAllAsArray();
+        $dados["categorias"] = $this->categoriaDao->list();
         $dados["pagina_atual"] = $page;
         $dados["queryString"] = $queryString;
         $dados["total_paginas"] = $totalPaginas;
@@ -150,6 +148,7 @@ class VagaController extends Controller
             exit;
         }
 
+        $usuario = $this->usuarioDao->findById($_SESSION[SESSAO_USUARIO_ID]);
         $dados["id"] = 0;
         $dados["modalidades"] = Modalidade::getAllAsArray();
         $dados["horarios"] = Horario::getAllAsArray();
@@ -157,6 +156,7 @@ class VagaController extends Controller
         $dados["status"] = Status::getAllAsArray();
         $dados["cargos"] = $this->cargoDao->list();
         $dados["categorias"] = $this->categoriaDao->list();
+        $dados["empresa"] = $this->usuarioDao->findById($usuario->getId());
         $this->loadView("vaga/vaga_form.php", $dados);
     }
 
@@ -177,6 +177,7 @@ class VagaController extends Controller
             $dados["status"] = Status::getAllAsArray();
             $dados["cargos"] = $this->cargoDao->list();
             $dados["categorias"] = $this->categoriaDao->list();
+            $dados["empresa"] = $this->usuarioDao->findById($vaga->getEmpresa()->getId());
 
             $this->loadView("vaga/vaga_form.php", $dados);
         } else
@@ -200,12 +201,13 @@ class VagaController extends Controller
         $descricao = trim($_POST['descricao']) ? trim($_POST['descricao']) : NULL;
         $requisitos = trim($_POST['requisitos']) ? trim($_POST['requisitos']) : NULL;
         $status = trim($_POST['status']) ? trim($_POST['status']) : Status::ATIVO;
-        $cargoId = isset($_POST['cargo']) && is_numeric($_POST['cargo']) ? (int)$_POST['cargo'] : NULL;
-        $cargo = $cargoId ? $this->cargoDao->findById($cargoId) : null;
-        $categoriaId = isset($_POST['categoria']) && is_numeric($_POST['categoria']) ? (int)$_POST['categoria'] : NULL;
-        $categoria = $categoriaId ? $this->categoriaDao->findById($categoriaId) : null;
+        $cargoId = isset($_POST['cargo']) && is_numeric($_POST['cargo']) && (int)$_POST['cargo'] > 0 ? (int)$_POST['cargo'] : NULL;
+        $cargo = $cargoId !== null ? $this->cargoDao->findById($cargoId) : NULL;
+        $categoriaId = isset($_POST['categoria']) && is_numeric($_POST['categoria']) && (int)$_POST['categoria'] > 0 ? (int)$_POST['categoria'] : NULL;
+        $categoria = $categoriaId !== null ? $this->categoriaDao->findById($categoriaId) : NULL;
+        $usuarioId = isset($_POST['usuarioId']) && is_numeric($_POST['usuarioId']) ? (int)$_POST['usuarioId'] : NULL;
+        $empresa = $usuarioId ? $this->usuarioDao->findById($usuarioId) : null;
 
-        //Cria objeto Vaga
         $vaga = new Vaga();
         $vaga->setTitulo($titulo);
         $vaga->setModalidade($modalidade);
@@ -217,13 +219,15 @@ class VagaController extends Controller
         $vaga->setStatus($status);
         $vaga->setCargo($cargo);
         $vaga->setCategoria($categoria);
-        $vaga->setEmpresa($_SESSION['usuario']);
+        $vaga->setEmpresa($empresa);
+        
 
-        //Validar os dados
+
         $erros = $this->vagaService->validarDados($vaga);
-        if(empty($erros)) {
-            //Persiste o objeto
+        if (empty($erros)) {
+           
             try {
+
                 if ($dados["id"] == 0) { 
                     $this->vagaDao->insert($vaga);
                   
@@ -247,9 +251,8 @@ class VagaController extends Controller
         $dados["modalidades"] = Modalidade::getAllAsArray();
         $dados["horarios"] = Horario::getAllAsArray();
         $dados["regimes"] = Regime::getAllAsArray();
-        $dados["status"] = Status::getAllAsArray();
         $dados["cargos"] = $this->cargoDao->list();
-        $dados["categorias"] = $this->categoriaDao->list();
+        $dados["empresa"] = $this->usuarioDao->findById($vaga->getEmpresa()->getId());
 
         $msgsErro = is_array($erros) ? implode("<br>", $erros) : $erros;
         $this->loadView("vaga/vaga_form.php", $dados, $msgsErro);
@@ -363,6 +366,7 @@ class VagaController extends Controller
         }
     }
 
+    // Sobrescreve o método usuarioLogado para permitir acesso público à listagem de vagas
     protected function usuarioLogado() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

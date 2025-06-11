@@ -88,7 +88,7 @@ class CadastroController extends Controller {
         $usuario->setEndNumero($endNumero);
         $usuario->setTelefone($telefone);
         if($usuario->getTipoUsuario() != null && $usuario->getTipoUsuario()->getId() == TipoUsuario::ID_EMPRESA)
-            $usuario->setStatus(Status::INATIVO);
+            $usuario->setStatus(Status::PENDENTE);
         else
             $usuario->setStatus(Status::ATIVO);
         
@@ -113,10 +113,11 @@ class CadastroController extends Controller {
                
                 $usuario = $this->usuarioDao->findByLoginSenha($usuario->getEmail(),$usuario->getSenha());                    
                 $this->loginService->salvarUsuarioSessao($usuario);
+                
                 // Redireciona baseado no tipo de usuário
                 switch ($usuario->getTipoUsuario()->getId()) {
                     case 1: // Candidato
-                        header("location: " . HOME_PAGE);
+                        header("location: " . BASEURL . "/controller/VagaController.php?action=minhasCandidaturas");
                         break;
                     case 2: // Administrador
                         header("location: " . BASEURL . "/controller/HomeController.php?action=dashboard");

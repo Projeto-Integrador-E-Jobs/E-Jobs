@@ -16,7 +16,6 @@ class CidadeDAO {
        
     }
 
-    //Método para listar os usuaários a partir da base de dados
     public function list() {
         $conn = Connection::getConn();
 
@@ -28,7 +27,6 @@ class CidadeDAO {
         return $this->mapCidades($result);
     }
 
-    //Método para buscar um usuário por seu ID
     public function findById(int $id) {
         $conn = Connection::getConn();
 
@@ -62,6 +60,25 @@ class CidadeDAO {
 
     }
 
+    public function findByNome(string $nome) {
+        $conn = Connection::getConn();
+
+         $sql = "SELECT c.*, e.uf 
+            FROM cidades c
+            INNER JOIN estados e ON c.codigo_uf = e.codigo_uf
+            WHERE c.nome LIKE ?
+            ORDER BY c.nome
+            LIMIT 10";
+
+        $stm = $conn->prepare($sql);
+        $nomeBusca = "%" . $nome . "%";    
+        $stm->execute([$nomeBusca]);
+        $result = $stm->fetchAll();
+
+        return $this->mapCidadesComEstadoSigla($result);
+
+    }
+
     //Método para converter um registro da base de dados em um objeto Usuario
     private function mapCidades($result) {
         $cidades = array();
@@ -82,5 +99,30 @@ class CidadeDAO {
 
         return $cidades;
     }
+
+    private function mapCidadesComEstadoSigla($result) {
+        $cidades = array();
+        foreach ($result as $reg) {
+            $cidade = new Cidade();
+            $cidade->setCodigoIbge($reg['codigo_ibge']);
+            $cidade->setNome($reg['nome']);
+            $cidade->setLatitude($reg['latitude']);
+            $cidade->setLongitude($reg['longitude']);
+            $cidade->setCapital($reg['capital']);
+            $cidade->setDdd($reg['ddd']);
+            $cidade->setFusoHorario($reg['fuso_horario']);
+            $cidade->setSiafiId($reg['siafi_id']);
+
+            // Cria um estado com apenas a sigla
+            $estado = new Estado();
+            $estado->setUf($reg['uf']);
+            $cidade->setEstado($estado);
+
+            array_push($cidades, $cidade);
+        }
+
+        return $cidades;
+    }
+
 
 }

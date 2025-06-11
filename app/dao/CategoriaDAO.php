@@ -25,7 +25,7 @@ class CategoriaDAO {
                 FROM categorias c  
                 LEFT JOIN vaga v ON v.categoria_id = c.id AND v.status = 'Ativo'
                 GROUP BY c.id, c.nome, c.icone
-                ORDER BY c.nome ASC" ;
+                ORDER BY c.nome ASC Limit 4" ;
         $stm = $conn->prepare($sql);    
         $stm->execute();
         $result = $stm->fetchAll();
@@ -55,21 +55,23 @@ class CategoriaDAO {
     public function insert(Categoria $categoria) {
         $conn = Connection::getConn();
 
-        $sql = "INSERT INTO categorias (nome)" .
-               " VALUES (:nome)";
+        $sql = "INSERT INTO categorias (nome, icone)" .
+               " VALUES (:nome, :icone)";
         
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $categoria->getNome());
+        $stm->bindValue("icone", $categoria->getIcone());
         $stm->execute();
     }
 
     public function update(categoria $categoria) {
         $conn = Connection::getConn();
     
-        $sql = "UPDATE categorias SET nome = :nome WHERE id = :id";        
+        $sql = "UPDATE categorias SET nome = :nome, icone = :icone WHERE id = :id";        
         $stm = $conn->prepare($sql);
         $stm->bindValue("id", $categoria->getId());
         $stm->bindValue("nome", $categoria->getNome());
+        $stm->bindValue("icone", $categoria->getIcone());
     
         $stm->execute();
     }

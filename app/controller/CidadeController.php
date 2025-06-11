@@ -13,7 +13,12 @@ class CidadeController extends Controller {
         $this->handleAction();
     }
 
-  
+    protected function findCidadeById() {
+        $idEstado = $_GET["id_estado"];
+
+        $cidades = $this->cidadeDao->findByEstado($idEstado);
+        echo json_encode($cidades, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);   
+    }
 
     protected function listarPorEstado() {
         $idEstado = $_GET["id_estado"];
@@ -22,8 +27,12 @@ class CidadeController extends Controller {
         echo json_encode($cidades, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);   
     }
 
-   
- 
+    protected function listarPorNome() {
+        $nome = $_GET["nome"];
+
+        $cidades = $this->cidadeDao->findByNome($nome);
+        echo json_encode($cidades, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);   
+    }
 
 }
 

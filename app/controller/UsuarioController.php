@@ -39,6 +39,14 @@ class UsuarioController extends Controller {
         $this->loadView("usuario/list.php", $dados,  $msgErro, $msgSucesso);
     }
 
+    protected function listEmpresasPendentes(string $msgErro = "", string $msgSucesso = "") {
+        $usuarios = $this->usuarioDao->listEmpresasPendentes();
+        //print_r($usuarios);
+        $dados["lista"] = $usuarios;
+
+        $this->loadView("usuario/listEmpresas.php", $dados,  $msgErro, $msgSucesso);
+    }
+
     protected function create() {
         $dados["id"] = 0;
         $dados["estados"] = $this->estadoDAO->list();
@@ -141,8 +149,6 @@ class UsuarioController extends Controller {
 
         try {
             $this->usuarioDao->update($usuario);
-            // Atualiza o nome na sessão
-            $_SESSION[SESSAO_USUARIO_NOME] = $usuario->getNome();
             header("location: " . BASEURL . "/controller/UsuarioController.php?action=viewProfile");
             exit;
         } catch (PDOException $e) {
@@ -230,6 +236,16 @@ class UsuarioController extends Controller {
             header("location: " . BASEURL . "/controller/UsuarioController.php?action=list");
         } else
             $this->list("Usuario não econtrado!");
+    }
+
+    protected function aprovarEmpresa() {
+        $usuario = $this->findUsuarioById();
+        if($usuario) {
+            $this->usuarioDao->aprovarEmpresa($usuario);
+
+            $this->listEmpresasPendentes();
+        } else
+            $this->list("Usuário não encontrado.");
     }
 
     private function findUsuarioById() {

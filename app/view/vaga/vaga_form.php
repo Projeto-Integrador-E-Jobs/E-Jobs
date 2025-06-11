@@ -89,20 +89,6 @@ require_once(__DIR__ . "/../include/menu.php");
                                     </div>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label>Categoria:</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            <i class="fas fa-tags"></i>
-                                        </span>
-                                        <select class="form-control" name="categoria" id="selCategoria" >
-                                            <option value="">Selecione a categoria da vaga</option>
-                                            <?php foreach($dados["categorias"] as $categoria): ?>
-                                                <option value="<?= $categoria->getId() ?>" <?php if(isset($dados["vaga"]) && $dados["vaga"]->getCategoria()?->getId() == $categoria->getId()) echo "selected"; ?>><?= $categoria->getNome() ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group mb-3">
                                     <label>Status:</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light">
@@ -136,9 +122,24 @@ require_once(__DIR__ . "/../include/menu.php");
                                         <textarea class="form-control" id="txtRequisitos" name="requisitos" rows="5" placeholder="Informe os requisitos da vaga" ><?php echo (isset($dados["vaga"]) ? $dados["vaga"]->getRequisitos() : ''); ?></textarea>
                                     </div>
                                 </div>
+                                <div class="form-group mb-3">
+                                    <label>Categoria:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-layer-group"></i>
+                                        </span>
+                                        <select class="form-control" name="categoria" >
+                                            <option value="">Selecione a categoria</option>
+                                            <?php foreach($dados["categorias"] as $categoria): ?>
+                                                <option value="<?= $categoria->getId() ?>" <?php if(isset($dados["vaga"]) && $dados["vaga"]->getCategoria()?->getId() == $categoria->getId()) echo "selected"; ?>><?= $categoria->getNome() ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <input type="hidden" id="hddId" name="id" value="<?= $dados['id']; ?>" />
+                        <input type="hidden" id="usuarioId" name="usuarioId" value="<?= $dados['empresa']->getId(); ?>" />
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="reset" class="btn btn-secondary">
                                 <i class="fas fa-eraser me-1"></i> Limpar
