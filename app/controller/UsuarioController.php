@@ -77,17 +77,16 @@ class UsuarioController extends Controller {
             exit;
         }
 
-        $id = isset($_GET['id']) ? $_GET['id'] : $_SESSION[SESSAO_USUARIO_ID];
-        $candidato = $this->usuarioDao->findById($id);
+        // Get user ID from URL if provided, otherwise use logged in user's ID
+        $usuarioId = isset($_GET['id']) ? $_GET['id'] : $_SESSION[SESSAO_USUARIO_ID];
+        $usuario = $this->usuarioDao->findById($usuarioId);
         
-        if ($candidato) {
-            $dados['candidato'] = $candidato;
-            if (isset($_GET['vaga_id'])) {
-                $dados['vaga_id'] = $_GET['vaga_id'];
-            }
-            $this->loadView("usuario/candidato_perfil.php", $dados);
+        if ($usuario) {
+            $dados["usuario"] = $usuario;
+            $dados["isOwnProfile"] = ($usuarioId == $_SESSION[SESSAO_USUARIO_ID]);
+            $this->loadView("usuario/profile.php", $dados);
         } else {
-            header("location: " . BASEURL . "/controller/VagaController.php?action=list");
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
             exit;
         }
     }
