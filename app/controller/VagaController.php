@@ -284,6 +284,11 @@ class VagaController extends Controller
 
     protected function viewVagas()
     {
+         if (!$this->usuarioLogado()) {
+            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+            exit;
+        }
+        
         $vaga = $this->findVagaById();
         if ($vaga) {
             $dados["vaga"] = $vaga;
@@ -364,7 +369,11 @@ class VagaController extends Controller
     }
 
     // Sobrescreve o método usuarioLogado para permitir acesso público à listagem de vagas
-    protected function usuarioLogado() {
+     protected function usuarioLogado() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         return isset($_SESSION[SESSAO_USUARIO_ID]);
     }
 }
