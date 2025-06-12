@@ -31,6 +31,7 @@ require_once(__DIR__ . "/../include/menu.php");
                             <th>Status</th>
                             <th>Data da Candidatura</th>
                             <th>Alterar Status</th>
+                            <th>Perfil</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,6 +45,12 @@ require_once(__DIR__ . "/../include/menu.php");
                                     <a class="btn btn-primary" 
                                         href="<?= BASEURL ?>/controller/CandidaturaController.php?action=edit&id=<?= $candidatura->getId() ?>">
                                         Alterar Status
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-info" 
+                                        href="<?= BASEURL ?>/controller/UsuarioController.php?action=viewProfile&id=<?= $candidatura->getCandidato()->getId() ?>&vaga_id=<?= $dados['vaga']->getId() ?>">
+                                        <i class="fas fa-user"></i> Visualizar Perfil
                                     </a>
                                 </td>
                             </tr>
