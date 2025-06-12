@@ -99,9 +99,11 @@ require_once(__DIR__ . "/../include/menu.php");
                         <h3 class="mb-0"><?= htmlspecialchars($dados["usuario"]->getNome()) ?></h3>
                         <p class="mb-0 opacity-75"><?= htmlspecialchars($dados["usuario"]->getEmail()) ?></p>
                     </div>
+                    <?php if ($dados["isOwnProfile"]): ?>
                     <a href="<?= BASEURL ?>/controller/UsuarioController.php?action=editProfile" class="edit-btn">
                         <i class="fas fa-pencil-alt"></i>
                     </a>
+                    <?php endif; ?>
                 </div>
                 <div class="card-body p-4">
                     <div class="row">
@@ -171,6 +173,22 @@ require_once(__DIR__ . "/../include/menu.php");
                             </div>
                         </div>
                     </div>
+
+                    <?php if ($dados["usuario"]->getDescricao()): ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="info-card d-flex align-items-start">
+                                <div class="info-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Descrição</small>
+                                    <strong><?= nl2br(htmlspecialchars($dados["usuario"]->getDescricao())) ?></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
