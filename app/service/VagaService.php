@@ -31,6 +31,9 @@ class VagaService{
         
             if (! $vaga->getCargo())
                 array_push($erros, "O campo [Cargo] é obrigatório.");
+
+            if (! $vaga->getCategoria())
+                array_push($erros, "O campo [Categoria] é obrigatório.");
         
             if (! $vaga->getEmpresa())
                 array_push($erros, "O campo [Empresa] é obrigatório.");
