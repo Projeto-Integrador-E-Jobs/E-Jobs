@@ -77,7 +77,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                 </td>
                                 <td>
                                     <a class="btn btn-info" 
-                                        href="<?= BASEURL ?>/controller/VagaController.php?action=viewCandidatos&id=<?= $vaga->getId() ?>">
+                                        href="<?= BASEURL ?>/controller/CandidaturaController.php?action=listarCandidatos&id=<?= $vaga->getId() ?>">
                                         Visualizar Candidatos
                                     </a>
                                 </td>
