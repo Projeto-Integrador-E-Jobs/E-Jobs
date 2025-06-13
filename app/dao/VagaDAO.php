@@ -52,7 +52,7 @@ class VagaDAO {
         if($cargo > 0)
             $sql .= " AND v.cargos_id = :cargo_id";
         if(!empty($search))
-            $sql .= " AND v.titulo = :search";
+            $sql .= " AND v.titulo LIKE :search";
         if ($idCidade > 0)
             $sql .= " AND u.cidade_id = :id_cidade";
 
@@ -60,8 +60,10 @@ class VagaDAO {
 
         $stm = $conn->prepare($sql);
 
-        if(!empty($search))
-            $stm->bindValue("search", $search);
+        if(!empty($search)){
+            $titulo = "%" . $search . "%";
+            $stm->bindValue("search", $titulo);
+        }
         if($idCategoria > 0)
             $stm->bindValue("id_categoria", $idCategoria, PDO::PARAM_INT);
         if(!empty($modalidade))
