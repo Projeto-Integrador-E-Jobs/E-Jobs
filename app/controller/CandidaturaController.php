@@ -4,6 +4,7 @@ require_once(__DIR__ . "/../dao/VagaDAO.php");
 require_once(__DIR__ . "/Controller.php");
 require_once(__DIR__ . "/../dao/CandidaturaDAO.php");
 require_once (__DIR__ . "/../model/enum/StatusCandidatura.php");
+require_once(__DIR__ . "/../model/TipoUsuario.php");
 
 
 
@@ -64,6 +65,32 @@ class CandidaturaController extends Controller {
         }
     }
 
+    protected function listarCandidatos(string $msgErro = "", string $msgSucesso = "") {
+        // Verifica se é uma empresa
+        if ($_SESSION[SESSAO_USUARIO_PAPEL] != TipoUsuario::ID_EMPRESA) {
+            header("location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
+        $vaga = $this->findVagaById();
+        if (!$vaga) {
+            header("location: " . BASEURL . "/controller/VagaController.php?action=list");
+            exit;
+        }
+
+        // Verifica se a vaga pertence à empresa logada
+        if ($vaga->getEmpresa()->getId() != $_SESSION[SESSAO_USUARIO_ID]) {
+            header("location: " . BASEURL . "/controller/VagaController.php?action=list");
+            exit;
+        }
+
+        $candidaturas = $this->candidaturaDao->findByVaga($vaga->getId());
+        $dados["vaga"] = $vaga;
+        $dados["lista"] = $candidaturas;
+        
+        $this->loadView("vaga/candidatos_list.php", $dados, $msgErro, $msgSucesso);
+    }
+
     private function findVagaById() {
         $id = 0;
         if (isset($_GET['id']))
@@ -71,6 +98,28 @@ class CandidaturaController extends Controller {
 
         $vaga = $this->vagaDao->findById($id);
         return $vaga;
+    }
+
+    protected function viewCandidato() {
+        // Only companies can view candidate profiles
+        if ($_SESSION[SESSAO_USUARIO_PAPEL] != TipoUsuario::ID_EMPRESA) {
+            header("location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
+        if (!isset($_GET['id'])) {
+            header("location: " . BASEURL . "/controller/VagaController.php?action=list");
+            exit;
+        }
+
+        $candidato = $this->usuarioDao->findById($_GET['id']);
+        if (!$candidato) {
+            header("location: " . BASEURL . "/controller/VagaController.php?action=list");
+            exit;
+        }
+
+        $dados['candidato'] = $candidato;
+        $this->loadView("usuario/perfil_candidato.php", $dados);
     }
 
 }

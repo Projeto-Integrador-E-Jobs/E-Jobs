@@ -49,7 +49,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                 </td>
                                 <td>
                                     <a class="btn btn-info" 
-                                        href="<?= BASEURL ?>/controller/UsuarioController.php?action=viewProfile&id=<?= $candidatura->getCandidato()->getId() ?>">
+                                        href="<?= BASEURL ?>/controller/CandidaturaController.php?action=viewCandidato&id=<?= $candidatura->getCandidato()->getId() ?>">
                                         <i class="fas fa-user"></i> Visualizar Perfil
                                     </a>
                                 </td>
