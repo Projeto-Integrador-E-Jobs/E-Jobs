@@ -13,9 +13,23 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
+        <?php if ($logado && ($papel == TipoUsuario::ID_CANDIDATO)): ?>
         <a class="navbar-brand" href="<?= HOME_PAGE ?>">
             <strong>EJobs</strong>
         </a>
+        <?php elseif ($logado && $papel == TipoUsuario::ID_ADMINISTRADOR): ?>
+        <a class="navbar-brand" href="<?= ADMINHOME_PAGE ?>">
+            <strong>EJobs</strong>
+        </a>
+        <?php elseif ($logado && $papel == TipoUsuario::ID_EMPRESA): ?>
+        <a class="navbar-brand" href="<?= EMPRESAHOME_PAGE ?>">
+            <strong>EJobs</strong>
+        </a>
+        <?php else: ?>
+        <a class="navbar-brand" href="<?= HOME_PAGE ?>">
+            <strong>EJobs</strong>
+        </a>    
+        <?php endif; ?>
 
         <button class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#conteudoNavbarSuportado" aria-controls="conteudoNavbarSuportado"
@@ -30,9 +44,11 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                     <a class="nav-link" href="<?= BASEURL . '/controller/VagaController.php?action=listPublic' ?>">Vagas</a>
                 </li>
 
+                <?php if ($logado && ($papel == TipoUsuario::ID_ADMINISTRADOR)): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Empresas</a>
+                    <a class="nav-link" href="<?= BASEURL ?>/controller/UsuarioController.php?action=listEmpresasPendentes">Empresas</a>
                 </li>
+                <?php endif; ?>
 
                 <?php if ($logado && ($papel == TipoUsuario::ID_ADMINISTRADOR)): ?>
                     <li class="nav-item dropdown">
@@ -68,7 +84,7 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
                             <?php if ($papel == TipoUsuario::ID_CANDIDATO): ?>
                                 <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=minhasCandidaturas">Minhas Candidaturas</a>
                             <?php elseif ($papel == TipoUsuario::ID_ADMINISTRADOR): ?>
-                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/UsuarioController.php?action=listEmpresasPendentes">Empresas</a>
+                                <a class="dropdown-item" href="<?= BASEURL ?>/controller/UsuarioController.php?action=list">Usuarios</a>
                             <?php elseif ($papel == TipoUsuario::ID_EMPRESA): ?>
                                     <a class="dropdown-item" href="<?= BASEURL ?>/controller/VagaController.php?action=list">Minhas Vagas</a>    
                             <?php else: ?>

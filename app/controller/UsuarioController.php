@@ -33,7 +33,6 @@ class UsuarioController extends Controller {
 
     protected function list(string $msgErro = "", string $msgSucesso = "") {
         $usuarios = $this->usuarioDao->list();
-        //print_r($usuarios);
         $dados["lista"] = $usuarios;
 
         $this->loadView("usuario/list.php", $dados,  $msgErro, $msgSucesso);
@@ -41,7 +40,6 @@ class UsuarioController extends Controller {
 
     protected function listEmpresasPendentes(string $msgErro = "", string $msgSucesso = "") {
         $usuarios = $this->usuarioDao->listEmpresasPendentes();
-        //print_r($usuarios);
         $dados["lista"] = $usuarios;
 
         $this->loadView("usuario/listEmpresas.php", $dados,  $msgErro, $msgSucesso);
@@ -235,9 +233,19 @@ class UsuarioController extends Controller {
         $usuario = $this->findUsuarioById();
         if($usuario) {
             $this->usuarioDao->deleteById($usuario->getId());
-            header("location: " . BASEURL . "/controller/UsuarioController.php?action=list");
+            header("location: " . BASEURL . "/controller/UsuarioController.php?action=listEmpresasPendentes");
         } else
-            $this->list("Usuario não econtrado!");
+            $this->listEmpresasPendentes("Usuario não econtrado!");
+    }
+
+     protected function inativarUsuario() {
+        $usuario = $this->findUsuarioById();
+        if($usuario) {
+            $this->usuarioDao->inativarUsuario($usuario);
+
+            $this->list();
+        } else
+            $this->list("Usuário não encontrado.");
     }
 
     protected function aprovarEmpresa() {
@@ -247,7 +255,7 @@ class UsuarioController extends Controller {
 
             $this->listEmpresasPendentes();
         } else
-            $this->list("Usuário não encontrado.");
+            $this->listEmpresasPendentes("Usuário não encontrado.");
     }
 
     private function findUsuarioById() {

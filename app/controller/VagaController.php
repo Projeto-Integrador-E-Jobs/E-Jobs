@@ -284,10 +284,7 @@ class VagaController extends Controller
 
     protected function viewVagas()
     {
-         if (!$this->usuarioLogado()) {
-            header("location: " . BASEURL . "/controller/LoginController.php?action=login");
-            exit;
-        }
+        $this->usuarioLogado();
         
         $vaga = $this->findVagaById();
         if ($vaga) {

@@ -34,8 +34,8 @@ require_once(__DIR__ . "/../include/menu.php");
                                     <td><?= htmlspecialchars($candidatura->getVaga()->getCargo()->getNome()) ?></td>
                                     <td><?= date('d/m/Y H:i', strtotime($candidatura->getDataCandidatura())) ?></td>
                                     <td>
-                                        <span class="badge <?= $candidatura->getStatus() == 'EM_ANDAMENTO' ? 'bg-primary' : 'bg-success' ?>">
-                                            <?= $candidatura->getStatus() == 'EM_ANDAMENTO' ? 'Em Andamento' : 'Finalizado' ?>
+                                        <span class="badge <?= $candidatura->getVaga()->getStatus() == 'Inativo' ? 'bg-primary' : 'bg-success' ?>">
+                                            <?= $candidatura->getVaga()->getStatus() == 'Inativo' ? 'Finalizado' : 'Em Andamento' ?>
                                         </span>
                                     </td>
                                     <td>
