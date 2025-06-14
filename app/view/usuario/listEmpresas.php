@@ -10,12 +10,6 @@ require_once(__DIR__ . "/../include/menu.php");
 
 <div class="container">
     <div class="row">
-        <div class="col-3">
-            <a class="btn btn-success" 
-                href="<?= BASEURL ?>/controller/UsuarioController.php?action=create">
-                Inserir</a>
-        </div>
-
         <div class="col-9">
             <?php require_once(__DIR__ . "/../include/msg.php"); ?>
         </div>

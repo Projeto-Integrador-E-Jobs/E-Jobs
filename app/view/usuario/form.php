@@ -241,7 +241,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                     <i class="fas fa-eraser me-1"></i> Limpar
                                 </button>
                                 <a class="btn btn-secondary"
-                                    href="<?= BASEURL ?>/controller/HomeController.php?action=home">
+                                    href="<?= BASEURL ?>/controller/UsuarioController.php?action=list">
                                     <i class="fas fa-arrow-left me-1"></i> Voltar
                                 </a>
                             </div>

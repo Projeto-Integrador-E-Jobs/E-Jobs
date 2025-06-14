@@ -29,6 +29,12 @@ define('LOGOUT_PAGE', BASEURL . '/controller/LoginController.php?action=logout')
 //Página home do sistema
 define('HOME_PAGE', BASEURL . '/controller/HomeController.php?action=home');
 
+//Página home da Empresa
+define('EMPRESAHOME_PAGE', BASEURL . '/controller/EmpresaController.php?action=home');
+
+//Página home do Administrador do sistema
+define('ADMINHOME_PAGE', BASEURL . '/controller/AdminController.php?action=home');
+
 //Sessão do usuário
 define('SESSAO_USUARIO_ID', "usuarioLogadoId");
 define('SESSAO_USUARIO_NOME', "usuarioLogadoNome");

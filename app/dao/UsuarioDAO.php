@@ -192,6 +192,17 @@ class UsuarioDAO {
         $stm->execute();
     }
 
+    public function inativarUsuario(Usuario $usuario) {
+        $conn = Connection::getConn();
+
+        $sql = "UPDATE usuario SET status = 'Inativo'".     
+               " WHERE id = :id";
+        
+        $stm = $conn->prepare($sql);
+        $stm->bindValue("id", $usuario->getId());
+        $stm->execute();
+    }
+
     //Método para converter um registro da base de dados em um objeto Usuario
     private function mapUsuarios($result) {
         $usuarios = array();
