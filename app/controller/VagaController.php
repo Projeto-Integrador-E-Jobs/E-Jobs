@@ -285,7 +285,11 @@ class VagaController extends Controller
     protected function viewVagas()
     {
         $this->usuarioLogado();
-        
+
+        $msgErro = "";
+        if (isset($_GET["erro"])) {
+             $msgErro = urldecode($_GET["erro"]);
+}
         $vaga = $this->findVagaById();
         if ($vaga) {
             $dados["vaga"] = $vaga;
@@ -298,8 +302,7 @@ class VagaController extends Controller
                     $dados["candidatura"] = $candidatura;
                 }
             }
-            
-            $this->loadView("vaga/vaga_detalhes.php", $dados);
+                $this->loadView("vaga/vaga_detalhes.php", $dados, $msgErro);
         } else {
             $this->listPublic("Vaga não encontrada.");
         }

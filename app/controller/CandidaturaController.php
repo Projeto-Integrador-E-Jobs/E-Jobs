@@ -50,18 +50,22 @@ class CandidaturaController extends Controller {
 
         */
 
-       
-        $candidatura = new Candidatura();
-        $candidatura->setCandidato($candidato)
-                   ->setVaga($vaga)
-                   ->setStatus(StatusCandidatura::EM_ANDAMENTO);
+        if($candidato->getTipoUsuario()->getId() == TipoUsuario::ID_CANDIDATO){
+            $candidatura = new Candidatura();
+            $candidatura->setCandidato($candidato)
+                    ->setVaga($vaga)
+                    ->setStatus(StatusCandidatura::EM_ANDAMENTO);
 
-        try {
-            $this->candidaturaDao->insert($candidatura);
+            try {
+                $this->candidaturaDao->insert($candidatura);
 
-            header("location: " . BASEURL . "/controller/VagaController.php?action=viewVagas&id=" . $vaga->getId());
-        } catch (Exception $e) {
-            echo "Erro ao realizar candidatura: " . $e->getMessage();
+                header("location: " . BASEURL . "/controller/VagaController.php?action=viewVagas&id=" . $vaga->getId());
+            } catch (Exception $e) {
+                echo "Erro ao realizar candidatura: " . $e->getMessage();
+            }
+        } else {
+            $msgErro = urlencode("Apenas candidatos podem se candidatar a vagas.");
+            header("location: " . BASEURL . "/controller/VagaController.php?action=viewVagas&id=" . $vaga->getId() . "&erro=$msgErro");
         }
     }
 
