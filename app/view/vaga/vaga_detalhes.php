@@ -9,6 +9,8 @@ require_once(__DIR__ . "/../include/menu.php");
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="detalhes-card">
+
+                <?php include_once(__DIR__ . "/../include/msg.php") ?>
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="mb-0"><?= htmlspecialchars($dados['vaga']->getTitulo()); ?></h3>
                     <div>
