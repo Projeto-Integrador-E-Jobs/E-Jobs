@@ -149,6 +149,7 @@ class UsuarioController extends Controller {
 
         try {
             $this->usuarioDao->update($usuario);
+            $_SESSION[SESSAO_USUARIO_NOME] = $nome;
             header("location: " . BASEURL . "/controller/UsuarioController.php?action=viewProfile");
             exit;
         } catch (PDOException $e) {
