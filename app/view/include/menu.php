@@ -40,9 +40,11 @@ $logado = isset($_SESSION[SESSAO_USUARIO_ID]);
         <div class="collapse navbar-collapse" id="conteudoNavbarSuportado">
             <ul class="navbar-nav mr-auto">
 
+                <?php if (!$logado || ($papel == TipoUsuario::ID_CANDIDATO)): ?>
                 <li class="nav-item">
                     <a class="nav-link" href="<?= BASEURL . '/controller/VagaController.php?action=listPublic' ?>">Vagas</a>
                 </li>
+                <?php endif; ?>
 
                 <?php if ($logado && ($papel == TipoUsuario::ID_ADMINISTRADOR)): ?>
                 <li class="nav-item">

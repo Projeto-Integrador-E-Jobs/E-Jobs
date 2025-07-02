@@ -50,7 +50,7 @@ require_once(__DIR__ . "/../include/menu.php");
                             <th>Regime</th>
                             <th>Status</th>
                             <th>Alterar</th>
-                            <th>Excluir</th>
+                
                             <th>Candidatos</th>
                         </tr>
                     </thead>
@@ -68,13 +68,7 @@ require_once(__DIR__ . "/../include/menu.php");
                                         Alterar
                                     </a>
                                 </td>
-                                <td>
-                                    <a class="btn btn-danger" 
-                                        onclick="return confirm('Confirma a exclusão da vaga?');"
-                                        href="<?= BASEURL ?>/controller/VagaController.php?action=delete&id=<?= $vaga->getId() ?>">
-                                        Excluir
-                                    </a>
-                                </td>
+                            
                                 <td>
                                     <a class="btn btn-info" 
                                         href="<?= BASEURL ?>/controller/CandidaturaController.php?action=listarCandidatos&id=<?= $vaga->getId() ?>">
