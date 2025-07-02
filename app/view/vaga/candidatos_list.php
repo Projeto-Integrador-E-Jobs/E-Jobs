@@ -28,9 +28,7 @@ require_once(__DIR__ . "/../include/menu.php");
                         <tr>
                             <th>Nome</th>
                             <th>Email</th>
-                            <th>Status</th>
                             <th>Data da Candidatura</th>
-                            <th>Alterar Status</th>
                             <th>Perfil</th>
                         </tr>
                     </thead>
@@ -39,14 +37,7 @@ require_once(__DIR__ . "/../include/menu.php");
                             <tr>
                                 <td><?= htmlspecialchars($candidatura->getCandidato()->getNome()) ?></td>
                                 <td><?= htmlspecialchars($candidatura->getCandidato()->getEmail()) ?></td>
-                                <td><?= htmlspecialchars($candidatura->getStatus()) ?></td>
                                 <td><?= date('d/m/Y', strtotime($candidatura->getDataCandidatura())) ?></td>
-                                <td>
-                                    <a class="btn btn-primary" 
-                                        href="<?= BASEURL ?>/controller/CandidaturaController.php?action=edit&id=<?= $candidatura->getId() ?>">
-                                        Alterar Status
-                                    </a>
-                                </td>
                                 <td>
                                     <a class="btn btn-info" 
                                         href="<?= BASEURL ?>/controller/CandidaturaController.php?action=viewCandidato&id=<?= $candidatura->getCandidato()->getId() ?>">

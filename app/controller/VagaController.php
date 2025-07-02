@@ -272,6 +272,20 @@ class VagaController extends Controller
             $this->listUsuario("Usuario não econtrado!");
     }
 
+     protected function inativarVaga() {
+        if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+            header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+            exit;
+        }
+
+        $vaga = $this->findVagaById();
+        if ($vaga) {
+            $this->vagaDao->inativarVaga($vaga->getId());
+            header("location: " . BASEURL . "/controller/VagaController.php?action=list");
+        } else
+            $this->listUsuario("Usuario não econtrado!");
+    }
+
     private function findVagaById()
     {
         $id = 0;
