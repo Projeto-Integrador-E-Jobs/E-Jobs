@@ -239,6 +239,17 @@ class VagaDAO {
         $stm->execute();
     }
 
+    public function inativarVaga(int $id) {
+        $conn = Connection::getConn();
+
+        $sql = "UPDATE vaga SET status = 'Inativo'".     
+               " WHERE id = :id";
+        
+        $stm = $conn->prepare($sql);
+        $stm->bindValue("id", $id);
+        $stm->execute();
+    }
+
     public function searchByTitle($title) {
         $conn = Connection::getConn();
 
