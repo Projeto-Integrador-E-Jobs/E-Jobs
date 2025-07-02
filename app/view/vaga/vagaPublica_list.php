@@ -183,16 +183,6 @@ require_once(__DIR__ . "/../include/menu.php");
                                     <span class="vaga-label">Cargo:</span>
                                     <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getCargo()->getNome()); ?> </span>
                                 </div>
-                                <div class="d-flex align-items-center mb-1">
-                                    <i class="fas fa-tasks vaga-icon"></i>
-                                    <span class="vaga-label">Requisitos:</span>
-                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getRequisitos()); ?> </span>
-                                </div>
-                                <div class="d-flex align-items-start mb-2">
-                                    <i class="fas fa-align-left vaga-icon mt-1"></i>
-                                    <span class="vaga-label">Descrição:</span>
-                                    <span class="vaga-info ms-1"> <?= htmlspecialchars($vaga->getDescricao()); ?> </span>
-                                </div>
                                 <div class="mt-auto text-end">
                                     <a href="VagaController.php?action=viewVagas&id=<?= $vaga->getId() ?>" class="btn btn-primary">
                                         <i class="fas fa-info-circle me-1"></i>Detalhes
