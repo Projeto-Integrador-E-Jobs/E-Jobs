@@ -1,0 +1,59 @@
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.vaga-card {
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    border: 1.5px solid #e3e3e3;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: #fff;
+}
+.vaga-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+    border-color: #0d6efd;
+    z-index: 2;
+}
+.vaga-icon {
+    width: 22px;
+    text-align: center;
+    color: #0d6efd;
+    margin-right: 8px;
+}
+.vaga-label {
+    font-weight: 500;
+    color: #333;
+}
+.vaga-info {
+    color: #555;
+}
+
+.detalhes-card {
+    border: 1.5px solid #e3e3e3;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background: #fff;
+    padding: 2rem;
+}
+.detalhes-icon {
+    width: 24px;
+    text-align: center;
+    color: #0d6efd;
+    margin-right: 10px;
+}
+.detalhes-label {
+    font-weight: 600;
+    color: #333;
+    min-width: 120px;
+}
+.detalhes-info {
+    color: #555;
+}

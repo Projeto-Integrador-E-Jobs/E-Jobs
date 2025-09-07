@@ -1,0 +1,87 @@
+/* Nome do arquivo: view/home/home.css */
+
+.banner {
+    background: linear-gradient(135deg, #4a6bff 0%, #2541b2 100%);
+    padding: 60px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.job-search-form {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.category-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+}
+
+.category-card .card-title {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.category-card .card-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.category-card .fa-3x {
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover .fa-3x {
+    transform: scale(1.1);
+}
+
+.job-card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.job-card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.job-info .badge {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.stats-section {
+    margin-top: 60px;
+    margin-bottom: 60px;
+    padding: 40px 0;
+    background-color: #f8f9fa;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2541b2;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+.badge-font {
+    font-size: 1.2rem;
+}
