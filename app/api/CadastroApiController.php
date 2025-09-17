@@ -1,0 +1,184 @@
+<?php
+#Classe controller para Usuário
+require_once(__DIR__ . "/ApiController.php");
+require_once(__DIR__ . "/../dao/UsuarioDAO.php");
+require_once(__DIR__ . "/../dao/TipoUsuarioDAO.php");
+require_once(__DIR__ . "/../dao/EstadoDAO.php");
+require_once(__DIR__ . "/../service/UsuarioService.php");
+require_once(__DIR__ . "/../service/LoginService.php");
+require_once(__DIR__ . "/../model/Usuario.php");
+require_once(__DIR__ . "/../model/enum/Status.php");
+
+class CadastroController extends Controller {
+
+    private UsuarioDAO $usuarioDao;
+    private TipoUsuarioDAO $tipoUsuarioDAO;
+    private EstadoDAO $estadoDAO;
+    private UsuarioService $usuarioService;
+    private LoginService $loginService;
+
+    //Método construtor do controller - será executado a cada requisição a está classe
+    public function __construct() {
+    
+        $this->usuarioDao = new UsuarioDAO();
+        $this->tipoUsuarioDAO = new TipoUsuarioDAO();
+        $this->estadoDAO = new EstadoDAO();
+        $this->usuarioService = new UsuarioService();
+        $this->loginService = new LoginService();
+
+
+        $this->handleAction();
+    }
+
+    protected function create() {
+        $dados["estados"] = $this->estadoDAO->list();
+        $dados["papeis"] = $this->tipoUsuarioDAO->listSemADM();
+        
+         $this->jsonResponse([
+                        "success" => true,
+                        "estados" => [
+                            "codigo_uf" => $dados["estados"]->getId(),
+                            "nome" => $dados["estados"]->getNome(),
+                        ],
+                        "papeis" => [
+                            "id" => $dados["papeis"]->getId(),
+                            "nome" => $dados["papeis"]->getNome(),
+                        ]
+                    ]);
+        
+    }
+
+    protected function save() {
+        //Captura os dados do formulário
+        $input = json_decode(file_get_contents("php://input"), true);
+        $idTipoUsuario = isset($input['tipoUsuario']) && is_numeric($input['tipoUsuario']) ? (int)$input['tipoUsuario'] : NULL;
+        $nome = trim($input['nome']) ? trim($input['nome']) : NULL;
+        $email = trim($input['email']) ? trim($input['email']) : NULL;
+        $senha = trim($input['senha']) ? trim($input['senha']) : NULL;
+        $confSenha = trim($input['conf_senha']) ? trim($input['conf_senha']) : NULL;
+        
+        $documento = NULL;
+        if(isset($input['documento']))
+            $documento = trim($input['documento']) ? trim($input['documento']) : NULL;
+        
+        $descricao = trim($input['descricao']) ? trim($input['descricao']) : NULL;
+        $estadoId = isset($input['estado']) && is_numeric($input['estado']) ? $input['estado'] : NULL;
+        $cidadeId = trim($input['cidade']) ? trim($input['cidade']) : NULL;
+        $endLogradouro = trim($input['endLogradouro']) ? trim($input['endLogradouro']) : NULL;
+        $endBairro = trim($input['endBairro']) ? trim($input['endBairro']) : NULL;
+        $endNumero = trim($input['endNumero']) ? trim($input['endNumero']) : NULL;
+        $telefone = trim($input['telefone']) ? trim($input['telefone']) : NULL;
+        
+        //Cria objeto Usuario
+        $usuario = new Usuario();
+
+        if($idTipoUsuario) {
+            $tipoUsuario = new TipoUsuario();
+            $tipoUsuario->setId($idTipoUsuario);
+            $usuario->setTipoUsuario($tipoUsuario);
+        } else
+            $usuario->setTipoUsuario(null);
+
+        $usuario->setNome($nome);
+        $usuario->setEmail($email);
+        $usuario->setSenha($senha);
+        $usuario->setDocumento($documento);
+        $usuario->setDescricao($descricao);
+        
+        $cidade = new Cidade();
+        if($cidadeId)
+            $cidade->setCodigoIbge($cidadeId);
+        else
+            $cidade->setCodigoIbge(null);
+        $cidade->setEstado(new Estado());
+        $cidade->getEstado()->setCodigoUf($estadoId);
+        $usuario->setCidade($cidade);
+
+        $usuario->setEndLogradouro($endLogradouro);
+        $usuario->setEndBairro($endBairro);
+        $usuario->setEndNumero($endNumero);
+        $usuario->setTelefone($telefone);
+        if($usuario->getTipoUsuario() != null && $usuario->getTipoUsuario()->getId() == TipoUsuario::ID_EMPRESA)
+            $usuario->setStatus(Status::PENDENTE);
+        else
+            $usuario->setStatus(Status::ATIVO);
+        
+        //Validar os dados
+        $erros = $this->usuarioService->validarDados($usuario, $confSenha);
+        if(empty($erros)){
+            if($usuario->getTipoUsuario()->getId() == TipoUsuario::ID_CANDIDATO){
+                if (! $this->usuarioService->validarCPF($usuario->getDocumento())) {
+                    array_push($erros, "O CPF informado é inválido.");
+                }
+                
+            }
+            if(empty($erros)){
+            $erros = array_merge($erros,$this->usuarioService->validarDocumento($usuario->getDocumento()));
+            $erros = array_merge($erros,$this->usuarioService->validarEmail($usuario->getEmail()));
+            }
+        }
+        if(empty($erros)) {
+            //Persiste o objeto
+            try {
+                $this->usuarioDao->insert($usuario);
+               
+                $usuario = $this->usuarioDao->findByLoginSenha($usuario->getEmail(),$usuario->getSenha());  
+                if($usuario->getStatus == Status::ATIVO){                  
+                    $this->loginService->salvarUsuarioSessao($usuario);
+                    
+                  $this->jsonResponse([
+                            "success" => true,
+                            "estados" => array_map(fn($e) => [
+                                "codigo_uf" => $e->getId(),
+                                "nome" => $e->getNome()
+                                                             ], 
+                            $dados["estados"]),
+                            "papeis" => array_map(fn($p) => [
+                                "id" => $p->getId(),
+                                "nome" => $p->getNome()
+                            ], 
+                            $dados["papeis"])
+                    ]);
+
+                
+                    exit;
+                } else { $this->jsonResponse([
+                            "success" => false,
+                            "estados" => array_map(fn($e) => [
+                                "codigo_uf" => $e->getId(),
+                                "nome" => $e->getNome()
+                            ], $dados["estados"]),
+                            "papeis" => array_map(fn($p) => [
+                                "id" => $p->getId(),
+                                "nome" => $p->getNome()
+                            ], $dados["papeis"])
+                        ]);
+                    }
+            } catch (PDOException $e) {
+                $erros = ["Erro ao salvar o usuário na base de dados."];                
+            }
+        }
+
+        //Se há erros, volta para o formulário
+        
+        //Carregar os valores recebidos por POST de volta para o formulário
+
+        
+        $dados["usuario"] = $usuario;
+        $dados["confSenha"] = $confSenha;
+        $dados["estados"] = $this->estadoDAO->list();
+        $dados["papeis"] = $this->tipoUsuarioDAO->listSemADM();
+
+         $this->jsonResponse([
+            "success" => false,
+            "errors" => $erros,
+            "dados" => $dados
+        ], 400);
+    }
+
+
+}
+
+
+#Criar objeto da classe para assim executar o construtor
+new CadastroController();
