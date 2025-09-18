@@ -9,7 +9,7 @@ require_once(__DIR__ . "/../service/LoginService.php");
 require_once(__DIR__ . "/../model/Usuario.php");
 require_once(__DIR__ . "/../model/enum/Status.php");
 
-class CadastroController extends Controller {
+class CadastroApiController extends ApiController {
 
     private UsuarioDAO $usuarioDao;
     private TipoUsuarioDAO $tipoUsuarioDAO;
@@ -52,22 +52,22 @@ class CadastroController extends Controller {
         //Captura os dados do formulário
         $input = json_decode(file_get_contents("php://input"), true);
         $idTipoUsuario = isset($input['tipoUsuario']) && is_numeric($input['tipoUsuario']) ? (int)$input['tipoUsuario'] : NULL;
-        $nome = trim($input['nome']) ? trim($input['nome']) : NULL;
-        $email = trim($input['email']) ? trim($input['email']) : NULL;
-        $senha = trim($input['senha']) ? trim($input['senha']) : NULL;
-        $confSenha = trim($input['conf_senha']) ? trim($input['conf_senha']) : NULL;
+        $nome = isset($input['nome']) ? trim((string)$input['nome']) : null;
+        $email = isset($input['email']) ? trim((string)$input['email']) : null;
+        $senha = isset($input['senha']) ? trim((string)$input['senha']) : null;
+        $confSenha = isset($input['conf_senha']) ? trim((string)$input['conf_senha']) : null;
         
         $documento = NULL;
         if(isset($input['documento']))
-            $documento = trim($input['documento']) ? trim($input['documento']) : NULL;
+            $documento  = isset($input['documento']) ? trim((string)$input['documento']) : null;
         
-        $descricao = trim($input['descricao']) ? trim($input['descricao']) : NULL;
+        $descricao  = isset($input['descricao'])  ? trim((string)$input['descricao'])  : null;
         $estadoId = isset($input['estado']) && is_numeric($input['estado']) ? $input['estado'] : NULL;
-        $cidadeId = trim($input['cidade']) ? trim($input['cidade']) : NULL;
-        $endLogradouro = trim($input['endLogradouro']) ? trim($input['endLogradouro']) : NULL;
-        $endBairro = trim($input['endBairro']) ? trim($input['endBairro']) : NULL;
-        $endNumero = trim($input['endNumero']) ? trim($input['endNumero']) : NULL;
-        $telefone = trim($input['telefone']) ? trim($input['telefone']) : NULL;
+        $cidadeId = isset($input['cidade']) ? trim($input['cidade']) : NULL;
+        $endLogradouro = isset($input['endLogradouro']) ? trim($input['endLogradouro']) : NULL;
+        $endBairro = isset($input['endBairro']) ? trim($input['endBairro']) : NULL;
+        $endNumero = isset($input['endNumero']) ? trim($input['endNumero']) : NULL;
+        $telefone = isset($input['telefone']) ? trim($input['telefone']) : NULL;
         
         //Cria objeto Usuario
         $usuario = new Usuario();
@@ -181,4 +181,4 @@ class CadastroController extends Controller {
 
 
 #Criar objeto da classe para assim executar o construtor
-new CadastroController();
+new CadastroApiController();
