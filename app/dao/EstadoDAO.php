@@ -15,6 +15,18 @@ class EstadoDAO {
         return $this->mapEstado($result);
     }
 
+    public function listJson() {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM estados ORDER BY nome";
+        $stm = $conn->prepare($sql);    
+        $stm->execute();
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result; 
+    }
+
+
     public function findById(int $id) {
         $conn = Connection::getConn();
 

@@ -15,6 +15,17 @@ class TipoUsuarioDAO {
         return $this->mapTipoUsuario($result);
     }
 
+    public function listJson() {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM tipo_usuario WHERE nome != 'ADMINISTRADOR'";
+        $stm = $conn->prepare($sql);    
+        $stm->execute();
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $result;
+    }
+
     public function listSemADM() {
         $conn = Connection::getConn();
 

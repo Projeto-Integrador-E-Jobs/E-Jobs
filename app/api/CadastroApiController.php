@@ -13,7 +13,7 @@ class CadastroApiController extends ApiController {
 
     private UsuarioDAO $usuarioDao;
     private TipoUsuarioDAO $tipoUsuarioDAO;
-    private EstadoDAO $estadoDAO;
+    private EstadoDAO $estadoDao;
     private UsuarioService $usuarioService;
     private LoginService $loginService;
 
@@ -22,7 +22,7 @@ class CadastroApiController extends ApiController {
     
         $this->usuarioDao = new UsuarioDAO();
         $this->tipoUsuarioDAO = new TipoUsuarioDAO();
-        $this->estadoDAO = new EstadoDAO();
+        $this->estadoDao = new EstadoDAO();
         $this->usuarioService = new UsuarioService();
         $this->loginService = new LoginService();
 
@@ -31,24 +31,33 @@ class CadastroApiController extends ApiController {
     }
 
     protected function create() {
-        $dados["estados"] = $this->estadoDAO->list();
-        $dados["papeis"] = $this->tipoUsuarioDAO->listSemADM();
+        $estados = $this->estadoDao->list();
+        $papeis = $this->tipoUsuarioDAO->listSemAdm();
         
-         $this->jsonResponse([
-                        "success" => true,
-                        "estados" => [
-                            "codigo_uf" => $dados["estados"]->getId(),
-                            "nome" => $dados["estados"]->getNome(),
-                        ],
-                        "papeis" => [
-                            "id" => $dados["papeis"]->getId(),
-                            "nome" => $dados["papeis"]->getNome(),
-                        ]
-                    ]);
+        $estadosArray = array_map(fn($e) => [
+                                                "codigo_uf" => $e->getCodigoUf(),
+                                                "nome" => $e->getNome()
+                                            ], $estados);
+
+        $papeisArray = array_map(fn($p) => [
+                                                "id" => $p->getId(),
+                                                "nome" => $p->getNome()
+                                            ], $papeis);
+
+        $this->jsonResponse([
+                            "success" => true,
+                            "estados" => $estadosArray,
+                            "papeis" => $papeisArray
+                        ]);
         
     }
 
     protected function save() {
+        $dados = [
+                    "estados" => $this->estadoDao->listJson() ?: [],
+                    "papeis" => $this->tipoUsuarioDAO->listJson() ?: []
+        ];
+
         //Captura os dados do formulário
         $input = json_decode(file_get_contents("php://input"), true);
         $idTipoUsuario = isset($input['tipoUsuario']) && is_numeric($input['tipoUsuario']) ? (int)$input['tipoUsuario'] : NULL;
@@ -123,21 +132,15 @@ class CadastroApiController extends ApiController {
                 $this->usuarioDao->insert($usuario);
                
                 $usuario = $this->usuarioDao->findByLoginSenha($usuario->getEmail(),$usuario->getSenha());  
-                if($usuario->getStatus == Status::ATIVO){                  
+                if($usuario->getStatus() == Status::ATIVO){                  
                     $this->loginService->salvarUsuarioSessao($usuario);
                     
                   $this->jsonResponse([
                             "success" => true,
-                            "estados" => array_map(fn($e) => [
-                                "codigo_uf" => $e->getId(),
-                                "nome" => $e->getNome()
-                                                             ], 
-                            $dados["estados"]),
-                            "papeis" => array_map(fn($p) => [
-                                "id" => $p->getId(),
-                                "nome" => $p->getNome()
-                            ], 
-                            $dados["papeis"])
+                            "usuario" => [
+                                "tipoUsuario" => $usuario->getTipoUsuario()->getId() ?? "",
+                                "nome" => $usuario->getNome() ?? "",
+                            ]
                     ]);
 
                 
@@ -163,11 +166,24 @@ class CadastroApiController extends ApiController {
         
         //Carregar os valores recebidos por POST de volta para o formulário
 
-        
-        $dados["usuario"] = $usuario;
+         $user = [
+                "tipoUsuario" => $usuario->getTipoUsuario()->getId() ?? "",
+                "nome" => $usuario->getNome() ?? "",
+                "email" => $usuario->getEmail() ?? "",
+                "senha" => $usuario->getSenha() ?? "",
+                "documento" => $usuario->getDocumento() ?? "",
+                "descricao" => $usuario->getDescricao() ?? "",
+                "cidade" => [ "id" => $cidade->getCodigoIbge() ?? "",
+                              "uf" => ["codigoUf" => $cidade->getEstado()->getCodigoUf()]],
+                "endLogradouro" => $usuario->getEndLogradouro() ?? "",
+                "endBairro" => $usuario->getEndBairro() ?? "",
+                "endNumero" => $usuario->getEndNumero() ?? "",
+                "telefone" => $usuario->getTelefone() ?? "",
+         ];
+        $dados["usuario"] = $user;
         $dados["confSenha"] = $confSenha;
-        $dados["estados"] = $this->estadoDAO->list();
-        $dados["papeis"] = $this->tipoUsuarioDAO->listSemADM();
+        $dados["estados"] = $this->estadoDao->listJson();
+        $dados["papeis"] = $this->tipoUsuarioDAO->listJson();
 
          $this->jsonResponse([
             "success" => false,
@@ -176,9 +192,7 @@ class CadastroApiController extends ApiController {
         ], 400);
     }
 
-
 }
-
 
 #Criar objeto da classe para assim executar o construtor
 new CadastroApiController();
