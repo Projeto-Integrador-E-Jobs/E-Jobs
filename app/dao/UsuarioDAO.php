@@ -170,7 +170,6 @@ class UsuarioDAO {
         $stm->execute();
     }
 
-    //Método para excluir um Usuario pelo seu ID
     public function deleteById(int $id) {
         $conn = Connection::getConn();
 
