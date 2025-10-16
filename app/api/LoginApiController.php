@@ -37,7 +37,8 @@ class LoginApiController extends ApiController {
                             "id" => $usuario->getId(),
                             "nome" => $usuario->getNome(),
                             "email" => $usuario->getEmail(),
-                            "tipo" => $usuario->getTipoUsuario()->getId()
+                            "tipo" => $usuario->getTipoUsuario()->getId(),
+                            "telefone" => $usuario->getTelefone()
                         ]
                     ]);
                 }

@@ -91,7 +91,6 @@ class CidadeDAO {
             $cidade->setCapital($reg['capital']);
             $cidade->setDdd($reg['ddd']);
             $cidade->setFusoHorario($reg['fuso_horario']);
-            $cidade->setSiafiId($reg['siafi_id']);
             $cidade->setEstado($this->estadoDAO->findById($reg['codigo_uf']));
     
             array_push($cidades, $cidade);
@@ -111,7 +110,6 @@ class CidadeDAO {
             $cidade->setCapital($reg['capital']);
             $cidade->setDdd($reg['ddd']);
             $cidade->setFusoHorario($reg['fuso_horario']);
-            $cidade->setSiafiId($reg['siafi_id']);
 
             // Cria um estado com apenas a sigla
             $estado = new Estado();

@@ -1,18 +1,55 @@
 <?php
-require_once __DIR__ . "/../dao/VagaDAO.php";
-require_once __DIR__ . "/../model/Vaga.php";
+require_once(__DIR__ . "/ApiController.php");
+require_once(__DIR__ . "/../dao/VagaDAO.php");
+require_once(__DIR__ . "/../dao/UsuarioDAO.php");
+require_once(__DIR__ . "/../dao/CargoDAO.php");
+require_once(__DIR__ . "/../dao/CategoriaDAO.php");
+require_once(__DIR__ . "/../dao/CandidaturaDAO.php");
+require_once(__DIR__ . "/../service/VagaService.php");
+require_once(__DIR__ . "/../model/Vaga.php");
+require_once(__DIR__ . "/../model/Candidatura.php");
+require_once(__DIR__ . "/../model/enum/Modalidade.php");
+require_once(__DIR__ . "/../model/enum/Regime.php");
+require_once(__DIR__ . "/../model/enum/Horario.php");
+require_once(__DIR__ . "/../model/enum/Status.php");
+require_once(__DIR__ . "/../model/enum/Salario.php");
 
-class VagaApiController {
-    private $vagaDAO;
 
-    public function __construct() {
-        $this->vagaDAO = new VagaDAO();
+class VagaApiController extends ApiController
+{
+
+    private VagaDAO $vagaDao;
+    private UsuarioDAO $usuarioDao;
+    private CargoDAO $cargoDao;
+    private CategoriaDAO $categoriaDao;
+    private CandidaturaDAO $candidaturaDao;
+    private VagaService $vagaService;
+
+    public function __construct()
+    {
+        $action = $_GET["action"];
+        $allowedActions = ["listPublic", "viewVagas", "listar", "create"];
+
+        // if (!in_array($action, $allowedActions) && !$this->usuarioLogado()) {
+        //     header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+        //     exit;
+        // }
+
         header('Content-Type: application/json; charset=utf-8');
+        $this->vagaDao = new VagaDAO();
+        $this->cargoDao = new CargoDAO();
+        $this->usuarioDao = new UsuarioDAO();
+        $this->candidaturaDao = new CandidaturaDAO();
+        $this->categoriaDao = new CategoriaDAO();
+        $this->vagaService = new VagaService();
+
+        $this->handleAction();
     }
+
 
     // Listar todas as vagas
     public function listar() {
-        $vagas = $this->vagaDAO->list();
+        $vagas = $this->vagaDao->list();
 
         $response = [];
         foreach ($vagas as $vaga) {
@@ -37,7 +74,7 @@ class VagaApiController {
 
 
     public function detalhes($id) {
-        $vaga = $this->vagaDAO->findById($id); 
+        $vaga = $this->vagaDao->findById($id); 
 
         if (!$vaga) {
             http_response_code(404);
@@ -62,22 +99,156 @@ class VagaApiController {
 
         echo json_encode($response);
     }
-}
 
-$action = $_GET['action'] ?? null;
-$controller = new VagaApiController();
+    protected function create()
+    {
+        // if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+        //     header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+        //     exit;
+        // }
 
-if ($action === 'listar') {
-    $controller->listar();
-} elseif ($action === 'detalhes') {
-    $id = $_GET['id'] ?? null;
-    if ($id) {
-        $controller->detalhes($id);
-    } else {
-        http_response_code(400);
-        echo json_encode(['error' => 'ID da vaga não informado']);
+        $usuario = $this->usuarioDao->findById(1);
+        $modalidades = Modalidade::getAllAsArray();
+        $horarios = Horario::getAllAsArray();
+        $regimes = Regime::getAllAsArray();
+        $status = Status::getAllAsArray();
+        $cargos = $this->cargoDao->list();
+        $categorias = $this->categoriaDao->list();
+        
+        $cargosArray = array_map(fn($e) => [
+                                                "id" => $e->getId(),
+                                                "nome" => $e->getNome()
+                                            ], $cargos);
+
+        $categoriasArray = array_map(fn($p) => [
+                                                "id" => $p->getId(),
+                                                "nome" => $p->getNome()
+                                            ], $categorias);
+
+        $empresaArray = [
+                            "id" => $usuario->getId(),
+                            "nome" => $usuario->getNome()
+                        ];
+
+        $this->jsonResponse([
+                            "success" => true,
+                            "id" => 0,
+                            "modalidades" => $modalidades,
+                            "horarios" => $horarios,
+                            "regimes" => $regimes,
+                            "status" => $status,
+                            "cargos" => $cargosArray,
+                            "categorias" => $categoriasArray,
+                            "empresa" => $empresaArray
+                        ]);
     }
-} else {
-    http_response_code(400);
-    echo json_encode(['error' => 'Ação inválida']);
+
+    protected function save()
+    {
+    
+        // if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
+        //     header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
+        //     exit;
+        // }
+
+        $input = json_decode(file_get_contents("php://input"), true);
+        $dados["id"] = isset($input['id']) ? $input['id'] : 0;
+        $titulo = trim($input['titulo']) ? trim($input['titulo']) : NULL;
+        $modalidade = trim($input['modalidade']) ? trim($input['modalidade']) : NULL;
+        $horario = trim($input['horario']) ? trim($input['horario']) : NULL;
+        $regime = trim($input['regime']) ? trim($input['regime']) : NULL;
+        $salario = trim($input['salario']) ? trim($input['salario']) : NULL;
+        $descricao = trim($input['descricao']) ? trim($input['descricao']) : NULL;
+        $requisitos = trim($input['requisitos']) ? trim($input['requisitos']) : NULL;
+        $status = trim($input['status']) ? trim($input['status']) : Status::ATIVO;
+        $cargoId = isset($input['cargo']) && is_numeric($input['cargo']) && (int)$input['cargo'] > 0 ? (int)$input['cargo'] : NULL;
+        $cargo = $cargoId !== null ? $this->cargoDao->findById($cargoId) : NULL;
+        $categoriaId = isset($input['categoria']) && is_numeric($input['categoria']) && (int)$input['categoria'] > 0 ? (int)$input['categoria'] : NULL;
+        $categoria = $categoriaId !== null ? $this->categoriaDao->findById($categoriaId) : NULL;
+        $usuarioId = isset($input['usuarioId']) && is_numeric($input['usuarioId']) ? (int)$input['usuarioId'] : NULL;
+        $empresa = $usuarioId ? $this->usuarioDao->findById($usuarioId) : null;
+
+        $vaga = new Vaga();
+        $vaga->setTitulo($titulo);
+        $vaga->setModalidade($modalidade);
+        $vaga->setHorario($horario);
+        $vaga->setRegime($regime);
+        $vaga->setSalario($salario);
+        $vaga->setDescricao($descricao);
+        $vaga->setRequisitos($requisitos);
+        $vaga->setStatus($status);
+        $vaga->setCargo($cargo);
+        $vaga->setCategoria($categoria);
+        $vaga->setEmpresa($empresa);
+        
+
+
+        $erros = $this->vagaService->validarDados($vaga);
+        if (empty($erros)) {
+           
+            try {
+
+                if ($dados["id"] == 0) { 
+                    $this->vagaDao->insert($vaga);
+                    $msg = "Vaga salva com sucesso.";
+                    $this->jsonResponse([
+                            "success" => true,
+                            "mensagem" => $msg
+                    ]);
+                    exit;
+                } else { 
+                    $vaga->setId($dados["id"]);
+                    $this->vagaDao->update($vaga);
+
+                    $msg = "Vaga salva com sucesso.";
+                    $this->jsonResponse([
+                            "success" => true,
+                            "mensagem" => $msg
+                    ]);
+                    exit;
+                }
+            } catch (PDOException $e) {
+                $erros = ["Erro ao salvar a vaga na base de dados.", $e];
+            }
+        }
+
+        $valoresVaga = [
+                "titulo" => $vaga->getTitulo() ?? "",
+                "modalidade" => $vaga->getModalidade() ?? "",
+                "horario" => $vaga->getHorario() ?? "",
+                "regime" => $vaga->getRegime() ?? "",
+                "salario" => $vaga->getSalario() ?? "",
+                "descricao" => $vaga->getDescricao() ?? "",
+                "requisitos" => $vaga->getRequisitos() ?? "",
+                "status" => $vaga->getStatus() ?? "",
+                "cargo" => $vaga->getCargo() ?? "",
+                "categoria" => $vaga->getCategoria() ?? "",
+         ];
+         
+        $dados["vaga"] = $valoresVaga;
+        $dados["modalidades"] = Modalidade::getAllAsArray();
+        $dados["horarios"] = Horario::getAllAsArray();
+        $dados["regimes"] = Regime::getAllAsArray();
+        $dados["cargos"] = $this->cargoDao->list();
+        $dados["empresa"] = $this->usuarioDao->findById($vaga->getEmpresa()->getId());
+
+         $this->jsonResponse([
+            "success" => false,
+            "errors" => $erros,
+            "dados" => $dados
+        ], 400);
+    }
+
+     protected function usuarioLogado() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        return isset($_SESSION[SESSAO_USUARIO_ID]);
+    }
+
+    
 }
+new VagaApiController();
+
+

@@ -17,7 +17,6 @@ class CadastroApiController extends ApiController {
     private UsuarioService $usuarioService;
     private LoginService $loginService;
 
-    //Método construtor do controller - será executado a cada requisição a está classe
     public function __construct() {
     
         $this->usuarioDao = new UsuarioDAO();
@@ -146,15 +145,8 @@ class CadastroApiController extends ApiController {
                 
                     exit;
                 } else { $this->jsonResponse([
-                            "success" => false,
-                            "estados" => array_map(fn($e) => [
-                                "codigo_uf" => $e->getId(),
-                                "nome" => $e->getNome()
-                            ], $dados["estados"]),
-                            "papeis" => array_map(fn($p) => [
-                                "id" => $p->getId(),
-                                "nome" => $p->getNome()
-                            ], $dados["papeis"])
+                            "success" => true,
+                            "status" => "pendente"
                         ]);
                     }
             } catch (PDOException $e) {
@@ -166,7 +158,7 @@ class CadastroApiController extends ApiController {
         
         //Carregar os valores recebidos por POST de volta para o formulário
 
-         $user = [
+        $user = [
                 "tipoUsuario" => $usuario->getTipoUsuario()->getId() ?? "",
                 "nome" => $usuario->getNome() ?? "",
                 "email" => $usuario->getEmail() ?? "",
