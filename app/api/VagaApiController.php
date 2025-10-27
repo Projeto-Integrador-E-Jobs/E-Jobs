@@ -48,7 +48,8 @@ class VagaApiController extends ApiController
 
 
     // Listar todas as vagas
-    public function listar() {
+    public function listar()
+    {
         $vagas = $this->vagaDao->list();
 
         $response = [];
@@ -56,12 +57,12 @@ class VagaApiController extends ApiController
             $response[] = [
                 'id'        => $vaga->getId(),
                 'titulo'    => $vaga->getTitulo(),
-                'modalidade'=> $vaga->getModalidade(),
+                'modalidade' => $vaga->getModalidade(),
                 'horario'   => $vaga->getHorario(),
                 'regime'    => $vaga->getRegime(),
                 'salario'   => $vaga->getSalario(),
                 'descricao' => $vaga->getDescricao(),
-                'requisitos'=> $vaga->getRequisitos(),
+                'requisitos' => $vaga->getRequisitos(),
                 'status'    => $vaga->getStatus(),
                 'empresa'   => $vaga->getEmpresa()->getNome(),
                 'cargo'     => $vaga->getCargo()->getNome(),
@@ -73,79 +74,108 @@ class VagaApiController extends ApiController
     }
 
 
-    public function detalhes($id) {
-        $vaga = $this->vagaDao->findById($id); 
+    protected function detalhes()
+    {
+        $id = $_GET["id"] ?? null;
 
-        if (!$vaga) {
-            http_response_code(404);
-            echo json_encode(['error' => 'Vaga não encontrada']);
+        if (!$id || !ctype_digit((string)$id)) {
+            $this->jsonResponse(["success" => false, "errors" => ["ID da vaga não informado ou inválido."]], 400);
             return;
         }
 
-        $response = [
-            'id'        => $vaga->getId(),
-            'titulo'    => $vaga->getTitulo(),
-            'modalidade'=> $vaga->getModalidade(),
-            'horario'   => $vaga->getHorario(),
-            'regime'    => $vaga->getRegime(),
-            'salario'   => $vaga->getSalario(),
-            'descricao' => $vaga->getDescricao(),
-            'requisitos'=> $vaga->getRequisitos(),
-            'status'    => $vaga->getStatus(),
-            'empresa'   => $vaga->getEmpresa()->getNome(),
-            'cargo'     => $vaga->getCargo()->getNome(),
-            'categoria' => $vaga->getCategoria()->getNome()
+        $vaga = $this->vagaDao->findById((int)$id);
+
+        if (!$vaga) {
+            $this->jsonResponse(["success" => false, "errors" => ["Vaga não encontrada."]], 404);
+            return;
+        }
+
+
+        $empresa   = $vaga->getEmpresa();
+        $cargo     = $vaga->getCargo();
+        $categoria = $vaga->getCategoria();
+
+        $payload = [
+            'id'         => $vaga->getId(),
+            'titulo'     => $vaga->getTitulo(),
+            'modalidade' => $vaga->getModalidade(),
+            'horario'    => $vaga->getHorario(),
+            'regime'     => $vaga->getRegime(),
+            'salario'    => $vaga->getSalario(),
+            'descricao'  => $vaga->getDescricao(),
+            'requisitos' => $vaga->getRequisitos(),
+            'status'     => $vaga->getStatus(),
+            'empresa'    => $empresa   ? $empresa->getNome()   : "",
+            'cargo'      => $cargo     ? $cargo->getNome()     : "",
+            'categoria'  => $categoria ? $categoria->getNome() : "",
         ];
 
-        echo json_encode($response);
+        $this->jsonResponse($payload);
     }
+
 
     protected function create()
     {
-        // if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
-        //     header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
-        //     exit;
-        // }
+        $input = json_decode(file_get_contents("php://input"), true);
+        $idEmpresa = $input["usuarioId"] ?? ($_GET["id"] ?? null);
 
-        $usuario = $this->usuarioDao->findById(1);
+        if (!$idEmpresa) {
+            $this->jsonResponse([
+                "success" => false,
+                "errors" => ["ID da empresa não informado."]
+            ]);
+            return;
+        }
+
+        $usuario = $this->usuarioDao->findById($idEmpresa);
+
+        if (!$usuario) {
+            $this->jsonResponse([
+                "success" => false,
+                "errors" => ["Empresa não encontrada."]
+            ]);
+            return;
+        }
+
         $modalidades = Modalidade::getAllAsArray();
         $horarios = Horario::getAllAsArray();
         $regimes = Regime::getAllAsArray();
         $status = Status::getAllAsArray();
         $cargos = $this->cargoDao->list();
         $categorias = $this->categoriaDao->list();
-        
+
         $cargosArray = array_map(fn($e) => [
-                                                "id" => $e->getId(),
-                                                "nome" => $e->getNome()
-                                            ], $cargos);
+            "id" => $e->getId(),
+            "nome" => $e->getNome()
+        ], $cargos);
 
         $categoriasArray = array_map(fn($p) => [
-                                                "id" => $p->getId(),
-                                                "nome" => $p->getNome()
-                                            ], $categorias);
+            "id" => $p->getId(),
+            "nome" => $p->getNome()
+        ], $categorias);
 
         $empresaArray = [
-                            "id" => $usuario->getId(),
-                            "nome" => $usuario->getNome()
-                        ];
+            "id" => $usuario->getId(),
+            "nome" => $usuario->getNome()
+        ];
 
         $this->jsonResponse([
-                            "success" => true,
-                            "id" => 0,
-                            "modalidades" => $modalidades,
-                            "horarios" => $horarios,
-                            "regimes" => $regimes,
-                            "status" => $status,
-                            "cargos" => $cargosArray,
-                            "categorias" => $categoriasArray,
-                            "empresa" => $empresaArray
-                        ]);
+            "success" => true,
+            "id" => 0,
+            "modalidades" => $modalidades,
+            "horarios" => $horarios,
+            "regimes" => $regimes,
+            "status" => $status,
+            "cargos" => $cargosArray,
+            "categorias" => $categoriasArray,
+            "empresa" => $empresaArray
+        ]);
     }
+
 
     protected function save()
     {
-    
+
         // if (isset($_SESSION[SESSAO_USUARIO_PAPEL]) && $_SESSION[SESSAO_USUARIO_PAPEL] == 1) {
         //     header("Location: " . BASEURL . "/controller/VagaController.php?action=listPublic");
         //     exit;
@@ -180,30 +210,30 @@ class VagaApiController extends ApiController
         $vaga->setCargo($cargo);
         $vaga->setCategoria($categoria);
         $vaga->setEmpresa($empresa);
-        
+
 
 
         $erros = $this->vagaService->validarDados($vaga);
         if (empty($erros)) {
-           
+
             try {
 
-                if ($dados["id"] == 0) { 
+                if ($dados["id"] == 0) {
                     $this->vagaDao->insert($vaga);
                     $msg = "Vaga salva com sucesso.";
                     $this->jsonResponse([
-                            "success" => true,
-                            "mensagem" => $msg
+                        "success" => true,
+                        "mensagem" => $msg
                     ]);
                     exit;
-                } else { 
+                } else {
                     $vaga->setId($dados["id"]);
                     $this->vagaDao->update($vaga);
 
                     $msg = "Vaga salva com sucesso.";
                     $this->jsonResponse([
-                            "success" => true,
-                            "mensagem" => $msg
+                        "success" => true,
+                        "mensagem" => $msg
                     ]);
                     exit;
                 }
@@ -213,18 +243,18 @@ class VagaApiController extends ApiController
         }
 
         $valoresVaga = [
-                "titulo" => $vaga->getTitulo() ?? "",
-                "modalidade" => $vaga->getModalidade() ?? "",
-                "horario" => $vaga->getHorario() ?? "",
-                "regime" => $vaga->getRegime() ?? "",
-                "salario" => $vaga->getSalario() ?? "",
-                "descricao" => $vaga->getDescricao() ?? "",
-                "requisitos" => $vaga->getRequisitos() ?? "",
-                "status" => $vaga->getStatus() ?? "",
-                "cargo" => $vaga->getCargo() ?? "",
-                "categoria" => $vaga->getCategoria() ?? "",
-         ];
-         
+            "titulo" => $vaga->getTitulo() ?? "",
+            "modalidade" => $vaga->getModalidade() ?? "",
+            "horario" => $vaga->getHorario() ?? "",
+            "regime" => $vaga->getRegime() ?? "",
+            "salario" => $vaga->getSalario() ?? "",
+            "descricao" => $vaga->getDescricao() ?? "",
+            "requisitos" => $vaga->getRequisitos() ?? "",
+            "status" => $vaga->getStatus() ?? "",
+            "cargo" => $vaga->getCargo() ?? "",
+            "categoria" => $vaga->getCategoria() ?? "",
+        ];
+
         $dados["vaga"] = $valoresVaga;
         $dados["modalidades"] = Modalidade::getAllAsArray();
         $dados["horarios"] = Horario::getAllAsArray();
@@ -232,14 +262,15 @@ class VagaApiController extends ApiController
         $dados["cargos"] = $this->cargoDao->list();
         $dados["empresa"] = $this->usuarioDao->findById($vaga->getEmpresa()->getId());
 
-         $this->jsonResponse([
+        $this->jsonResponse([
             "success" => false,
             "errors" => $erros,
             "dados" => $dados
         ], 400);
     }
 
-     protected function usuarioLogado() {
+    protected function usuarioLogado()
+    {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -247,8 +278,35 @@ class VagaApiController extends ApiController
         return isset($_SESSION[SESSAO_USUARIO_ID]);
     }
 
-    
+    protected function listarPorEmpresa()
+    {
+        $idEmpresa = $_GET["id"] ?? null;
+
+        if (!$idEmpresa) {
+            $this->jsonResponse([
+                "success" => false,
+                "errors" => ["ID da empresa não informado."]
+            ]);
+            return;
+        }
+
+        $vagas = $this->vagaDao->findByEmpresa($idEmpresa);
+        $vagasArray = [];
+
+        foreach ($vagas as $vaga) {
+            $vagasArray[] = [
+                "id" => $vaga->getId(),
+                "titulo" => $vaga->getTitulo(),
+                "salario" => $vaga->getSalario(),
+                "horario" => $vaga->getHorario(),
+                "status" => $vaga->getStatus(),
+            ];
+        }
+
+        $this->jsonResponse([
+            "success" => true,
+            "vagas" => $vagasArray
+        ]);
+    }
 }
 new VagaApiController();
-
-
