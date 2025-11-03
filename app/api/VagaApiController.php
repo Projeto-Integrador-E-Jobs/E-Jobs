@@ -171,6 +171,53 @@ class VagaApiController extends ApiController
             "empresa" => $empresaArray
         ]);
     }
+    protected function edit()
+    {
+        $id = $_GET["id"] ?? null;
+
+        if (!$id || !ctype_digit((string)$id)) {
+            $this->jsonResponse(["success" => false, "errors" => ["ID da vaga não informado."]], 400);
+            return;
+        }
+
+        $vaga = $this->vagaDao->findById((int)$id);
+        if (!$vaga) {
+            $this->jsonResponse(["success" => false, "errors" => ["Vaga não encontrada."]], 404);
+            return;
+        }
+
+        // 🔹 Dados relacionados
+        $empresa   = $vaga->getEmpresa();
+        $cargo     = $vaga->getCargo();
+        $categoria = $vaga->getCategoria();
+
+        // 🔹 Retorna tudo o que o app precisa para edição
+        $this->jsonResponse([
+            "success" => true,
+            "vaga" => [
+                "id"          => $vaga->getId(),
+                "titulo"      => $vaga->getTitulo(),
+                "modalidade"  => $vaga->getModalidade(),
+                "horario"     => $vaga->getHorario(),
+                "regime"      => $vaga->getRegime(),
+                "salario"     => $vaga->getSalario(),
+                "descricao"   => $vaga->getDescricao(),
+                "requisitos"  => $vaga->getRequisitos(),
+                "status"      => $vaga->getStatus(),
+                "cargo_id"    => $cargo ? $cargo->getId() : null,
+                "categoria_id" => $categoria ? $categoria->getId() : null,
+                "empresa_id"  => $empresa ? $empresa->getId() : null
+            ],
+            "modalidades" => Modalidade::getAllAsArray(),
+            "horarios"    => Horario::getAllAsArray(),
+            "regimes"     => Regime::getAllAsArray(),
+            "status"      => Status::getAllAsArray(),
+            "cargos"      => array_map(fn($c) => ["id" => $c->getId(), "nome" => $c->getNome()], $this->cargoDao->list()),
+            "categorias"  => array_map(fn($cat) => ["id" => $cat->getId(), "nome" => $cat->getNome()], $this->categoriaDao->list())
+        ]);
+    }
+
+
 
 
     protected function save()
@@ -268,6 +315,52 @@ class VagaApiController extends ApiController
             "dados" => $dados
         ], 400);
     }
+   protected function alterarStatus()
+{
+    $id = $_GET["id"] ?? null;
+
+    if (!$id || !ctype_digit((string)$id)) {
+        $this->jsonResponse([
+            "success" => false,
+            "errors" => ["ID da vaga inválido."]
+        ], 400);
+        return;
+    }
+
+    try {
+        $vaga = $this->vagaDao->findById((int)$id);
+
+        if (!$vaga) {
+            $this->jsonResponse([
+                "success" => false,
+                "errors" => ["Vaga não encontrada."]
+            ], 404);
+            return;
+        }
+
+        // Alterna o status da vaga
+        $novoStatus = ($vaga->getStatus() === "Ativo") ? "Inativo" : "Ativo";
+        $vaga->setStatus($novoStatus);
+        $this->vagaDao->update($vaga);
+
+        $mensagem = $novoStatus === "Ativo"
+            ? "Vaga reativada com sucesso!"
+            : "Vaga inativada com sucesso!";
+
+        $this->jsonResponse([
+            "success" => true,
+            "message" => $mensagem,
+            "novoStatus" => $novoStatus
+        ]);
+    } catch (Exception $e) {
+        $this->jsonResponse([
+            "success" => false,
+            "errors" => ["Erro ao alterar status: " . $e->getMessage()]
+        ]);
+    }
+}
+
+
 
     protected function usuarioLogado()
     {
