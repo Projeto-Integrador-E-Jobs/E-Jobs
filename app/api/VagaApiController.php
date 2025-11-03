@@ -49,29 +49,46 @@ class VagaApiController extends ApiController
 
     // Listar todas as vagas
     public function listar()
-    {
-        $vagas = $this->vagaDao->list();
-
-        $response = [];
-        foreach ($vagas as $vaga) {
-            $response[] = [
-                'id'        => $vaga->getId(),
-                'titulo'    => $vaga->getTitulo(),
-                'modalidade' => $vaga->getModalidade(),
-                'horario'   => $vaga->getHorario(),
-                'regime'    => $vaga->getRegime(),
-                'salario'   => $vaga->getSalario(),
-                'descricao' => $vaga->getDescricao(),
-                'requisitos' => $vaga->getRequisitos(),
-                'status'    => $vaga->getStatus(),
-                'empresa'   => $vaga->getEmpresa()->getNome(),
-                'cargo'     => $vaga->getCargo()->getNome(),
-                'categoria' => $vaga->getCategoria()->getNome()
-            ];
-        }
-
-        echo json_encode($response);
+{
+    // Inicia a sessão (caso ainda não tenha sido iniciada)
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
     }
+
+    // Verifica se há usuário logado e se ele é uma empresa
+    $usuarioLogado = $_SESSION['usuario'] ?? null;
+    $isEmpresa = $usuarioLogado && isset($usuarioLogado['tipo']) && strtolower($usuarioLogado['tipo']) === 'empresa';
+
+    // Se for empresa, mostra todas as vagas
+    if ($isEmpresa) {
+        $vagas = $this->vagaDao->list();
+    } else {
+        // Candidato ou visitante: mostra apenas vagas ativas
+        $vagas = $this->vagaDao->listarAtivas();
+    }
+
+    // Monta o array de resposta
+    $response = [];
+    foreach ($vagas as $vaga) {
+        $response[] = [
+            'id'         => $vaga->getId(),
+            'titulo'     => $vaga->getTitulo(),
+            'modalidade' => $vaga->getModalidade(),
+            'horario'    => $vaga->getHorario(),
+            'regime'     => $vaga->getRegime(),
+            'salario'    => $vaga->getSalario(),
+            'descricao'  => $vaga->getDescricao(),
+            'requisitos' => $vaga->getRequisitos(),
+            'status'     => $vaga->getStatus(),
+            'empresa'    => $vaga->getEmpresa()->getNome(),
+            'cargo'      => $vaga->getCargo()->getNome(),
+            'categoria'  => $vaga->getCategoria()->getNome()
+        ];
+    }
+
+    echo json_encode($response);
+}
+
 
 
     protected function detalhes()
