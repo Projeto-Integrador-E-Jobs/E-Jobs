@@ -131,7 +131,9 @@ class CadastroApiController extends ApiController {
                 $this->usuarioDao->insert($usuario);
                
                 $usuario = $this->usuarioDao->findByLoginSenha($usuario->getEmail(),$usuario->getSenha());  
-                if($usuario->getStatus() == Status::ATIVO){                  
+                if($usuario->getStatus() == Status::ATIVO){   
+                    session_start();
+                    $_SESSION['usuario_id'] = $usuario->getId();               
                     $this->loginService->salvarUsuarioSessao($usuario);
                     
                   $this->jsonResponse([
