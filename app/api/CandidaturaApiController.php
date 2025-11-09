@@ -5,15 +5,18 @@ require_once(__DIR__ . "/../model/Candidatura.php");
 require_once(__DIR__ . "/../model/Usuario.php");
 require_once(__DIR__ . "/../model/Vaga.php");
 
-class CandidaturaApiController extends ApiController {
+class CandidaturaApiController extends ApiController
+{
     private CandidaturaDAO $dao;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->dao = new CandidaturaDAO();
         $this->handleAction();
     }
 
-    protected function candidatar() {
+    protected function candidatar()
+    {
         $input = json_decode(file_get_contents("php://input"), true);
         $idUsuario = $input["id_usuario"] ?? null;
         $idVaga = $input["id_vaga"] ?? null;
@@ -59,7 +62,8 @@ class CandidaturaApiController extends ApiController {
         }
     }
 
-    protected function verificar() {
+    protected function verificar()
+    {
         $idUsuario = $_GET["id_usuario"] ?? null;
         $idVaga = $_GET["id_vaga"] ?? null;
 
@@ -70,6 +74,23 @@ class CandidaturaApiController extends ApiController {
 
         $jaExiste = $this->dao->findByCandidatoAndVaga($idUsuario, $idVaga);
         $this->jsonResponse(["success" => true, "jaCandidatado" => (bool)$jaExiste]);
+    }
+
+    protected function listarPorVaga()
+    {
+        if (!isset($_GET['id_vaga'])) {
+            echo json_encode(['success' => false, 'errors' => ['ID da vaga não informado.']]);
+            return;
+        }
+
+        $idVaga = $_GET['id_vaga'];
+        $dao = new CandidaturaDAO();
+        $candidatos = $dao->listByVaga($idVaga);
+
+        echo json_encode([
+            'success' => true,
+            'candidatos' => $candidatos
+        ]);
     }
 }
 
