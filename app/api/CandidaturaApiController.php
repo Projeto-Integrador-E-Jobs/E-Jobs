@@ -76,6 +76,35 @@ class CandidaturaApiController extends ApiController
         $this->jsonResponse(["success" => true, "jaCandidatado" => (bool)$jaExiste]);
     }
 
+     protected function minhasCandidaturas(string $msgErro = "", string $msgSucesso = "")
+    {
+        // if (!$this->usuarioLogado()) {
+        //     header("location: " . BASEURL . "/controller/LoginController.php?action=login");
+        //     exit;
+        // }
+
+        $input = json_decode(file_get_contents("php://input"), true);
+        $idUsuario = $input["id_usuario"] ?? null;
+        $candidaturas = $this->dao->findByCandidato($idUsuario);
+        
+        $response = [];
+        foreach ($candidaturas as $candidatura) {
+            $response[] = [
+                'id'         => $candidatura->getId(),
+                'candidato_id'     => $candidatura->getCandidato()->getId(),
+                'vaga_id' => $candidatura->getVaga()->getId(),
+                'vaga_titulo' => $candidatura->getVaga()->getTitulo(),
+                'empresa' => $candidatura->getVaga()->getEmpresa()->getNome(),
+                'vaga_cargo' => $candidatura->getVaga()->getCargo(),
+                'data_candidatura'    => $candidatura->getDataCandidatura(),
+                'status'     => $candidatura->getStatus(),
+                
+            ];
+        }
+
+        echo json_encode($response);
+    }
+
     protected function listarPorVaga()
     {
         if (!isset($_GET['id_vaga'])) {
