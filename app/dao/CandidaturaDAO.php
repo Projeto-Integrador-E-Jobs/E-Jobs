@@ -184,4 +184,14 @@ class CandidaturaDAO
 
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function deleteById(int $id) {
+        $conn = Connection::getConn();
+        $sql = "DELETE FROM candidatura WHERE id = :id";
+        $stm = $conn->prepare($sql);
+        $stm->bindValue(":id", $id, PDO::PARAM_INT);
+        $stm->execute();
+
+        return $stm->rowCount() > 0;
+    }
 }

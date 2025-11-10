@@ -95,7 +95,7 @@ class CandidaturaApiController extends ApiController
                 'vaga_id' => $candidatura->getVaga()->getId(),
                 'vaga_titulo' => $candidatura->getVaga()->getTitulo(),
                 'empresa' => $candidatura->getVaga()->getEmpresa()->getNome(),
-                'vaga_cargo' => $candidatura->getVaga()->getCargo(),
+                'vaga_cargo' => $candidatura->getVaga()->getCargo()->getNome(),
                 'data_candidatura'    => $candidatura->getDataCandidatura(),
                 'status'     => $candidatura->getStatus(),
                 
@@ -103,6 +103,26 @@ class CandidaturaApiController extends ApiController
         }
 
         echo json_encode($response);
+    }
+
+    protected function cancelarCandidatura(){
+        $input = json_decode(file_get_contents("php://input"), true);
+        $idCandidatura = $input["id_candidatura"] ?? null;
+
+        if(!$idCandidatura){
+            echo json_encode([
+            'success' => false,
+            'message' => 'ID da candidatura não informado.'
+        ]);
+        return;
+        }
+        $delete = $this->dao->deleteById($idCandidatura);
+        echo json_encode([
+            'success' => $delete,
+            'message' => $delete 
+            ? 'Candidatura cancelada com sucesso.' 
+            : 'Nenhuma candidatura encontrada com esse ID.'
+        ]);
     }
 
     protected function listarPorVaga()
