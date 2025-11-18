@@ -56,17 +56,17 @@ class VagaApiController extends ApiController
     }
 
     // Verifica se há usuário logado e se ele é uma empresa
-    $usuarioLogado = $_SESSION['usuario'] ?? null;
-    $isEmpresa = $usuarioLogado->getTipoUsuario()->getNome() === 'empresa';
+    //$usuarioLogado = $_SESSION['usuario'] ?? null;
+    //$isEmpresa = $usuarioLogado->getTipoUsuario()->getNome() === 'empresa';
 
 
     // Se for empresa, mostra todas as vagas
-    if ($isEmpresa) {
-        $vagas = $this->vagaDao->list();
-    } else {
+    //if ($isEmpresa) {
+      //  $vagas = $this->vagaDao->list();
+    //} else {
         // Candidato ou visitante: mostra apenas vagas ativas
         $vagas = $this->vagaDao->listarAtivas();
-    }
+    //}
 
     // Monta o array de resposta
     $response = [];

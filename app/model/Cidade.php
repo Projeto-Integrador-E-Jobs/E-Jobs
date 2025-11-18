@@ -17,7 +17,9 @@ class Cidade implements JsonSerializable {
         return array(
             "id" => $this->codigoIbge,
             "nome" => $this->nome,
+            "codigo_uf" => $this->estado->getCodigoUf(),
             "uf" => $this->estado ? $this->estado->getUf() : null
+
         );
     }
 
