@@ -67,7 +67,7 @@ class CandidaturaDAO
     {
         $conn = Connection::getConn();
 
-        $sql = "SELECT c.*,c.status AS candidatura_status, v.*, u.nome as empresa_nome, car.nome as cargo_nome 
+        $sql = "SELECT c.*,c.id AS candidatura_id, c.status AS candidatura_status, v.*, u.nome as empresa_nome, car.nome as cargo_nome 
                 FROM candidatura c 
                 JOIN vaga v ON c.vaga_id = v.id 
                 JOIN usuario u ON v.empresa_id = u.id 
@@ -88,7 +88,7 @@ class CandidaturaDAO
         $candidaturas = array();
         foreach ($result as $dado) {
             $candidatura = new Candidatura();
-            $candidatura->setId($dado['id']);
+            $candidatura->setId($dado['candidatura_id']);
 
             $candidato = new Usuario();
             $candidato->setId($dado['candidato_id']);

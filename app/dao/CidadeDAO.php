@@ -114,6 +114,7 @@ class CidadeDAO {
             // Cria um estado com apenas a sigla
             $estado = new Estado();
             $estado->setUf($reg['uf']);
+            $estado->setCodigoUf($reg['codigo_uf']);
             $cidade->setEstado($estado);
 
             array_push($cidades, $cidade);

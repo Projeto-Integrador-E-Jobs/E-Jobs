@@ -49,56 +49,26 @@ class VagaApiController extends ApiController
 
     // Listar todas as vagas
     public function listar()
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $usuarioLogado = $_SESSION['usuario'] ?? null;
-
-        // Por padrão, listar somente vagas ativas
-        $isEmpresa = false;
-
-        if ($usuarioLogado && $usuarioLogado->getTipoUsuario()) {
-            $isEmpresa = $usuarioLogado->getTipoUsuario()->getNome() === 'empresa';
-        }
-
-        if ($isEmpresa) {
-            $vagas = $this->vagaDao->list();
-        } else {
-            $vagas = $this->vagaDao->listarAtivas();
-        }
-
-        $response = [];
-        foreach ($vagas as $vaga) {
-            $response[] = [
-                'id'         => $vaga->getId(),
-                'titulo'     => $vaga->getTitulo(),
-                'modalidade' => $vaga->getModalidade(),
-                'horario'    => $vaga->getHorario(),
-                'regime'     => $vaga->getRegime(),
-                'salario'    => $vaga->getSalario(),
-                'descricao'  => $vaga->getDescricao(),
-                'requisitos' => $vaga->getRequisitos(),
-                'status'     => $vaga->getStatus(),
-                'empresa'    => $vaga->getEmpresa()->getNome(),
-                'cargo'      => $vaga->getCargo()->getNome(),
-                'categoria'  => $vaga->getCategoria()->getNome()
-            ];
-        }
-
-        echo json_encode($response);
+{
+    // Inicia a sessão (caso ainda não tenha sido iniciada)
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
     }
 
-    protected function buscar()
-{
-    $search = $_GET["term"] ?? "";
-    $categoria = $_GET["categoria"] ?? null;
-    $modalidade = $_GET["modalidade"] ?? null;
-    $regime = $_GET["regime"] ?? null;
+    // Verifica se há usuário logado e se ele é uma empresa
+    //$usuarioLogado = $_SESSION['usuario'] ?? null;
+    //$isEmpresa = $usuarioLogado->getTipoUsuario()->getNome() === 'empresa';
 
-    $vagas = $this->vagaDao->buscar($search, $categoria, $modalidade, $regime);
 
+    // Se for empresa, mostra todas as vagas
+    //if ($isEmpresa) {
+      //  $vagas = $this->vagaDao->list();
+    //} else {
+        // Candidato ou visitante: mostra apenas vagas ativas
+        $vagas = $this->vagaDao->listarAtivas();
+    //}
+
+    // Monta o array de resposta
     $response = [];
     foreach ($vagas as $vaga) {
         $response[] = [
@@ -117,12 +87,8 @@ class VagaApiController extends ApiController
         ];
     }
 
-    $this->jsonResponse([
-        "success" => true,
-        "vagas" => $response
-    ]);
+    echo json_encode($response);
 }
-
 
 
 
@@ -367,50 +333,50 @@ class VagaApiController extends ApiController
             "dados" => $dados
         ], 400);
     }
-    protected function alterarStatus()
-    {
-        $id = $_GET["id"] ?? null;
+   protected function alterarStatus()
+{
+    $id = $_GET["id"] ?? null;
 
-        if (!$id || !ctype_digit((string)$id)) {
+    if (!$id || !ctype_digit((string)$id)) {
+        $this->jsonResponse([
+            "success" => false,
+            "errors" => ["ID da vaga inválido."]
+        ], 400);
+        return;
+    }
+
+    try {
+        $vaga = $this->vagaDao->findById((int)$id);
+
+        if (!$vaga) {
             $this->jsonResponse([
                 "success" => false,
-                "errors" => ["ID da vaga inválido."]
-            ], 400);
+                "errors" => ["Vaga não encontrada."]
+            ], 404);
             return;
         }
 
-        try {
-            $vaga = $this->vagaDao->findById((int)$id);
+        // Alterna o status da vaga
+        $novoStatus = ($vaga->getStatus() === "Ativo") ? "Inativo" : "Ativo";
+        $vaga->setStatus($novoStatus);
+        $this->vagaDao->update($vaga);
 
-            if (!$vaga) {
-                $this->jsonResponse([
-                    "success" => false,
-                    "errors" => ["Vaga não encontrada."]
-                ], 404);
-                return;
-            }
+        $mensagem = $novoStatus === "Ativo"
+            ? "Vaga reativada com sucesso!"
+            : "Vaga inativada com sucesso!";
 
-            // Alterna o status da vaga
-            $novoStatus = ($vaga->getStatus() === "Ativo") ? "Inativo" : "Ativo";
-            $vaga->setStatus($novoStatus);
-            $this->vagaDao->update($vaga);
-
-            $mensagem = $novoStatus === "Ativo"
-                ? "Vaga reativada com sucesso!"
-                : "Vaga inativada com sucesso!";
-
-            $this->jsonResponse([
-                "success" => true,
-                "message" => $mensagem,
-                "novoStatus" => $novoStatus
-            ]);
-        } catch (Exception $e) {
-            $this->jsonResponse([
-                "success" => false,
-                "errors" => ["Erro ao alterar status: " . $e->getMessage()]
-            ]);
-        }
+        $this->jsonResponse([
+            "success" => true,
+            "message" => $mensagem,
+            "novoStatus" => $novoStatus
+        ]);
+    } catch (Exception $e) {
+        $this->jsonResponse([
+            "success" => false,
+            "errors" => ["Erro ao alterar status: " . $e->getMessage()]
+        ]);
     }
+}
 
 
 
@@ -453,7 +419,5 @@ class VagaApiController extends ApiController
             "vagas" => $vagasArray
         ]);
     }
-
-    
 }
 new VagaApiController();
