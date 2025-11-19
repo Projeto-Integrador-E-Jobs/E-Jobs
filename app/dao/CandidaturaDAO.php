@@ -176,7 +176,7 @@ class CandidaturaDAO
                 u.descricao
             FROM candidatura c
             INNER JOIN usuario u ON u.id = c.candidato_id
-            WHERE c.vaga_id = :idVaga"; 
+            WHERE c.vaga_id = :idVaga";
 
         $stm = $conn->prepare($sql);
         $stm->bindValue(":idVaga", $idVaga, PDO::PARAM_INT);
@@ -185,7 +185,8 @@ class CandidaturaDAO
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function deleteById(int $id) {
+    public function deleteById(int $id)
+    {
         $conn = Connection::getConn();
         $sql = "DELETE FROM candidatura WHERE id = :id";
         $stm = $conn->prepare($sql);
@@ -194,4 +195,69 @@ class CandidaturaDAO
 
         return $stm->rowCount() > 0;
     }
+
+    public function alterarStatus($idCandidatura, $status)
+    {
+        $conn = Connection::getConn();
+
+        $sql = "UPDATE candidatura 
+            SET status = :status 
+            WHERE id = :id";
+
+        $stm = $conn->prepare($sql);
+        return $stm->execute([
+            ":status" => $status,
+            ":id" => $idCandidatura
+        ]);
+    }
+
+    public function findById($id)
+{
+    $conn = Connection::getConn();
+
+    $sql = "SELECT 
+                c.*, 
+                u.nome AS candidato_nome,
+                u.email AS candidato_email,
+                v.titulo AS vaga_titulo
+            FROM candidatura c
+            INNER JOIN usuario u ON u.id = c.candidato_id
+            INNER JOIN vaga v ON v.id = c.vaga_id
+            WHERE c.id = :id
+            LIMIT 1";
+
+    $stm = $conn->prepare($sql);
+    $stm->bindValue(":id", $id, PDO::PARAM_INT);
+    $stm->execute();
+
+    $dado = $stm->fetch(PDO::FETCH_ASSOC);
+
+    if (!$dado) {
+        return null;
+    }
+
+    // Montagem do objeto completo
+    $candidatura = new Candidatura();
+    $candidatura->setId($dado['id']);
+
+    // Candidato
+    $candidato = new Usuario();
+    $candidato->setId($dado['candidato_id']);
+    $candidato->setNome($dado['candidato_nome']);
+    $candidato->setEmail($dado['candidato_email']);
+    $candidatura->setCandidato($candidato);
+
+    // Vaga
+    $vaga = new Vaga();
+    $vaga->setId($dado['vaga_id']);
+    $vaga->setTitulo($dado['vaga_titulo']);
+    $candidatura->setVaga($vaga);
+
+    // Dados gerais
+    $candidatura->setDataCandidatura($dado['data_candidatura']);
+    $candidatura->setStatus($dado['status']);
+
+    return $candidatura;
+}
+
 }

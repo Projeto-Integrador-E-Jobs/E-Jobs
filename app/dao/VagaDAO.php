@@ -336,4 +336,43 @@ class VagaDAO
 
         return $vagas;
     }
+
+    public function buscar($search, $categoria, $modalidade, $regime)
+    {
+        $conn = Connection::getConn();
+
+        $sql = "SELECT * FROM vaga v WHERE v.status = 'Ativo' ";
+        $params = [];
+
+        if (!empty($search)) {
+            $sql .= " AND (
+            v.titulo LIKE :search
+            OR v.descricao LIKE :search
+            OR v.requisitos LIKE :search
+        )";
+            $params[':search'] = "%$search%";
+        }
+
+        if (!empty($categoria)) {
+            $sql .= " AND v.id_categoria = :categoria";
+            $params[':categoria'] = $categoria;
+        }
+
+        if (!empty($modalidade)) {
+            $sql .= " AND v.modalidade = :modalidade";
+            $params[':modalidade'] = $modalidade;
+        }
+
+        if (!empty($regime)) {
+            $sql .= " AND v.regime = :regime";
+            $params[':regime'] = $regime;
+        }
+
+        $stm = $conn->prepare($sql);
+        $stm->execute($params);
+
+        $result = $stm->fetchAll();
+
+        return $this->mapVagas($result);
+    }
 }

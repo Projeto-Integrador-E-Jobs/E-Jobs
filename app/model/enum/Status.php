@@ -8,5 +8,7 @@ class Status{
 
     public static function getAllAsArray() {
         return [Status::ATIVO, Status::INATIVO];
+
+        
     }
 }
