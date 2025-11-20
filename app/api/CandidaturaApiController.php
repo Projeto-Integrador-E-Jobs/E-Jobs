@@ -7,10 +7,14 @@ require_once(__DIR__ . "/../model/Vaga.php");
 
 class CandidaturaApiController extends ApiController
 {
+    private CandidaturaDAO $candidaturaDao;
+    private UsuarioDAO $usuarioDao;
     private CandidaturaDAO $dao;
 
     public function __construct()
     {
+        $allowedActions = ["aprovar, listarPorVaga"];
+
         $this->dao = new CandidaturaDAO();
         $this->handleAction();
     }
@@ -76,7 +80,7 @@ class CandidaturaApiController extends ApiController
         $this->jsonResponse(["success" => true, "jaCandidatado" => (bool)$jaExiste]);
     }
 
-     protected function minhasCandidaturas(string $msgErro = "", string $msgSucesso = "")
+    protected function minhasCandidaturas(string $msgErro = "", string $msgSucesso = "")
     {
         // if (!$this->usuarioLogado()) {
         //     header("location: " . BASEURL . "/controller/LoginController.php?action=login");
@@ -86,7 +90,7 @@ class CandidaturaApiController extends ApiController
         $input = json_decode(file_get_contents("php://input"), true);
         $idUsuario = $input["id_usuario"] ?? null;
         $candidaturas = $this->dao->findByCandidato($idUsuario);
-        
+
         $response = [];
         foreach ($candidaturas as $candidatura) {
             $response[] = [
@@ -98,30 +102,31 @@ class CandidaturaApiController extends ApiController
                 'vaga_cargo' => $candidatura->getVaga()->getCargo()->getNome(),
                 'data_candidatura'    => $candidatura->getDataCandidatura(),
                 'status'     => $candidatura->getStatus(),
-                
+
             ];
         }
 
         echo json_encode($response);
     }
 
-    protected function cancelarCandidatura(){
+    protected function cancelarCandidatura()
+    {
         $input = json_decode(file_get_contents("php://input"), true);
         $idCandidatura = $input["id_candidatura"] ?? null;
 
-        if(!$idCandidatura){
+        if (!$idCandidatura) {
             echo json_encode([
-            'success' => false,
-            'message' => 'ID da candidatura não informado.'
-        ]);
-        return;
+                'success' => false,
+                'message' => 'ID da candidatura não informado.'
+            ]);
+            return;
         }
         $delete = $this->dao->deleteById($idCandidatura);
         echo json_encode([
             'success' => $delete,
-            'message' => $delete 
-            ? 'Candidatura cancelada com sucesso.' 
-            : 'Nenhuma candidatura encontrada com esse ID.'
+            'message' => $delete
+                ? 'Candidatura cancelada com sucesso.'
+                : 'Nenhuma candidatura encontrada com esse ID.'
         ]);
     }
 
@@ -141,82 +146,31 @@ class CandidaturaApiController extends ApiController
             'candidatos' => $candidatos
         ]);
     }
-    
+
     protected function aprovar()
-{
-    $id = $_GET["id"] ?? null;
+    {
+        // Tenta ler pelo GET
+        $id = $_GET["id"] ?? null;
 
-    if (!$id) {
-        return $this->jsonResponse([
-            "success" => false,
-            "errors" => ["ID da candidatura não informado."]
-        ], 400);
+        // Caso não venha via GET, tenta pelo corpo POST JSON
+        if (!$id) {
+            $input = json_decode(file_get_contents("php://input"), true);
+            $id = $input["id"] ?? null;
+        }
+
+        if (!$id) {
+            echo json_encode(["success" => false, "errors" => ["ID inválido"]]);
+            return;
+        }
+
+        $ok = $this->dao->aprovar($id);
+
+        if ($ok) {
+            echo json_encode(["success" => true, "message" => "Candidato aprovado!"]);
+        } else {
+            echo json_encode(["success" => false, "errors" => ["Erro ao aprovar"]]);
+        }
     }
-
-    $candidatura = $this->dao->findById($id);
-
-    if (!$candidatura) {
-        return $this->jsonResponse([
-            "success" => false,
-            "errors" => ["Candidatura não encontrada."]
-        ], 404);
-    }
-
-    // atualiza status
-    $ok = $this->dao->alterarStatus($id, StatusCandidatura::APROVADO);
-
-    if ($ok) {
-        return $this->jsonResponse([
-            "success" => true,
-            "message" => "Candidato aprovado com sucesso!"
-        ]);
-    }
-
-    return $this->jsonResponse([
-        "success" => false,
-        "errors" => ["Erro ao atualizar status."]
-    ]);
-}
-
-protected function recusar()
-{
-    $id = $_GET["id"] ?? null;
-
-    if (!$id) {
-        return $this->jsonResponse([
-            "success" => false,
-            "errors" => ["ID da candidatura não informado."]
-        ], 400);
-    }
-
-    $candidatura = $this->dao->findById($id);
-
-    if (!$candidatura) {
-        return $this->jsonResponse([
-            "success" => false,
-            "errors" => ["Candidatura não encontrada."]
-        ], 404);
-    }
-
-    
-    $ok = $this->dao->alterarStatus($id, StatusCandidatura::RECUSADO);
-
-    if ($ok) {
-        return $this->jsonResponse([
-            "success" => true,
-            "message" => "Candidato recusado."
-        ]);
-    }
-
-    return $this->jsonResponse([
-        "success" => false,
-        "errors" => ["Erro ao atualizar status."]
-    ]);
-}
-
-
-
-    
 }
 
 new CandidaturaApiController();
