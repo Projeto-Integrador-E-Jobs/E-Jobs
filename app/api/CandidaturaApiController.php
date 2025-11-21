@@ -1,21 +1,26 @@
 <?php
 require_once(__DIR__ . "/ApiController.php");
+require_once(__DIR__ . "/../service/NotificacaoService.php");
+require_once(__DIR__ . "/../observer/NotificacaoObserver.php");
 require_once(__DIR__ . "/../dao/CandidaturaDAO.php");
+require_once(__DIR__ . "/../dao/NotificacaoDAO.php");
 require_once(__DIR__ . "/../model/Candidatura.php");
 require_once(__DIR__ . "/../model/Usuario.php");
 require_once(__DIR__ . "/../model/Vaga.php");
 
 class CandidaturaApiController extends ApiController
 {
-    private CandidaturaDAO $candidaturaDao;
-    private UsuarioDAO $usuarioDao;
     private CandidaturaDAO $dao;
+    private NotificacaoObserver $observer;
 
     public function __construct()
     {
         $allowedActions = ["aprovar, listarPorVaga"];
 
         $this->dao = new CandidaturaDAO();
+        $notificacaoDao = new NotificacaoDAO();
+        $service = new NotificacaoService($notificacaoDao);
+        $this->observer = new NotificacaoObserver($service);
         $this->handleAction();
     }
 
@@ -53,6 +58,7 @@ class CandidaturaApiController extends ApiController
             $candidatura->setStatus("EM_ANDAMENTO");
 
             $this->dao->insert($candidatura);
+            $this->observer->candidaturaCriada($candidatura);
 
             $this->jsonResponse([
                 "success" => true,
@@ -164,6 +170,8 @@ class CandidaturaApiController extends ApiController
         }
 
         $ok = $this->dao->aprovar($id);
+        $candidatura = $this->dao->findById($id);
+        $this->observer->candidaturaAprovada($candidatura);
 
         if ($ok) {
             echo json_encode(["success" => true, "message" => "Candidato aprovado!"]);
