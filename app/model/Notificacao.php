@@ -42,7 +42,7 @@ class Notificacao
 
     public function setDestino(?Usuario $usuarioDestino): self
     {
-        $this->$usuarioDestino = $usuarioDestino;
+        $this->usuarioDestino = $usuarioDestino;
 
         return $this;
     }

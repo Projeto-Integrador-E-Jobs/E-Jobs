@@ -2,6 +2,7 @@
 include_once(__DIR__ . "/../dao/NotificacaoDAO.php");
 include_once(__DIR__ . "/../model/Notificacao.php");
 include_once(__DIR__ . "/../model/Usuario.php");
+include_once(__DIR__ . "/../model/Vaga.php");
 class NotificacaoService
 {
     private NotificacaoDAO $notificacaoDao;

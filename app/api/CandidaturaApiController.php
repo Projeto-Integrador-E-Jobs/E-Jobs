@@ -3,6 +3,7 @@ require_once(__DIR__ . "/ApiController.php");
 require_once(__DIR__ . "/../service/NotificacaoService.php");
 require_once(__DIR__ . "/../observer/NotificacaoObserver.php");
 require_once(__DIR__ . "/../dao/CandidaturaDAO.php");
+require_once(__DIR__ . "/../dao/VagaDAO.php");
 require_once(__DIR__ . "/../dao/NotificacaoDAO.php");
 require_once(__DIR__ . "/../model/Candidatura.php");
 require_once(__DIR__ . "/../model/Usuario.php");
@@ -11,13 +12,16 @@ require_once(__DIR__ . "/../model/Vaga.php");
 class CandidaturaApiController extends ApiController
 {
     private CandidaturaDAO $dao;
+    private VagaDAO $vagaDao;
     private NotificacaoObserver $observer;
 
     public function __construct()
     {
-        $allowedActions = ["aprovar, listarPorVaga"];
+        $allowedActions = ["aprovar", "listarPorVaga", "candidatar", "verificar", "minhasCandidaturas", "cancelarCandidatura"];
+
 
         $this->dao = new CandidaturaDAO();
+        $this->vagaDao= new VagaDAO();
         $notificacaoDao = new NotificacaoDAO();
         $service = new NotificacaoService($notificacaoDao);
         $this->observer = new NotificacaoObserver($service);
@@ -50,7 +54,7 @@ class CandidaturaApiController extends ApiController
             $candidato->setId($idUsuario);
 
             $vaga = new Vaga();
-            $vaga->setId($idVaga);
+            $vaga = $this->vagaDao->findById($idVaga);           
 
             $candidatura = new Candidatura();
             $candidatura->setCandidato($candidato);

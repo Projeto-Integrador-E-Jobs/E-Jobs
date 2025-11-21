@@ -1,7 +1,7 @@
 <?php
 include_once(__DIR__ . "/../connection/Connection.php");
 include_once(__DIR__ . "/../dao/UsuarioDAO.php");
-include_once(__DIR__ . "/../dao/UsuVagaDAO.php");
+include_once(__DIR__ . "/../dao/VagaDAO.php");
 include_once(__DIR__ . "/../model/Usuario.php");
 include_once(__DIR__ . "/../model/Vaga.php");
 include_once(__DIR__ . "/../model/Notificacao.php");
@@ -22,9 +22,9 @@ class NotificacaoDAO{
     {
         $conn = Connection::getConn();
 
-        $sql = "INSERT INTO notificacao (id_origem, id_destino, tipo,
-         id_vaga, lida, data_criacao)" .
-            " VALUES (:id_origem, :id_destino, :tipo, :id_vaga,)";
+        $sql = "INSERT INTO notificacao (id_origem, id_destino, tipo, mensagem,
+         id_vaga)" .
+            " VALUES (:id_origem, :id_destino, :tipo, :mensagem, :id_vaga)";
 
         $stm = $conn->prepare($sql);
         $stm->bindValue("id_origem", $notificacao->getOrigem()->getId());
@@ -58,7 +58,7 @@ class NotificacaoDAO{
             $notificacao = new Notificacao();
             $notificacao->setId($reg['id']);
             $notificacao->setTipo($reg['tipo']);
-            $notificacao->setTipo($reg['mensagem']);
+            $notificacao->setMensagem($reg['mensagem']);
             $notificacao->setVaga($this->vagaDao->findById($reg['id_vaga']));
             $notificacao->setLida($reg['lida']);
             $notificacao->setDataCriacao($reg['data_criacao']);           

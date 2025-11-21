@@ -1,6 +1,8 @@
 <?php
 include_once(__DIR__ . "/../service/NotificacaoService.php");
 include_once(__DIR__ . "/../model/Candidatura.php");
+include_once(__DIR__ . "/../model/Vaga.php");
+
 
 class NotificacaoObserver
 {
@@ -36,7 +38,7 @@ class NotificacaoObserver
         $this->service->criarNotificacao(
             $empresaId,                      
             $candidatoId,                  
-            "Aprovação",               
+            "Aprovacao",               
             "Você foi aprovado na vaga: " . $candidatura->getVaga()->getTitulo(),
             $vagaId
         );
