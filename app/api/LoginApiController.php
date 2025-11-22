@@ -7,17 +7,20 @@ require_once(__DIR__ . "/../model/Usuario.php");
 require_once(__DIR__ . "/../model/TipoUsuario.php");
 require_once(__DIR__ . "/../model/enum/Status.php");
 
-class LoginApiController extends ApiController {
+class LoginApiController extends ApiController
+{
     private LoginService $loginService;
     private UsuarioDAO $usuarioDao;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->loginService = new LoginService();
         $this->usuarioDao = new UsuarioDAO();
         $this->handleAction();
     }
 
-    protected function logon() {
+    protected function logon()
+    {
         $input = json_decode(file_get_contents("php://input"), true);
         $email = isset($input['email']) ? trim($input['email']) : null;
         $senha = isset($input['senha']) ? trim($input['senha']) : null;
@@ -38,7 +41,9 @@ class LoginApiController extends ApiController {
                             "nome" => $usuario->getNome(),
                             "email" => $usuario->getEmail(),
                             "tipo" => $usuario->getTipoUsuario()->getId(),
-                            "telefone" => $usuario->getTelefone()
+                            "telefone" => $usuario->getTelefone(),
+                            "documento" => $usuario->getDocumento(),
+                            "descricao" => $usuario->getDescricao()
                         ]
                     ]);
                 }
@@ -52,7 +57,8 @@ class LoginApiController extends ApiController {
         ], 401);
     }
 
-    protected function logout() {
+    protected function logout()
+    {
         session_start();
         session_destroy();
 
