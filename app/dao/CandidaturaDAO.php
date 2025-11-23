@@ -232,15 +232,20 @@ class CandidaturaDAO
         $conn = Connection::getConn();
 
         $sql = "SELECT 
-                c.*, 
-                u.nome AS candidato_nome,
-                u.email AS candidato_email,
-                v.titulo AS vaga_titulo
-            FROM candidatura c
-            INNER JOIN usuario u ON u.id = c.candidato_id
-            INNER JOIN vaga v ON v.id = c.vaga_id
-            WHERE c.id = :id
-            LIMIT 1";
+                    c.*, 
+                    u.nome AS candidato_nome,
+                    u.email AS candidato_email,
+                    v.titulo AS vaga_titulo,
+                    v.empresa_id,
+                    e.nome AS empresa_nome,
+                    e.email AS empresa_email
+                FROM candidatura c
+                INNER JOIN usuario u ON u.id = c.candidato_id
+                INNER JOIN vaga v ON v.id = c.vaga_id
+                INNER JOIN usuario e ON e.id = v.empresa_id
+                WHERE c.id = :id
+                LIMIT 1";
+
 
         $stm = $conn->prepare($sql);
         $stm->bindValue(":id", $id, PDO::PARAM_INT);
@@ -261,9 +266,15 @@ class CandidaturaDAO
         $candidato->setEmail($dado['candidato_email']);
         $candidatura->setCandidato($candidato);
 
+        $empresa = new Usuario();
+        $empresa->setId($dado['empresa_id']);
+        $empresa->setNome($dado['empresa_nome']);
+        $empresa->setEmail($dado['empresa_email']);
+
         $vaga = new Vaga();
         $vaga->setId($dado['vaga_id']);
         $vaga->setTitulo($dado['vaga_titulo']);
+        $vaga->setEmpresa($empresa);
         $candidatura->setVaga($vaga);
 
         $candidatura->setDataCandidatura($dado['data_candidatura']);

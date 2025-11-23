@@ -11,13 +11,7 @@ class NotificacaoApiController extends ApiController{
 
     public function __construct()
     {
-        $action = $_GET["action"];
-        $allowedActions = ["listar"];
-
-        // if (!in_array($action, $allowedActions) && !$this->usuarioLogado()) {
-        //     header("location: " . BASEURL . "/controller/LoginController.php?action=login");
-        //     exit;
-        // }
+        $allowedActions = ["listar", "detalhes"];
 
         header('Content-Type: application/json; charset=utf-8');
         $this->notificacaoDao = new NotificacaoDAO();
@@ -26,22 +20,13 @@ class NotificacaoApiController extends ApiController{
         $this->handleAction();
     }
 
-    public function listar()
+    protected function listar()
     {
-        // Inicia a sessão (caso ainda não tenha sido iniciada)
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-       
-        $usuarioLogado = $_SESSION['usuario'] ?? null;
-        $idDestino = $usuarioLogado->getTipoUsuario()->getId();
-
-
+        $input = json_decode(file_get_contents("php://input"), true);
+        $idDestino = $input["id_usuario"] ?? null;
         
-        if ($idDestino) {
-            $notificacoes = $this->notificacaoDao->list($idDestino);
-        } else {
+
+        if (!$idDestino) {
             $this->jsonResponse([
                 "success" => false,
                 "errors" => ["ID não informado."]
@@ -49,26 +34,114 @@ class NotificacaoApiController extends ApiController{
             return;
         }
 
-        // Monta o array de resposta
+        $notificacoes = $this->notificacaoDao->list($idDestino);
+
         $response = [];
-        foreach ($notificacoes as $notitificacao) {
+        foreach ($notificacoes as $notificacao) {
             $response[] = [
-                'id'         => $notitificacao->getId(),
-                'id_origem'     => $notitificacao->getOrigem()->getId(),
-                'nome_origem'     => $notitificacao->getOrigem()->getNome(),
-                'id_destino'     => $notitificacao->getDestino()->getId(),
-                'nome_destino'     => $notitificacao->getDestino()->getNome(),
-                'tipo' => $notitificacao->getTipo(),
-                'mensagem'    => $notitificacao->getMensagem(),
-                'id_vaga'     => $notitificacao->getVaga()->getId(),
-                'titulo_vaga'     => $notitificacao->getVaga()->getTitulo(),
-                'lida'    => $notitificacao->getLida(),
-                'data_criacao'  => $notitificacao->getDataCriacao(),
-                
+                'id'           => $notificacao->getId(),
+                'id_origem'    => $notificacao->getOrigem()->getId(),
+                'nome_origem'  => $notificacao->getOrigem()->getNome(),
+                'id_destino'   => $notificacao->getDestino()->getId(),
+                'nome_destino' => $notificacao->getDestino()->getNome(),
+                'tipo'         => $notificacao->getTipo(),
+                'mensagem'     => $notificacao->getMensagem(),
+                'id_vaga'      => $notificacao->getVaga()->getId(),
+                'titulo_vaga'  => $notificacao->getVaga()->getTitulo(),
+                'lida'         => $notificacao->getLida(),
+                'data_criacao' => $notificacao->getDataCriacao(),
             ];
         }
 
-        echo json_encode($response);
+        echo json_encode([
+            "success" => true,
+            "notificacoes" => $response
+        ]);
     }
 
+     protected function detalhes()
+    {
+        $id = $_GET["id"] ?? null;
+
+        if (!$id || !ctype_digit((string)$id)) {
+            $this->jsonResponse(["success" => false, "errors" => ["ID de notificação não informado ou inválido."]], 400);
+            return;
+        }
+
+        $notificacao = $this->notificacaoDao->findById((int)$id);
+
+        if (!$notificacao) {
+            $this->jsonResponse(["success" => false, "errors" => ["Notificacão não encontrada."]], 404);
+            return;
+        }
+
+
+        $response[] = [
+                'id'         => $notificacao->getId(),
+                'id_origem'     => $notificacao->getOrigem()->getId(),
+                'nome_origem'     => $notificacao->getOrigem()->getNome(),
+                'id_destino'     => $notificacao->getDestino()->getId(),
+                'nome_destino'     => $notificacao->getDestino()->getNome(),
+                'tipo' => $notificacao->getTipo(),
+                'mensagem'    => $notificacao->getMensagem(),
+                'id_vaga'     => $notificacao->getVaga()->getId(),
+                'titulo_vaga'     => $notificacao->getVaga()->getTitulo(),
+                'lida'    => $notificacao->getLida(),
+                'data_criacao'  => $notificacao->getDataCriacao(),
+                
+            ];
+
+        echo json_encode([
+            "success" => true,
+            "notificacoes" => $response
+        ]);
+
+    }
+
+    protected function excluirNotificacao()
+    {
+        $input = json_decode(file_get_contents("php://input"), true);
+        $idNotificacao = $input["id_notificacao"] ?? null;
+
+        if (!$idNotificacao) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID da candidatura não informado.'
+            ]);
+            return;
+        }
+        $delete = $this->notificacaoDao->deleteById($idNotificacao);
+        echo json_encode([
+            'success' => $delete,
+            'message' => $delete
+                ? 'Notificacao excluida com sucesso.'
+                : 'Nenhuma candidatura encontrada com esse ID.'
+        ]);
+    }
+
+    protected function marcarLido()
+    {
+    
+        $input = json_decode(file_get_contents("php://input"), true);
+        $id = $input["id_notificacao"] ?? null;
+      
+
+        if (!$id) {
+            echo json_encode(["success" => false, "errors" => ["ID inválido"]]);
+            return;
+        }
+
+        $ok = $this->notificacaoDao->marcarLido($id);
+    
+
+        if ($ok) {
+            echo json_encode(["success" => true, "message" => "Lida"]);
+        } else {
+            echo json_encode(["success" => false, "errors" => ["Erro ao marcar como lida"]]);
+        }
+    }
+
+
 }
+
+new NotificacaoApiController();

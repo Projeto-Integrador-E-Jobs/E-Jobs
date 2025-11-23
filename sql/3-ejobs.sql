@@ -95,3 +95,17 @@ INSERT INTO usuario (
 INSERT INTO vaga (titulo, modalidade, horario, regime, salario, descricao, requisitos, empresa_id, cargos_id, status, categoria_id) VALUES 
 ('Desenvolvedor PHP Pleno', 'HOME OFFICE', '40h', 'CLT', 5000.00, 'Desenvolvimento de aplicações web em PHP', 'Experiência com Laravel, MySQL, Git', 2, 1, 'Ativo', 1),
 ('Designer UI/UX', 'PRESENCIAL', '40h', 'PJ', 4500.00, 'Criação de interfaces modernas', 'Figma, Adobe XD, criatividade', 2, 2, 'Ativo', 1);
+
+CREATE TABLE notificacao (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_origem INT NOT NULL,
+  id_destino INT NOT NULL,
+  tipo ENUM('Candidatura', 'Aprovacao') NOT NULL,
+  mensagem TEXT NOT NULL,
+  id_vaga INT NOT NULL,
+  lida TINYINT(1) DEFAULT 0,
+  data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_notif_origem FOREIGN KEY (id_origem) REFERENCES usuario(id),
+  CONSTRAINT fk_notif_destino FOREIGN KEY (id_destino) REFERENCES usuario(id),
+  CONSTRAINT fk_notif_vaga FOREIGN KEY (id_vaga) REFERENCES vaga(id)
+);

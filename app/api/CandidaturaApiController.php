@@ -174,10 +174,10 @@ class CandidaturaApiController extends ApiController
         }
 
         $ok = $this->dao->aprovar($id);
-        $candidatura = $this->dao->findById($id);
-        $this->observer->candidaturaAprovada($candidatura);
+        $candidatura = $this->dao->findById($id);    
 
         if ($ok) {
+            $this->observer->candidaturaAprovada($candidatura);
             echo json_encode(["success" => true, "message" => "Candidato aprovado!"]);
         } else {
             echo json_encode(["success" => false, "errors" => ["Erro ao aprovar"]]);

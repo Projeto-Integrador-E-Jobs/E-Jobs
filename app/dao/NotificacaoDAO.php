@@ -40,32 +40,121 @@ class NotificacaoDAO{
     {
         $conn = Connection::getConn();
 
-        $sql = "SELECT n.* FROM notificacao n 
-                WHERE  id_destino = :id_destino";
+        $sql = "SELECT 
+                n.id,
+                n.id_origem,
+                u1.nome AS nome_origem,
+                n.id_destino,
+                u2.nome AS nome_destino,
+                n.tipo,
+                n.mensagem,
+                n.id_vaga,
+                v.titulo AS titulo_vaga,
+                n.lida,
+                n.data_criacao
+            FROM notificacao n
+            JOIN usuario u1 ON u1.id = n.id_origem
+            JOIN usuario u2 ON u2.id = n.id_destino
+            JOIN vaga v ON v.id = n.id_vaga
+            WHERE n.id_destino = :id_destino
+            ORDER BY n.data_criacao DESC";
         $stm = $conn->prepare($sql);
         $stm->bindValue("id_destino", $idDestino);
         $stm->execute();
-        $result = $stm->fetchAll();
+        $result = $stm->fetchAll(PDO::FETCH_ASSOC);
 
         return $this->mapNotificacoes($result);
     }
 
+    public function findById(int $id)
+    {
+        $conn = Connection::getConn();
 
-      private function mapNotificacoes($result)
+        $sql = "SELECT 
+                    n.id,
+                    n.id_origem,
+                    u1.nome AS nome_origem,
+                    n.id_destino,
+                    u2.nome AS nome_destino,
+                    n.tipo,
+                    n.mensagem,
+                    n.id_vaga,
+                    v.titulo AS titulo_vaga,
+                    n.lida,
+                    n.data_criacao
+                FROM notificacao n
+                JOIN usuario u1 ON u1.id = n.id_origem
+                JOIN usuario u2 ON u2.id = n.id_destino
+                JOIN vaga v ON v.id = n.id_vaga
+                WHERE n.id = :id";
+
+        $stm = $conn->prepare($sql);
+        $stm->bindValue(":id", $id, PDO::PARAM_INT);
+        $stm->execute();
+
+        $result = $stm->fetchAll();
+
+        $notificacoes = $this->mapNotificacoes($result);
+
+        if (count($notificacoes) == 1)
+            return $notificacoes[0];
+        elseif (count($notificacoes) == 0)
+            return null;
+
+        die("NotificacaoDAO.findById() - Erro: mais de uma notificação encontrada.");
+    }
+
+    public function deleteById(int $id)
+    {
+        $conn = Connection::getConn();
+        $sql = "DELETE FROM notificacao WHERE id = :id";
+        $stm = $conn->prepare($sql);
+        $stm->bindValue(":id", $id, PDO::PARAM_INT);
+        $stm->execute();
+
+        return $stm->rowCount() > 0;
+    }
+
+    public function marcarLido($idNotificacao)
+    {
+        $conn = Connection::getConn();
+
+        $sql = "UPDATE notificacao 
+            SET lida = 1 
+            WHERE id = :id";
+
+        $stm = $conn->prepare($sql);
+        $stm->bindValue(':id', $idNotificacao, PDO::PARAM_INT);
+        return $stm->execute();
+    }
+
+
+    private function mapNotificacoes($result)
     {
         $notificacoes = array();
         foreach ($result as $reg) {
+
             $notificacao = new Notificacao();
+            $origem = new Usuario();
+            $destino = new Usuario();
+            $vaga = new Vaga();
+
             $notificacao->setId($reg['id']);
             $notificacao->setTipo($reg['tipo']);
             $notificacao->setMensagem($reg['mensagem']);
-            $notificacao->setVaga($this->vagaDao->findById($reg['id_vaga']));
             $notificacao->setLida($reg['lida']);
-            $notificacao->setDataCriacao($reg['data_criacao']);           
-            $notificacao->setOrigem($this->usuarioDao->findById($reg['id_origem']));
-            $notificacao->setDestino($this->usuarioDao->findById($reg['id_destino']));
-            
-            array_push($notificacoes, $notificacao);
+            $notificacao->setDataCriacao($reg['data_criacao']);
+            $origem->setId($reg['id_origem']);
+            $origem->setNome($reg['nome_origem']);
+            $notificacao->setOrigem($origem);
+            $destino->setId($reg['id_destino']);
+            $destino->setNome($reg['nome_destino']);
+            $notificacao->setDestino($destino);
+            $vaga->setId($reg['id_vaga']);
+            $vaga->setTitulo($reg['titulo_vaga']);
+            $notificacao->setVaga($vaga);
+
+            $notificacoes[] = $notificacao;
         }
 
         return $notificacoes;
