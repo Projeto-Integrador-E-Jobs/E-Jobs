@@ -8,135 +8,143 @@ include_once(__DIR__ . "/../dao/CidadeDAO.php");
 include_once(__DIR__ . "/../model/Usuario.php");
 include_once(__DIR__ . "/../model/TipoUsuario.php");
 
-class UsuarioDAO {
+class UsuarioDAO
+{
     private TipoUsuarioDAO $tipoUsuarioDao;
     private CidadeDAO $cidadeDAO;
 
-    public function __construct() {
+    public function __construct()
+    {
 
         $this->cidadeDAO = new CidadeDAO;
         $this->tipoUsuarioDao = new TipoUsuarioDAO;
-       
     }
 
     //Método para listar os usuaários a partir da base de dados
-    public function list() {
+    public function list()
+    {
         $conn = Connection::getConn();
 
         $sql = "SELECT * FROM usuario u ORDER BY u.nome";
-        $stm = $conn->prepare($sql);    
+        $stm = $conn->prepare($sql);
         $stm->execute();
         $result = $stm->fetchAll();
-        
+
         return $this->mapUsuarios($result);
     }
 
-     public function listEmpresasPendentes() {
+    public function listEmpresasPendentes()
+    {
         $conn = Connection::getConn();
 
         $sql = "SELECT * FROM usuario u 
                 WHERE u.status = 'Pendente' 
                 AND tipo_usuario_id = 3
                 ORDER BY u.nome";
-        $stm = $conn->prepare($sql);    
+        $stm = $conn->prepare($sql);
         $stm->execute();
         $result = $stm->fetchAll();
-        
+
         return $this->mapUsuarios($result);
     }
 
     //Método para buscar um usuário por seu ID
-    public function findById(int $id) {
+    public function findById(int $id)
+    {
         $conn = Connection::getConn();
 
         $sql = "SELECT * FROM usuario u" .
-               " WHERE u.id = ?";
-        $stm = $conn->prepare($sql);    
+            " WHERE u.id = ?";
+        $stm = $conn->prepare($sql);
         $stm->execute([$id]);
         $result = $stm->fetchAll();
 
         $usuarios = $this->mapUsuarios($result);
 
-        if(count($usuarios) == 1)
+        if (count($usuarios) == 1)
             return $usuarios[0];
-        elseif(count($usuarios) == 0)
+        elseif (count($usuarios) == 0)
             return null;
 
-        die("UsuarioDAO.findById()" . 
+        die("UsuarioDAO.findById()" .
             " - Erro: mais de um usuário encontrado.");
     }
 
-    public function findByDocumento(string $documento) {
+    public function findByDocumento(string $documento)
+    {
         $conn = Connection::getConn();
 
         $sql = "SELECT * FROM usuario u" .
-               " WHERE u.documento = ?";
-        $stm = $conn->prepare($sql);    
+            " WHERE u.documento = ?";
+        $stm = $conn->prepare($sql);
         $stm->execute([$documento]);
         $result = $stm->fetchAll();
 
         $usuarios = $this->mapUsuarios($result);
 
-        if(count($usuarios) == 1)
+        if (count($usuarios) == 1)
             return $usuarios[0];
-        elseif(count($usuarios) == 0)
+        elseif (count($usuarios) == 0)
             return null;
     }
 
-    public function findByEmail(string $email) {
+    public function findByEmail(string $email)
+    {
         $conn = Connection::getConn();
 
         $sql = "SELECT * FROM usuario u" .
-               " WHERE u.email = ?";
-        $stm = $conn->prepare($sql);    
+            " WHERE u.email = ?";
+        $stm = $conn->prepare($sql);
         $stm->execute([$email]);
         $result = $stm->fetchAll();
 
         $usuarios = $this->mapUsuarios($result);
 
-        if(count($usuarios) == 1)
+        if (count($usuarios) == 1)
             return $usuarios[0];
-        elseif(count($usuarios) == 0)
+        elseif (count($usuarios) == 0)
             return null;
     }
 
 
     //Método para buscar um usuário por seu login e senha
-    public function findByLoginSenha(string $email, string $senha) {
+    public function findByLoginSenha(string $email, string $senha)
+    {
         $conn = Connection::getConn();
 
         $sql = "SELECT * FROM usuario u" .
-               " WHERE BINARY u.email = ?";
-        $stm = $conn->prepare($sql);    
+            " WHERE BINARY u.email = ?";
+        $stm = $conn->prepare($sql);
         $stm->execute([$email]);
         $result = $stm->fetchAll();
 
         $usuarios = $this->mapUsuarios($result);
 
-        if(count($usuarios) == 1) {
+        if (count($usuarios) == 1) {
             //Tratamento para senha criptografada
-            if(password_verify($senha, $usuarios[0]->getSenha()))
+            if (password_verify($senha, $usuarios[0]->getSenha()))
                 return $usuarios[0];
             else
                 return null;
-        } elseif(count($usuarios) == 0)
+        } elseif (count($usuarios) == 0)
             return null;
 
-        die("UsuarioDAO.findByLoginSenha()" . 
+        die("UsuarioDAO.findByLoginSenha()" .
             " - Erro: mais de um usuário encontrado.");
     }
 
     //Método para inserir um Usuario
-    public function insert(Usuario $usuario) {
+    public function insert(Usuario $usuario)
+    {
         $conn = Connection::getConn();
 
         $sql = "INSERT INTO usuario (nome, email, senha,
         documento, descricao, cidade_id, end_logradouro,
         end_bairro, end_numero, telefone, status, tipo_usuario_id)" .
-               " VALUES (:nome, :email, :senha, :documento, :descricao,
+            " VALUES (:nome, :email, :senha, :documento, :descricao,
                :cidade, :endLogradouro, :endBairro, :endNumero,
                :telefone, :status, :tipoUsuario)";
-        
+
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
         $stm->bindValue("email", $usuario->getEmail());
@@ -154,13 +162,14 @@ class UsuarioDAO {
     }
 
     //Método para atualizar um Usuario
-    public function update(Usuario $usuario) {
+    public function update(Usuario $usuario)
+    {
         $conn = Connection::getConn();
 
-        $sql = "UPDATE usuario SET nome = :nome, email = :email," . 
-               " documento = :documento, telefone = :telefone" .     
-               " WHERE id = :id";
-        
+        $sql = "UPDATE usuario SET nome = :nome, email = :email," .
+            " documento = :documento, telefone = :telefone" .
+            " WHERE id = :id";
+
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
         $stm->bindValue("email", $usuario->getEmail());
@@ -170,40 +179,56 @@ class UsuarioDAO {
         $stm->execute();
     }
 
-    public function deleteById(int $id) {
+    public function deleteById(int $id)
+    {
         $conn = Connection::getConn();
 
         $sql = "DELETE FROM usuario WHERE id = :id";
-        
+
         $stm = $conn->prepare($sql);
         $stm->bindValue("id", $id);
         $stm->execute();
     }
 
-    public function aprovarEmpresa(Usuario $usuario) {
+    public function aprovarEmpresa(Usuario $usuario)
+    {
         $conn = Connection::getConn();
 
-        $sql = "UPDATE usuario SET status = 'Ativo'".     
-               " WHERE id = :id";
-        
+        $sql = "UPDATE usuario SET status = 'Ativo'" .
+            " WHERE id = :id";
+
         $stm = $conn->prepare($sql);
         $stm->bindValue("id", $usuario->getId());
         $stm->execute();
     }
 
-    public function inativarUsuario(Usuario $usuario) {
+    public function inativarUsuario(Usuario $usuario)
+    {
         $conn = Connection::getConn();
 
-        $sql = "UPDATE usuario SET status = 'Inativo'".     
-               " WHERE id = :id";
-        
+        $sql = "UPDATE usuario SET status = 'Inativo'" .
+            " WHERE id = :id";
+
         $stm = $conn->prepare($sql);
         $stm->bindValue("id", $usuario->getId());
         $stm->execute();
     }
+
+    public function alterarStatus(int $id, string $status)
+    {
+        $conn = Connection::getConn();
+
+        $sql = "UPDATE usuario SET status = :status WHERE id = :id";
+        $stm = $conn->prepare($sql);
+        $stm->bindValue("status", $status);
+        $stm->bindValue("id", $id);
+        $stm->execute();
+    }
+
 
     //Método para converter um registro da base de dados em um objeto Usuario
-    private function mapUsuarios($result) {
+    private function mapUsuarios($result)
+    {
         $usuarios = array();
         foreach ($result as $reg) {
             $usuario = new Usuario();
@@ -225,5 +250,4 @@ class UsuarioDAO {
 
         return $usuarios;
     }
-
 }
