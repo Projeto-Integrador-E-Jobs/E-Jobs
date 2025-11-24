@@ -16,25 +16,74 @@ if ($_GET["action"] === "listAllAdmin") {
     try {
         $usuarios = $usuarioDAO->list();
 
-        $arr = array_map(function($u) {
+        $arr = array_map(function ($u) {
             return [
                 "id" => $u->getId(),
                 "nome" => $u->getNome(),
                 "email" => $u->getEmail(),
                 "documento" => $u->getDocumento(),
                 "telefone" => $u->getTelefone(),
-                "status" => $u->getStatus(),              
-                "tipo" => $u->getTipoUsuario()->getId()   
+                "status" => $u->getStatus(),
+                "tipo" => $u->getTipoUsuario()->getId()
             ];
         }, $usuarios);
 
         echo json_encode(["success" => true, "usuarios" => $arr]);
-
     } catch (Exception $e) {
         echo json_encode(["success" => false, "error" => $e->getMessage()]);
     }
     exit;
 }
+
+if ($_GET["action"] === "listarPendentes") {
+    try {
+        $usuarios = $usuarioDAO->listEmpresasPendentes();
+
+        $arr = array_map(function ($u) {
+            return [
+                "id" => $u->getId(),
+                "nome" => $u->getNome(),
+                "email" => $u->getEmail(),
+                "documento" => $u->getDocumento(),
+                "telefone" => $u->getTelefone(),
+                "status" => $u->getStatus(),
+                "tipo" => $u->getTipoUsuario()->getId()
+            ];
+        }, $usuarios);
+
+        echo json_encode(["success" => true, "usuarios" => $arr]);
+    } catch (Exception $e) {
+        echo json_encode(["success" => false, "error" => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($_GET["action"] === "aprovarEmpresa") {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (!isset($data["id"])) {
+        echo json_encode(["success" => false, "error" => "ID inválido"]);
+        exit;
+    }
+
+    try {
+        $usuario = $usuarioDAO->findById($data["id"]);
+        if (!$usuario) {
+            echo json_encode(["success" => false, "error" => "Empresa não encontrada"]);
+            exit;
+        }
+
+        $usuarioDAO->alterarStatus($usuario->getId(), "Ativo");
+
+        echo json_encode(["success" => true, "message" => "Empresa aprovada com sucesso"]);
+    } catch (Exception $e) {
+        echo json_encode(["success" => false, "error" => $e->getMessage()]);
+    }
+
+    exit;
+}
+
+
 
 
 if ($_GET["action"] === "alterarStatus") {
@@ -53,7 +102,6 @@ if ($_GET["action"] === "alterarStatus") {
             "message" => "Status atualizado com sucesso",
             "status" => $data["status"]
         ]);
-
     } catch (Exception $e) {
         echo json_encode(["success" => false, "error" => $e->getMessage()]);
     }
@@ -102,7 +150,6 @@ if ($_GET["action"] === "update") {
                 "telefone" => $usuario->getTelefone()
             ]
         ]);
-
     } catch (Exception $e) {
         echo json_encode(["success" => false, "errors" => [$e->getMessage()]]);
     }
@@ -112,5 +159,3 @@ if ($_GET["action"] === "update") {
 
 echo json_encode(["success" => false, "error" => "Ação inválida"]);
 exit;
-
-?>
