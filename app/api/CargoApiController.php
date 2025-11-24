@@ -15,9 +15,19 @@ class CargoApiController
                 $this->listar();
                 break;
 
+            case "update":
+                $this->update();
+                break;
+
+
             case "save":
                 $this->save();
                 break;
+
+            case "delete":
+                $this->delete();
+                break;
+
 
             default:
                 echo json_encode([
@@ -33,7 +43,6 @@ class CargoApiController
             $dao = new CargoDAO();
             $cargos = $dao->list();
 
-            // 👇 Converte objetos Cargo em arrays
             $cargosArray = array_map(function ($cargo) {
                 return [
                     "id" => $cargo->getId(),
@@ -52,6 +61,72 @@ class CargoApiController
             ]);
         }
     }
+
+    private function delete()
+    {
+        try {
+            $input = json_decode(file_get_contents("php://input"), true);
+            $id = $input["id"] ?? null;
+
+            if (!$id) {
+                echo json_encode([
+                    "success" => false,
+                    "error" => "ID não informado"
+                ]);
+                return;
+            }
+
+            $dao = new CargoDAO();
+            $dao->deleteById($id);
+
+            echo json_encode([
+                "success" => true,
+                "message" => "Cargo excluído com sucesso"
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "error" => "Erro ao excluir cargo"
+            ]);
+        }
+    }
+
+    private function update()
+    {
+        try {
+            $input = json_decode(file_get_contents("php://input"), true);
+
+            $id = $input["id"] ?? null;
+            $nome = trim($input["nome"] ?? "");
+
+            if (!$id || empty($nome)) {
+                echo json_encode([
+                    "success" => false,
+                    "error" => "ID ou nome inválidos"
+                ]);
+                return;
+            }
+
+            $cargo = new Cargo();
+            $cargo->setId($id);
+            $cargo->setNome($nome);
+
+            $dao = new CargoDAO();
+            $dao->update($cargo);
+
+            echo json_encode([
+                "success" => true,
+                "message" => "Cargo atualizado com sucesso"
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "error" => "Erro ao atualizar cargo"
+            ]);
+        }
+    }
+
+
 
     private function save()
     {
