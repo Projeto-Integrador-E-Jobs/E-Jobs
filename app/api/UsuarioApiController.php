@@ -9,8 +9,6 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once(__DIR__ . "/../dao/UsuarioDAO.php");
 require_once(__DIR__ . "/../model/Usuario.php");
 
-header("Content-Type: application/json; charset=UTF-8");
-
 $usuarioDAO = new UsuarioDAO();
 
 if ($_GET["action"] === "update") {
@@ -22,16 +20,27 @@ if ($_GET["action"] === "update") {
     }
 
     try {
+        $usuarioAtual = $usuarioDAO->findById($data["id"]);
+        if (!$usuarioAtual) {
+            echo json_encode(["success" => false, "errors" => ["Usuário não encontrado."]]);
+            exit;
+        }
+
+        // Preservar o email atual se não vier no JSON
+        $email = isset($data["email"]) && !empty($data["email"])
+            ? $data["email"]
+            : $usuarioAtual->getEmail();
+
         $usuario = new Usuario();
         $usuario->setId($data["id"]);
         $usuario->setNome($data["nome"]);
-        $usuario->setEmail($data["email"]);
+        $usuario->setEmail($email); 
         $usuario->setDocumento($data["documento"]);
         $usuario->setTelefone($data["telefone"]);
 
         $usuarioDAO->update($usuario);
 
-         ob_clean();
+        ob_clean();
 
         echo json_encode([
             "success" => true,
