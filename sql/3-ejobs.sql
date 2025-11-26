@@ -109,3 +109,4 @@ CREATE TABLE notificacao (
   CONSTRAINT fk_notif_destino FOREIGN KEY (id_destino) REFERENCES usuario(id),
   CONSTRAINT fk_notif_vaga FOREIGN KEY (id_vaga) REFERENCES vaga(id)
 );
+
