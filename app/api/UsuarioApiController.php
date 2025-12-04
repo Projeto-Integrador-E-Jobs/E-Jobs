@@ -133,11 +133,11 @@ if ($_GET["action"] === "update") {
         $usuario->setId($data["id"]);
         $usuario->setNome($data["nome"]);
         $usuario->setEmail($email);
-
         $usuario->setDocumento($usuarioAtual->getDocumento());
-
         $usuario->setTelefone($data["telefone"]);
+        $usuario->setDescricao($data["descricao"] ?? $usuarioAtual->getDescricao());
 
+ 
         $usuarioDAO->update($usuario);
 
         echo json_encode([
@@ -146,9 +146,10 @@ if ($_GET["action"] === "update") {
             "usuario" => [
                 "id" => $usuario->getId(),
                 "nome" => $usuario->getNome(),
-                "email" => $usuario->getEmail(),
-                "documento" => $usuario->getDocumento(),
-                "telefone" => $usuario->getTelefone()
+                "email"=> $usuario->getEmail(),
+                "documento"=> $usuario->getDocumento(),
+                "telefone"=> $usuario->getTelefone(),
+                "descricao"=> $usuario->getDescricao()
             ]
         ]);
     } catch (Exception $e) {
@@ -156,6 +157,7 @@ if ($_GET["action"] === "update") {
     }
     exit;
 }
+
 
 
 

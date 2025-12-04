@@ -133,7 +133,7 @@ class UsuarioDAO
             " - Erro: mais de um usuário encontrado.");
     }
 
-   
+
     public function insert(Usuario $usuario)
     {
         $conn = Connection::getConn();
@@ -161,23 +161,29 @@ class UsuarioDAO
         $stm->execute();
     }
 
-    //Método para atualizar um Usuario
+
     public function update(Usuario $usuario)
     {
         $conn = Connection::getConn();
 
-        $sql = "UPDATE usuario SET nome = :nome, email = :email," .
-            " documento = :documento, telefone = :telefone" .
-            " WHERE id = :id";
+        $sql = "UPDATE usuario SET 
+                nome = :nome, 
+                email = :email,
+                documento = :documento, 
+                telefone = :telefone,
+                descricao = :descricao
+            WHERE id = :id";
 
         $stm = $conn->prepare($sql);
         $stm->bindValue("nome", $usuario->getNome());
         $stm->bindValue("email", $usuario->getEmail());
         $stm->bindValue("documento", $usuario->getDocumento());
         $stm->bindValue("telefone", $usuario->getTelefone());
+        $stm->bindValue("descricao", $usuario->getDescricao());
         $stm->bindValue("id", $usuario->getId());
         $stm->execute();
     }
+
 
     public function deleteById(int $id)
     {
