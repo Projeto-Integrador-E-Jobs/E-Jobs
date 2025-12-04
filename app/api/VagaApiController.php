@@ -438,12 +438,23 @@ class VagaApiController extends ApiController
         $vagasArray = [];
 
         foreach ($vagas as $vaga) {
+            $cargo     = $vaga->getCargo();
+            $categoria = $vaga->getCategoria();
+            $empresa   = $vaga->getEmpresa();
+
             $vagasArray[] = [
-                "id" => $vaga->getId(),
-                "titulo" => $vaga->getTitulo(),
-                "salario" => $vaga->getSalario(),
-                "horario" => $vaga->getHorario(),
-                "status" => $vaga->getStatus(),
+                "id"         => $vaga->getId(),
+                "titulo"     => $vaga->getTitulo(),
+                "modalidade" => $vaga->getModalidade(),
+                "horario"    => $vaga->getHorario(),
+                "regime"     => $vaga->getRegime(),
+                "salario"    => $vaga->getSalario(),
+                "descricao"  => $vaga->getDescricao(),
+                "requisitos" => $vaga->getRequisitos(),
+                "status"     => $vaga->getStatus(),
+                "empresa"    => $empresa   ? $empresa->getNome()   : "",
+                "cargo"      => $cargo     ? $cargo->getNome()     : "",
+                "categoria"  => $categoria ? $categoria->getNome() : "",
             ];
         }
 
@@ -452,6 +463,9 @@ class VagaApiController extends ApiController
             "vagas" => $vagasArray
         ]);
     }
+
+
+
     protected function aprovarCandidato()
     {
         $idVaga = $_POST["idVaga"] ?? null;
