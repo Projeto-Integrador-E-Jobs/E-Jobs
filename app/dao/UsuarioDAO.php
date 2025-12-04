@@ -133,7 +133,7 @@ class UsuarioDAO
             " - Erro: mais de um usuário encontrado.");
     }
 
-    //Método para inserir um Usuario
+   
     public function insert(Usuario $usuario)
     {
         $conn = Connection::getConn();

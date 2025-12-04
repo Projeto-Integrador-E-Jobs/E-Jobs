@@ -133,12 +133,13 @@ if ($_GET["action"] === "update") {
         $usuario->setId($data["id"]);
         $usuario->setNome($data["nome"]);
         $usuario->setEmail($email);
-        $usuario->setDocumento($data["documento"]);
+
+        $usuario->setDocumento($usuarioAtual->getDocumento());
+
         $usuario->setTelefone($data["telefone"]);
 
         $usuarioDAO->update($usuario);
 
-        ob_clean();
         echo json_encode([
             "success" => true,
             "message" => "Usuário atualizado com sucesso.",
@@ -155,6 +156,7 @@ if ($_GET["action"] === "update") {
     }
     exit;
 }
+
 
 
 echo json_encode(["success" => false, "error" => "Ação inválida"]);
